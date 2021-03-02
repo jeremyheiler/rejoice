@@ -11,10 +11,10 @@ public class Program {
     }
 
     public Stack evaluate(Library library, Stack stack) {
-        Stack s = stack;
+        Stack main = stack;
         for (Atom atom : atoms) {
-            s = atom.evaluate(library, s);
+            main = atom.evaluate(library, main);
         }
-        return s;
+        return main;
     }
 }

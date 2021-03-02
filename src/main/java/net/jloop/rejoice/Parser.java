@@ -10,6 +10,10 @@ import java.util.ArrayList;
 
 public class Parser {
 
+    public Program parse(String input) {
+        return parse(new Buffer(input));
+    }
+
     public Program parse(Buffer input) {
         ArrayList<Atom> atoms = new ArrayList<>();
         while (input.hasMore()) {
@@ -91,7 +95,7 @@ public class Parser {
                 atoms.add(atom);
             }
         }
-        throw new RuntimeException("End of input while parsing a vector");
+        throw new RuntimeException("End of input while parsing a stack");
     }
 
     public static class Buffer {

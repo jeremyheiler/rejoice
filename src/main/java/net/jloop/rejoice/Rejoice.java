@@ -24,6 +24,6 @@ public class Rejoice {
     }
 
     public Stack interpret(Stack stack, String input) {
-        return parser.parse(new Parser.Buffer(input)).evaluate(library, stack);
+        return parser.parse(input).evaluate(library, stack);
     }
 }
