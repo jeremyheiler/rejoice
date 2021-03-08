@@ -1,6 +1,4 @@
-package net.jloop.rejoice.literals;
-
-import net.jloop.rejoice.Literal;
+package net.jloop.rejoice;
 
 public class Str implements Literal {
 

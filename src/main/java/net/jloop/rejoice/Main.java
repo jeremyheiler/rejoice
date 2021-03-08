@@ -1,5 +1,8 @@
 package net.jloop.rejoice;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 public class Main {
@@ -8,10 +11,20 @@ public class Main {
         System.out.println("Rejoice 0.0.1-alpha");
 
         if (args.length == 0) {
-            // TODO: Start a REPL
-            System.err.println("Error: Must use one of the following commands:");
-            printCommands(System.err);
-            System.exit(1);
+            Rejoice rt = new Rejoice();
+            Stack main = new Stack();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            try {
+                while (true) {
+                    System.out.print("> ");
+                    String line = reader.readLine();
+                    main = rt.interpret(main, line);
+                    main.print();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
 
         String command = args[0];

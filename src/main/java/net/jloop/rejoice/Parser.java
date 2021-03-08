@@ -1,20 +1,14 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.literals.Bool;
-import net.jloop.rejoice.literals.Int64;
-import net.jloop.rejoice.literals.Quote;
-import net.jloop.rejoice.literals.Str;
-import net.jloop.rejoice.literals.Symbol;
-
 import java.util.ArrayList;
 
 public class Parser {
 
-    public Program parse(String input) {
+    public List parse(String input) {
         return parse(new Buffer(input));
     }
 
-    public Program parse(Buffer input) {
+    public List parse(Buffer input) {
         ArrayList<Atom> atoms = new ArrayList<>();
         while (input.hasMore()) {
             Atom atom = parseAtom(input);
@@ -22,7 +16,7 @@ public class Parser {
                 atoms.add(atom);
             }
         }
-        return new Program(atoms);
+        return new List(atoms);
     }
 
     public Atom parseAtom(Buffer input) {
@@ -31,9 +25,7 @@ public class Parser {
             if (c == '"') {
                 return parseString(input);
             } else if (c == '[') {
-                return parseStack(input);
-            } else if (c == '\'') {
-                return new Quote(parseAtom(input));
+                return parseList(input);
             } else {
                 input.undo();
             }
@@ -83,19 +75,21 @@ public class Parser {
         throw new RuntimeException("End of input while parsing a string");
     }
 
-    public Stack parseStack(Buffer input) {
+    public List parseList(Buffer input) {
         ArrayList<Atom> atoms = new ArrayList<>();
         while (input.hasMore()) {
             char c = input.get();
             if (c == ']') {
-                return new Stack(atoms);
+                return new List(atoms);
             } else {
                 input.undo();
                 Atom atom = parseAtom(input);
-                atoms.add(atom);
+                if (atom != null) {
+                    atoms.add(atom);
+                }
             }
         }
-        throw new RuntimeException("End of input while parsing a stack");
+        throw new RuntimeException("End of input while parsing a list");
     }
 
     public static class Buffer {

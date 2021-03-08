@@ -1,22 +1,49 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.operators.ApplyOperator;
-import net.jloop.rejoice.operators.ConcatOperator;
-import net.jloop.rejoice.operators.MinusOperator;
-import net.jloop.rejoice.operators.PlusOperator;
-import net.jloop.rejoice.operators.ReduceOperator;
-
 public class Rejoice {
 
     private final Parser parser = new Parser();
     private final Library library = new Library();
 
     public Rejoice() {
-        library.define("+", new PlusOperator());
-        library.define("-", new MinusOperator());
-        library.define("apply", new ApplyOperator());
-        library.define("concat", new ConcatOperator());
-        library.define("reduce", new ReduceOperator());
+        library.define("/", Operators::_divide);
+        library.define("=", Operators::_equal);
+        library.define("-", Operators::_minus);
+        library.define("%", Operators::_mod);
+        library.define("*", Operators::_multiply);
+        library.define("+", Operators::_plus);
+        library.define("abs", Operators::abs);
+        library.define("app1", Operators::app1);
+        library.define("app2", Operators::app2);
+        library.define("app3", Operators::app3);
+        library.define("b", Operators::b);
+        library.define("choice", Operators::choice);
+        library.define("cleave", Operators::cleave);
+        library.define("dip", Operators::dip);
+        library.define("dipd", Operators::dipd);
+        library.define("dipdd", Operators::dipdd);
+        library.define("dup", Operators::dup);
+        library.define("dupd", Operators::dupd);
+        library.define("i", Operators::i);
+        library.define("ifte", Operators::ifte);
+        library.define("map", Operators::map);
+        library.define("min", Operators::min);
+        library.define("max", Operators::max);
+        library.define("nullary", Operators::nullary);
+        library.define("opcase", Operators::opcase);
+        library.define("pop", Operators::pop);
+        library.define("popd", Operators::popd);
+        library.define("popop", Operators::popop);
+        library.define("pred", Operators::pred);
+        library.define("rolldown", Operators::rolldown);
+        library.define("rollup", Operators::rollup);
+        library.define("sign", Operators::sign);
+        library.define("succ", Operators::succ);
+        library.define("swap", Operators::swap);
+        library.define("swapd", Operators::swapd);
+        library.define("while", Operators::_while);
+        library.define("x", Operators::x);
+        library.define("y", Operators::y);
     }
 
     public Stack interpret(String input) {
@@ -24,6 +51,6 @@ public class Rejoice {
     }
 
     public Stack interpret(Stack stack, String input) {
-        return parser.parse(input).evaluate(library, stack);
+        return parser.parse(input).unquote(library, stack);
     }
 }

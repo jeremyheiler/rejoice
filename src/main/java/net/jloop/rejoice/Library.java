@@ -1,8 +1,7 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.literals.Symbol;
-
 import java.util.HashMap;
+import java.util.Optional;
 
 public class Library {
 
@@ -16,11 +15,7 @@ public class Library {
         library.put(symbol, operator);
     }
 
-    public Operator lookup(Symbol symbol) {
-        Operator operator =  library.get(symbol);
-        if (operator == null) {
-            throw new RuntimeException("Could not find operator for symbol " + symbol);
-        }
-        return operator;
+    public Optional<Operator> lookup(Symbol symbol) {
+        return Optional.ofNullable(library.get(symbol));
     }
 }

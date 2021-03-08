@@ -1,13 +1,9 @@
-package net.jloop.rejoice.literals;
-
-import net.jloop.rejoice.Operator;
-import net.jloop.rejoice.Library;
-import net.jloop.rejoice.Stack;
-import net.jloop.rejoice.Atom;
+package net.jloop.rejoice;
 
 import java.util.Objects;
+import java.util.Optional;
 
-public class Symbol implements Atom {
+public class Symbol implements Literal {
 
     private final String value;
 
@@ -17,11 +13,11 @@ public class Symbol implements Atom {
 
     @Override
     public Stack evaluate(Library library, Stack stack) {
-        Operator operator = library.lookup(this);
-        if (operator == null) {
-            throw new RuntimeException("No function named: " + value);
+        Optional<Operator> operator = library.lookup(this);
+        if (operator.isPresent()) {
+            return operator.get().evaluate(library, stack);
         }
-        return operator.evaluate(library, stack);
+        throw new RuntimeException("Could not find operator for symbol " + value);
     }
 
     @Override
