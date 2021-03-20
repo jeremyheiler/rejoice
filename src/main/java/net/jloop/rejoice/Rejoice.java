@@ -1,5 +1,8 @@
 package net.jloop.rejoice;
 
+import java.io.PushbackReader;
+import java.io.StringReader;
+
 public class Rejoice {
 
     private final Parser parser = new Parser();
@@ -46,11 +49,20 @@ public class Rejoice {
         library.define("y", Operators::y);
     }
 
-    public Stack interpret(String input) {
+    public InterpreterResult interpret(String input) {
         return interpret(new Stack(), input);
     }
 
-    public Stack interpret(Stack stack, String input) {
-        return parser.parse(input).unquote(library, stack);
+    public InterpreterResult interpret(Stack stack, String input) {
+        PushbackReader reader = new PushbackReader(new StringReader(input));
+        ParserResult result;
+        while ((result = parser.parse(reader)).isOk()) {
+            stack = result.getAtom().evaluate(library, stack);
+        }
+        if (result.isEof()) {
+            return new InterpreterResult(stack, null);
+        } else {
+            return new InterpreterResult(stack, result.getError());
+        }
     }
 }

@@ -1,131 +1,92 @@
 package net.jloop.rejoice;
 
+import java.io.IOException;
+import java.io.PushbackReader;
 import java.util.ArrayList;
 
 public class Parser {
 
-    public List parse(String input) {
-        return parse(new Buffer(input));
-    }
+    private static final int EOF = -1;
 
-    public List parse(Buffer input) {
-        ArrayList<Atom> atoms = new ArrayList<>();
-        while (input.hasMore()) {
-            Atom atom = parseAtom(input);
-            if (atom != null) {
-                atoms.add(atom);
-            }
-        }
-        return new List(atoms);
-    }
+    public ParserResult parse(PushbackReader input) {
+        try {
+            int c;
 
-    public Atom parseAtom(Buffer input) {
-        if (input.hasMore()) {
-            char c = input.get();
-            if (c == '"') {
-                return parseString(input);
-            } else if (c == '[') {
-                return parseList(input);
-            } else {
-                input.undo();
-            }
-        }
-        StringBuilder buf = new StringBuilder();
-        while (input.hasMore()) {
-            char c = input.get();
-            if (Character.isWhitespace(c)) {
-                break;
-            } else if (c == ']') {
-                input.undo();
-                break;
-            } else {
-                buf.append(c);
-            }
-        }
-        while (input.hasMore()) {
-            char c = input.get();
-            if (!Character.isWhitespace(c)) {
-                input.undo();
-                break;
-            }
-        }
-        if (!buf.isEmpty()) {
-            String value = buf.toString();
-            if (value.matches("-?\\d+")) {
-                return new Int64(Long.parseLong(value));
-            } else if (value.equals("true")) {
-                return new Bool(true);
-            } else if (value.equals("false")) {
-                return new Bool(false);
-            } else {
-                return new Symbol(value);
-            }
-        }
-        return null;
-    }
-
-    public Str parseString(Buffer input) {
-        int mark = input.at();
-        while (input.hasMore()) {
-            char c = input.get();
-            if (c == '"') {
-                return new Str(input.sub(mark, input.at() - 1));
-            }
-        }
-        throw new RuntimeException("End of input while parsing a string");
-    }
-
-    public List parseList(Buffer input) {
-        ArrayList<Atom> atoms = new ArrayList<>();
-        while (input.hasMore()) {
-            char c = input.get();
-            if (c == ']') {
-                return new List(atoms);
-            } else {
-                input.undo();
-                Atom atom = parseAtom(input);
-                if (atom != null) {
-                    atoms.add(atom);
+            // Consume whitespace
+            while ((c = input.read()) != EOF) {
+                if (!(c == ' ' || c == '\t' || c == '\n')) {
+                    input.unread(c);
+                    break;
                 }
             }
-        }
-        throw new RuntimeException("End of input while parsing a list");
-    }
-
-    public static class Buffer {
-
-        private final String data;
-        private int index = 0;
-
-        public Buffer(String data) {
-            this.data = data;
-        }
-
-        public boolean hasMore() {
-            return index < data.length();
-        }
-
-        public int at() {
-            return index;
-        }
-
-        public char look() {
-            return data.charAt(index);
-        }
-
-        public void undo() {
-            index--;
-        }
-
-        public char get() {
-            return data.charAt(index++);
-        }
-
-        public String sub(int start, int end) {
-            if (start >= end) {
-                throw new RuntimeException("The start index must be less than the end index.");
+            if (c == EOF) {
+                return ParserResult.of(new RejoiceError("PARSE", "EOF"));
             }
-            return data.substring(start, end);
+
+            // Consume the next aggregate or atom
+            if ((c = input.read()) != EOF) {
+                if (c == '"') {
+
+                    // Parse string
+                    StringBuilder buf = new StringBuilder();
+                    while ((c = input.read()) != EOF) {
+                        if (c == '"') {
+                            return ParserResult.of(new Str(buf.toString()));
+                        } else {
+                            buf.append((char) c);
+                        }
+                    }
+                    // The loop ended on EOF without closing the string
+                    return ParserResult.of(new RejoiceError("PARSE", "Unexpected EOF", "Run-on string"));
+
+                } else if (c == '[') {
+
+                    // Parse list
+                    ArrayList<Atom> atoms = new ArrayList<>();
+                    while ((c = input.read()) != EOF) {
+                        if (c == ']') {
+                            return ParserResult.of(new List(atoms));
+                        } else {
+                            ParserResult result = parse(input);
+                            if (result.isError()) {
+                                return result;
+                            } else {
+                                atoms.add(result.getAtom());
+                            }
+                        }
+                    }
+                    // The loop ended on EOF without closing the list
+                    return ParserResult.of(new RejoiceError("PARSE", "Unexpected EOF", "Run-on list"));
+
+                } else {
+                    // TODO(jeremy): Check that c is a valid character for a literal
+
+                    // Parse a literal
+                    StringBuilder buf = new StringBuilder().append((char) c);
+                    while ((c = input.read()) != EOF) {
+                        if (c == ' ' || c == '\t' || c == '\n') {
+                            break;
+                        } else {
+                            buf.append((char) c);
+                        }
+                    }
+                    String value = buf.toString();
+                    if (value.matches("-?\\d+")) {
+                        return ParserResult.of(new Int64(Long.parseLong(value)));
+                    } else if (value.equals("true")) {
+                        return ParserResult.of(new Bool(true));
+                    } else if (value.equals("false")) {
+                        return ParserResult.of(new Bool(false));
+                    } else {
+                        return ParserResult.of(new Symbol(value));
+                    }
+
+                }
+            } else {
+                return ParserResult.of(new RejoiceError("PARSE", "EOF"));
+            }
+        } catch (IOException e) {
+            return ParserResult.of(new RejoiceError("PARSE", e));
         }
     }
 }

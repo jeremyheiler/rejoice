@@ -10,7 +10,9 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Rejoice 0.0.1-alpha");
 
-        if (args.length == 0) {
+        String command = args[0];
+
+        if (command.equals("repl")) {
             Rejoice rt = new Rejoice();
             Stack main = new Stack();
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -18,7 +20,12 @@ public class Main {
                 while (true) {
                     System.out.print("> ");
                     String line = reader.readLine();
-                    main = rt.interpret(main, line);
+                    InterpreterResult result = rt.interpret(main, line);
+                    main = result.getStack();
+                    if (result.getError() != null) {
+                        RejoiceError error = result.getError();
+                        System.out.println(error.getStage() + " ERROR: " + error.getMessage() + (error.getDetails() == null ? "" : "; " + error.getDetails()));
+                    }
                     main.print();
                 }
             } catch (IOException e) {
@@ -26,8 +33,6 @@ public class Main {
                 System.exit(1);
             }
         }
-
-        String command = args[0];
 
         if (command.equals("help")) {
             printCommands(System.out);
@@ -37,7 +42,13 @@ public class Main {
         if (command.equals("eval")) {
             String program = args[1];
             try {
-                new Rejoice().interpret(program).print();
+                InterpreterResult result = new Rejoice().interpret(program);
+                if (result.getError() == null) {
+                    result.getStack().print();
+                } else {
+                    RejoiceError error = result.getError();
+                    System.out.println(error.getStage() + " ERROR: " + result.getError().getMessage());
+                }
                 System.exit(0);
             } catch (Exception e) {
                 System.err.print("Error: ");
