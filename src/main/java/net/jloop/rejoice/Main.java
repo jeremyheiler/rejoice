@@ -66,7 +66,8 @@ public class Main {
     private static void printCommands(PrintStream stream) {
         stream.println();
         stream.println("Commands:");
-        stream.println("\thelp");
         stream.println("\teval <program>");
+        stream.println("\thelp");
+        stream.println("\trepl");
     }
 }
