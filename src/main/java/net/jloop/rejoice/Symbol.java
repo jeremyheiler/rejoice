@@ -1,7 +1,6 @@
 package net.jloop.rejoice;
 
 import java.util.Objects;
-import java.util.Optional;
 
 public class Symbol implements Literal {
 
@@ -12,12 +11,12 @@ public class Symbol implements Literal {
     }
 
     @Override
-    public Stack evaluate(Library library, Stack stack) {
-        Optional<Operator> operator = library.lookup(this);
-        if (operator.isPresent()) {
-            return operator.get().evaluate(library, stack);
-        }
-        throw new RuntimeException("Could not find operator for symbol " + value);
+    public Stack accept(Stack stack, Interpreter interpreter) {
+        return interpreter.evaluate(stack, this);
+    }
+
+    public String getName() {
+        return value;
     }
 
     @Override

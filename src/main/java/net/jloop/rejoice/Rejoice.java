@@ -7,6 +7,7 @@ public class Rejoice {
 
     private final Parser parser = new Parser();
     private final Library library = new Library();
+    private final Interpreter interpreter = new Interpreter(parser, library);
 
     public Rejoice() {
         library.define("/", Operators::_divide);
@@ -49,20 +50,11 @@ public class Rejoice {
         library.define("y", Operators::y);
     }
 
-    public InterpreterResult interpret(String input) {
-        return interpret(new Stack(), input);
+    public InterpreterResult evaluate(String input) {
+        return evaluate(new Stack(), input);
     }
 
-    public InterpreterResult interpret(Stack stack, String input) {
-        PushbackReader reader = new PushbackReader(new StringReader(input));
-        ParserResult result;
-        while ((result = parser.parse(reader)).isOk()) {
-            stack = result.getAtom().evaluate(library, stack);
-        }
-        if (result.isEof()) {
-            return new InterpreterResult(stack, null);
-        } else {
-            return new InterpreterResult(stack, result.getError());
-        }
+    public InterpreterResult evaluate(Stack stack, String input) {
+        return interpreter.interpret(stack, new PushbackReader(new StringReader(input)));
     }
 }
