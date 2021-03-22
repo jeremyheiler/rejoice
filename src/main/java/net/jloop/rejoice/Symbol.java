@@ -1,23 +1,22 @@
 package net.jloop.rejoice;
 
 import java.util.Objects;
-import java.util.Optional;
 
 public class Symbol implements Literal {
 
     private final String value;
 
-    public Symbol(String value) {
+    private Symbol(String value) {
         this.value = value;
     }
 
-    @Override
-    public Stack evaluate(Library library, Stack stack) {
-        Optional<Operator> operator = library.lookup(this);
-        if (operator.isPresent()) {
-            return operator.get().evaluate(library, stack);
-        }
-        throw new RuntimeException("Could not find operator for symbol " + value);
+    // TODO(jeremy): Intern symbols
+    public static Symbol of(String symbol) {
+        return new Symbol(symbol);
+    }
+
+    public String getName() {
+        return value;
     }
 
     @Override

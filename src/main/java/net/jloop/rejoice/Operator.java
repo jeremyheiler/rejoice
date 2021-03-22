@@ -1,4 +1,7 @@
 package net.jloop.rejoice;
 
-public interface Operator extends Atom {
+@FunctionalInterface
+public interface Operator {
+
+    Stack evaluate(Stack stack);
 }

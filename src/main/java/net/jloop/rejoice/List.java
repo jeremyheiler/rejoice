@@ -15,6 +15,14 @@ public class List implements Literal, Iterable<Atom> {
         this.atoms = atoms;
     }
 
+    public static List from(Stack stack) {
+        List list = new List();
+        for (Atom atom : stack) {
+            list.append(atom);
+        }
+        return list;
+    }
+
     public void append(Atom atom) {
         atoms.add(atom);
     }
@@ -24,24 +32,21 @@ public class List implements Literal, Iterable<Atom> {
     }
 
     public Atom first() {
-        return atoms.get(0);
+        if (atoms.isEmpty()) {
+            return null;
+        } else {
+            return atoms.get(0);
+        }
     }
 
     public List rest() {
-        ArrayList<Atom> atoms = new ArrayList<>(this.atoms);
-        atoms.remove(0);
-        return new List(atoms);
-    }
-
-    public Stack unquote(Library library, Stack stack) {
-        for (Atom atom : atoms) {
-            stack = atom.evaluate(library, stack);
+        if (atoms.isEmpty()) {
+            return new List();
+        } else {
+            ArrayList<Atom> atoms = new ArrayList<>(this.atoms);
+            atoms.remove(0);
+            return new List(atoms);
         }
-        return stack;
-    }
-
-    public Stack toStack() {
-        return new Stack(atoms);
     }
 
     @Override

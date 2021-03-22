@@ -5,17 +5,40 @@ import java.util.Optional;
 
 public class Library {
 
-    private final HashMap<Symbol, Operator> library = new HashMap<>();
+    private final Definitions<Operator> operators = new Definitions<>();
+    private final Definitions<Combinator> combinators = new Definitions<>();
+    private final Definitions<Macro> macros = new Definitions<>();
 
-    public void define(String name, Operator operator) {
-        define(new Symbol(name), operator);
+    public Definitions<Operator> operators() {
+        return operators;
     }
 
-    public void define(Symbol symbol, Operator operator) {
-        library.put(symbol, operator);
+    public Definitions<Combinator> combinators() {
+        return combinators;
     }
 
-    public Optional<Operator> lookup(Symbol symbol) {
-        return Optional.ofNullable(library.get(symbol));
+    public Definitions<Macro> macros() {
+        return macros;
+    }
+
+    public static class Definitions<T> {
+
+        private final HashMap<Symbol, T> defs = new HashMap<>();
+
+        public void define(String symbol, T def) {
+            define(Symbol.of(symbol), def);
+        }
+
+        public void define(Symbol symbol, T def) {
+            defs.put(symbol, def);
+        }
+
+        public Optional<T> lookup(String symbol) {
+            return lookup(Symbol.of(symbol));
+        }
+
+        public Optional<T> lookup(Symbol symbol) {
+            return Optional.ofNullable(defs.get(symbol));
+        }
     }
 }
