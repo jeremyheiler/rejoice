@@ -50,7 +50,7 @@ public class List implements Atom, Iterable<Atom> {
     }
 
     @Override
-    public String toString() {
+    public String print() {
         StringBuilder buf = new StringBuilder();
         buf.append("[");
         boolean first = true;
@@ -60,7 +60,7 @@ public class List implements Atom, Iterable<Atom> {
             } else {
                 buf.append(" ");
             }
-            buf.append(atom);
+            buf.append(atom.print());
         }
         buf.append("]");
         return buf.toString();

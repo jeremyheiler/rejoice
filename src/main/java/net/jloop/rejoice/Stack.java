@@ -53,7 +53,7 @@ public class Stack implements Iterable<Atom> {
 
     public void print() {
         for (Atom atom : atoms) {
-            System.out.println(atom.toString());
+            System.out.println(atom.print());
         }
     }
 

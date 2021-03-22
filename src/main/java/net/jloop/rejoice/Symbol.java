@@ -20,7 +20,7 @@ public class Symbol implements Atom {
     }
 
     @Override
-    public String toString() {
+    public String print() {
         return value;
     }
 

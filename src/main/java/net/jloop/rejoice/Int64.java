@@ -57,7 +57,7 @@ public class Int64 implements Atom {
     }
 
     @Override
-    public String toString() {
+    public String print() {
         return String.valueOf(value);
     }
 
