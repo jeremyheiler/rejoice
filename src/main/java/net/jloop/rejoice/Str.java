@@ -1,6 +1,6 @@
 package net.jloop.rejoice;
 
-public class Str implements Literal {
+public class Str implements Atom {
 
     private final String value;
 

@@ -3,7 +3,7 @@ package net.jloop.rejoice;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class List implements Literal, Iterable<Atom> {
+public class List implements Atom, Iterable<Atom> {
 
     private final ArrayList<Atom> atoms;
 

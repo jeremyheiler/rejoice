@@ -2,7 +2,7 @@ package net.jloop.rejoice;
 
 import java.util.Objects;
 
-public class Bool implements Literal {
+public class Bool implements Atom {
 
     private final boolean value;
 

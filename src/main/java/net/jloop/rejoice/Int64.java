@@ -2,7 +2,7 @@ package net.jloop.rejoice;
 
 import java.util.Objects;
 
-public class Int64 implements Literal {
+public class Int64 implements Atom {
 
     private final long value;
 

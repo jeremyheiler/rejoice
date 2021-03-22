@@ -2,7 +2,7 @@ package net.jloop.rejoice;
 
 import java.util.Objects;
 
-public class Symbol implements Literal {
+public class Symbol implements Atom {
 
     private final String value;
 
