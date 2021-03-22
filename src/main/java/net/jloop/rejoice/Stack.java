@@ -1,6 +1,7 @@
 package net.jloop.rejoice;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 public class Stack implements Iterable<Atom> {
@@ -52,7 +53,9 @@ public class Stack implements Iterable<Atom> {
     }
 
     public void print() {
-        for (Atom atom : atoms) {
+        ArrayList<Atom> list = new ArrayList<>(atoms);
+        Collections.reverse(list);
+        for (Atom atom : list) {
             System.out.println(atom.print());
         }
     }
