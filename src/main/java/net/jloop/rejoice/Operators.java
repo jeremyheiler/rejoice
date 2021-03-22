@@ -76,6 +76,12 @@ public class Operators {
         return stack.push(m);
     }
 
+    // no effect
+    public static Stack print_BANG_(Stack stack) {
+        stack.print();
+        return stack;
+    }
+
     // n -> m
     public static Stack sign(Stack stack) {
         Int64 n = stack.consume(Int64.class);

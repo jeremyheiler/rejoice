@@ -22,7 +22,6 @@ public class Main {
                     String line = reader.readLine();
                     Input input = new Input(new StringReader(line));
                     stack = interpreter.interpret(stack, input);
-                    stack.print();
                 } catch (RuntimeError error) {
                     System.out.println(error.getStage() + " ERROR: " + error.getMessage());
                     if (error.getCause() != null) {
@@ -97,6 +96,7 @@ public class Main {
         operators.define("popd", Operators::popd);
         operators.define("popop", Operators::popop);
         operators.define("pred", Operators::pred);
+        operators.define("print!", Operators::print_BANG_);
         operators.define("rolldown", Operators::rolldown);
         operators.define("rollup", Operators::rollup);
         operators.define("sign", Operators::sign);
