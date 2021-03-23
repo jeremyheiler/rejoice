@@ -1,5 +1,7 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Symbol;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;

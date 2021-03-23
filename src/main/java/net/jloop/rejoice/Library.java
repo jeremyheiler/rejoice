@@ -1,5 +1,7 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Symbol;
+
 import java.util.HashMap;
 import java.util.Optional;
 

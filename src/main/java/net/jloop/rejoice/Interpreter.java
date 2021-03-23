@@ -1,5 +1,8 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.List;
+import net.jloop.rejoice.types.Symbol;
+
 import java.util.Optional;
 
 public final class Interpreter {

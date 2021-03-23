@@ -1,4 +1,7 @@
-package net.jloop.rejoice;
+package net.jloop.rejoice.types;
+
+import net.jloop.rejoice.Atom;
+import net.jloop.rejoice.Stack;
 
 import java.util.ArrayList;
 import java.util.Iterator;

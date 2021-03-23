@@ -1,5 +1,8 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.List;
+import net.jloop.rejoice.types.Symbol;
+
 public final class Macros {
 
     public static final class ListLiteral implements Macro {

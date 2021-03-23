@@ -1,5 +1,10 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Bool;
+import net.jloop.rejoice.types.Int64;
+import net.jloop.rejoice.types.Str;
+import net.jloop.rejoice.types.Symbol;
+
 public final class Parser {
 
     private final Lexer lexer = new Lexer();

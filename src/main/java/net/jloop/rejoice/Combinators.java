@@ -1,5 +1,8 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Bool;
+import net.jloop.rejoice.types.List;
+
 public class Combinators {
 
     // x [p] -> r

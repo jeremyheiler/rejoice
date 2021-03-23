@@ -1,5 +1,9 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Bool;
+import net.jloop.rejoice.types.Int64;
+import net.jloop.rejoice.types.List;
+
 public class Operators {
 
     /*

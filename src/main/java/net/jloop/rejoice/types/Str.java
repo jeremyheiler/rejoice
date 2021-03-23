@@ -1,4 +1,6 @@
-package net.jloop.rejoice;
+package net.jloop.rejoice.types;
+
+import net.jloop.rejoice.Atom;
 
 public class Str implements Atom {
 
