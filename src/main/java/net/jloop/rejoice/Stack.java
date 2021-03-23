@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-public class Stack implements Iterable<Atom> {
+public final class Stack implements Iterable<Atom> {
 
     private final ArrayList<Atom> atoms;
 
@@ -12,18 +12,14 @@ public class Stack implements Iterable<Atom> {
         this.atoms = new ArrayList<>();
     }
 
-    public Stack(ArrayList<Atom> atoms) {
+    private Stack(ArrayList<Atom> atoms) {
         this.atoms = atoms;
     }
 
-    private int lastIndex() {
-        return atoms.size() - 1;
-    }
-
     public <V extends Atom> V peek(Class<V> type) {
-        Atom atom = atoms.get(lastIndex());
+        Atom atom = atoms.get(atoms.size() - 1);
         if (!type.isInstance(atom)) {
-            throw new RuntimeException("Expecting type " + type + " but found " + atom.getClass());
+            throw new RuntimeError("STACK", "Expecting " + type.getSimpleName() + " but found " + atom.getClass().getSimpleName());
         } else {
             return type.cast(atom);
         }
@@ -31,7 +27,7 @@ public class Stack implements Iterable<Atom> {
 
     public <V extends Atom> V consume(Class<V> type) {
         V atom = peek(type);
-        this.pop();
+        pop();
         return atom;
     }
 
@@ -40,15 +36,8 @@ public class Stack implements Iterable<Atom> {
         return this;
     }
 
-    public Stack pushAll(Stack stack) {
-        for (Atom atom : stack) {
-            atoms.add(atom);
-        }
-        return this;
-    }
-
     public Stack pop() {
-        atoms.remove(lastIndex());
+        atoms.remove(atoms.size() - 1);
         return this;
     }
 
