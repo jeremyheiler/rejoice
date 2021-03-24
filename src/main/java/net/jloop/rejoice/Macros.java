@@ -19,12 +19,43 @@ public final class Macros {
 
             Atom atom;
             while ((atom = next.next()) != null) {
-                if (atom instanceof Symbol && atom.equals(terminator)) {
+                if (atom.equals(terminator)) {
                     return stack.push(List.from(syntax));
                 }
                 syntax = interpreter.interpret(syntax, atom, next, Interpreter.Mode.Macro);
             }
             throw new RuntimeError("MACRO", "Unexpected EOF; Run-on list");
+        }
+    }
+
+    public static final class Definition implements Macro {
+
+        private final Symbol terminator;
+
+        public Definition(Symbol terminator) {
+            this.terminator = terminator;
+        }
+
+        @Override
+        public Stack evaluate(Stack stack, Interpreter interpreter, Interpreter.Next next) {
+            Atom atom = next.next();
+            if (atom == null) {
+                throw new RuntimeError("MACRO", "Unexpected EOF; Incomplete definition");
+            }
+            if (!(atom instanceof Symbol)) {
+                throw new RuntimeError("MACRO", "Expecting a Symbol for the definition name, but found " + atom.getClass().getSimpleName());
+            }
+            Symbol name = (Symbol) atom;
+
+            List body = new List();
+            while ((atom = next.next()) != null) {
+                if (atom.equals(terminator)) {
+                    interpreter.library().operators().define(name, s -> interpreter.interpret(s, body));
+                    return stack;
+                }
+                body.append(atom);
+            }
+            throw new RuntimeError("MACRO", "Unexpected EOF; Incomplete definition");
         }
     }
 }

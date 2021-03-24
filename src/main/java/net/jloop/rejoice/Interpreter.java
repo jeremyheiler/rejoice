@@ -14,6 +14,10 @@ public final class Interpreter {
         this.library = library;
     }
 
+    public Library library() {
+        return library;
+    }
+
     public Stack interpret(Stack stack, Input input) {
         return interpret(stack, new NextFromInput(parser, input));
     }
