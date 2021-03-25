@@ -30,9 +30,11 @@ public final class Macros {
 
     public static final class Define implements Macro {
 
+        private final Symbol separator;
         private final Symbol terminator;
 
-        public Define(Symbol terminator) {
+        public Define(Symbol separator, Symbol terminator) {
+            this.separator = separator;
             this.terminator = terminator;
         }
 
@@ -51,7 +53,7 @@ public final class Macros {
             if (atom == null) {
                 throw new RuntimeError("MACRO", "Unexpected EOF; Incomplete definition");
             }
-            if (!atom.equals(Symbol.of(":"))) {
+            if (!atom.equals(separator)) {
                 throw new RuntimeError("MACRO", "Expecting a ':' after the definition name, but found " + atom.getClass().getSimpleName());
             }
 

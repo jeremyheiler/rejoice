@@ -131,6 +131,6 @@ public class Main {
 
         Library.Definitions<Macro> macros = library.macros();
         macros.define("[", new Macros.ListLiteral(Symbol.of("]")));
-        macros.define("define", new Macros.Define(Symbol.of(";")));
+        macros.define("define", new Macros.Define(Symbol.of(":"), Symbol.of(";")));
     }
 }
