@@ -28,11 +28,11 @@ public final class Macros {
         }
     }
 
-    public static final class Definition implements Macro {
+    public static final class Define implements Macro {
 
         private final Symbol terminator;
 
-        public Definition(Symbol terminator) {
+        public Define(Symbol terminator) {
             this.terminator = terminator;
         }
 
@@ -46,6 +46,14 @@ public final class Macros {
                 throw new RuntimeError("MACRO", "Expecting a Symbol for the definition name, but found " + atom.getClass().getSimpleName());
             }
             Symbol name = (Symbol) atom;
+
+            atom = next.next();
+            if (atom == null) {
+                throw new RuntimeError("MACRO", "Unexpected EOF; Incomplete definition");
+            }
+            if (!atom.equals(Symbol.of(":"))) {
+                throw new RuntimeError("MACRO", "Expecting a ':' after the definition name, but found " + atom.getClass().getSimpleName());
+            }
 
             List body = new List();
             while ((atom = next.next()) != null) {

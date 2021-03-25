@@ -18,6 +18,18 @@ public class Main {
             Stack stack = new Stack();
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             Interpreter interpreter = new Interpreter(library);
+            try {
+                stack = interpreter.interpret(stack, new Input(new InputStreamReader(Main.class.getResourceAsStream("/core.rejoice"))));
+            } catch (RuntimeError error) {
+                System.out.println(error.getStage() + " ERROR: " + error.getMessage());
+                if (error.getCause() != null) {
+                    error.getCause().printStackTrace();
+                }
+                System.exit(1);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.exit(1);
+            }
             while (true) {
                 System.out.print("> ");
                 try {
@@ -45,10 +57,8 @@ public class Main {
             Input input = new Input(new StringReader(args[1]));
             Interpreter interpreter = new Interpreter(library);
             try {
-                Stack result;
-                while ((result = interpreter.interpret(stack, input)) != null) {
-                    stack = result;
-                }
+                stack = interpreter.interpret(stack, new Input(new InputStreamReader(Main.class.getResourceAsStream("/core.rejoice"))));
+                stack = interpreter.interpret(stack, input);
                 stack.print();
             } catch (RuntimeError error) {
                 System.out.println(error.getStage() + " ERROR: " + error.getMessage());
@@ -96,7 +106,6 @@ public class Main {
         operators.define("opcase", Operators::opcase);
         operators.define("pop", Operators::pop);
         operators.define("popd", Operators::popd);
-        operators.define("popop", Operators::popop);
         operators.define("pred", Operators::pred);
         operators.define("print!", Operators::print_BANG_);
         operators.define("rolldown", Operators::rolldown);
@@ -125,6 +134,6 @@ public class Main {
 
         Library.Definitions<Macro> macros = library.macros();
         macros.define("[", new Macros.ListLiteral(Symbol.of("]")));
-        macros.define("define", new Macros.Definition(Symbol.of(";")));
+        macros.define("define", new Macros.Define(Symbol.of(";")));
     }
 }

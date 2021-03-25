@@ -182,11 +182,6 @@ public class Operators {
         return stack.pop().pop().push(x);
     }
 
-    // x y ->
-    public static Stack popop(Stack stack) {
-        return stack.pop().pop();
-    }
-
     // x y z -> z x y
     public static Stack rollup(Stack stack) {
         Atom z = stack.consume(Atom.class);
