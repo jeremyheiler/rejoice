@@ -15,11 +15,9 @@ public class Main {
         String command = args[0];
 
         if (command.equals("repl")) {
-            Stack stack = new Stack();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            Interpreter interpreter = new Interpreter(library);
+            Runtime rt = new Runtime(new Interpreter(library));
             try {
-                stack = interpreter.interpret(stack, new Input(new InputStreamReader(Main.class.getResourceAsStream("/core.rejoice"))));
+                rt.init();
             } catch (RuntimeError error) {
                 System.out.println(error.getStage() + " ERROR: " + error.getMessage());
                 if (error.getCause() != null) {
@@ -30,12 +28,12 @@ public class Main {
                 ex.printStackTrace();
                 System.exit(1);
             }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             while (true) {
-                System.out.print("> ");
                 try {
+                    System.out.print("> ");
                     String line = reader.readLine();
-                    Input input = new Input(new StringReader(line));
-                    stack = interpreter.interpret(stack, input);
+                    rt.eval(new Input(new StringReader(line)));
                 } catch (RuntimeError error) {
                     System.out.println(error.getStage() + " ERROR: " + error.getMessage());
                     if (error.getCause() != null) {
@@ -53,13 +51,13 @@ public class Main {
         }
 
         if (command.equals("eval")) {
-            Stack stack = new Stack();
             Input input = new Input(new StringReader(args[1]));
-            Interpreter interpreter = new Interpreter(library);
+            Runtime rt = new Runtime(new Interpreter(library));
             try {
-                stack = interpreter.interpret(stack, new Input(new InputStreamReader(Main.class.getResourceAsStream("/core.rejoice"))));
-                stack = interpreter.interpret(stack, input);
-                stack.print();
+                rt.init();
+                rt.eval(input);
+                rt.eval(new Input(new StringReader("print!")));
+                System.exit(0);
             } catch (RuntimeError error) {
                 System.out.println(error.getStage() + " ERROR: " + error.getMessage());
                 if (error.getCause() != null) {
@@ -70,7 +68,6 @@ public class Main {
                 ex.printStackTrace();
                 System.exit(1);
             }
-            System.exit(0);
         }
 
         System.err.println("Error: Unknown command '" + command + "'.");
