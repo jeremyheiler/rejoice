@@ -16,7 +16,7 @@ public final class Cifte implements Combinator {
         List t = stack.consume(List.class);
         List b = stack.consume(List.class);
         Stack copy = stack.copy();
-        if (interpreter.interpret(copy, b).consume(Bool.class).isTrue()) {
+        if (interpreter.interpret(copy, b).consume(Bool.class) == Bool.True) {
             return interpreter.interpret(stack, t);
         } else {
             return interpreter.interpret(stack, f);

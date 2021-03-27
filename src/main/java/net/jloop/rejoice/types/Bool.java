@@ -2,39 +2,26 @@ package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
 
-import java.util.Objects;
+public enum Bool implements Atom {
 
-public class Bool implements Atom {
+    True, False;
 
-    private final boolean value;
-
-    public Bool(boolean value) {
-        this.value = value;
+    public static Bool of(boolean value) {
+        return value ? True : False;
     }
 
-    public boolean isTrue() {
-        return value;
-    }
-
-    public boolean isFalse() {
-        return !value;
+    public static Bool of(String value) {
+        if (value.equals("true")) {
+            return True;
+        } else if (value.equals("false")) {
+            return False;
+        } else {
+            throw new IllegalArgumentException("Boolean values must be either 'true' or 'false', but received: '" + value + "'");
+        }
     }
 
     @Override
     public String print() {
-        return String.valueOf(value);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Bool bool = (Bool) o;
-        return value == bool.value;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
+        return this == True ? "true" : "false";
     }
 }

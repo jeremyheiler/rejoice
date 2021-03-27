@@ -13,7 +13,7 @@ public final class Oequal_Q_ implements Operator {
     public Stack evaluate(Stack stack) {
         Atom y = stack.consume(Atom.class);
         Atom x = stack.consume(Atom.class);
-        Bool b = new Bool(x.equals(y));
+        Bool b = Bool.of(x.equals(y));
         return stack.push(b);
     }
 }

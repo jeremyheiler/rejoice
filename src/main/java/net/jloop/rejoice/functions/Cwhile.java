@@ -14,7 +14,7 @@ public final class Cwhile implements Combinator {
     public Stack evaluate(Stack stack, Interpreter interpreter) {
         List d = stack.consume(List.class);
         List b = stack.consume(List.class);
-        while (interpreter.interpret(stack, b).consume(Bool.class).isTrue()) {
+        while (interpreter.interpret(stack, b).consume(Bool.class) == Bool.True) {
             stack = interpreter.interpret(stack, d);
         }
         return stack;

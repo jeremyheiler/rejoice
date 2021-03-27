@@ -15,7 +15,7 @@ public final class Ochoice implements Operator {
         Atom f = stack.consume(Atom.class);
         Atom t = stack.consume(Atom.class);
         Bool b = stack.consume(Bool.class);
-        Atom r = b.isTrue() ? t : f;
+        Atom r = b == Bool.True ? t : f;
         return stack.push(r);
     }
 }

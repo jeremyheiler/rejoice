@@ -13,7 +13,7 @@ public final class Parser {
         Lexer.Token token = lexer.lex(input);
         switch (token.getType()) {
             case Bool -> {
-                return new Bool(token.getLexeme().equals("true"));
+                return Bool.of(token.getLexeme());
             }
             case EOF -> {
                 return null;
