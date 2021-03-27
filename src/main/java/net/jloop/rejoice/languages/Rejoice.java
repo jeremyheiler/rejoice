@@ -1,6 +1,10 @@
 package net.jloop.rejoice.languages;
 
+import net.jloop.rejoice.Interpreter;
+import net.jloop.rejoice.Lexer;
+import net.jloop.rejoice.LexerRule;
 import net.jloop.rejoice.Library;
+import net.jloop.rejoice.Parser;
 import net.jloop.rejoice.Runtime;
 import net.jloop.rejoice.RuntimeFactory;
 import net.jloop.rejoice.functions.Capp1;
@@ -42,6 +46,11 @@ import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.functions.Oswap;
 import net.jloop.rejoice.functions.Oswapd;
 import net.jloop.rejoice.types.Symbol;
+
+import java.io.IOException;
+import java.io.PushbackReader;
+
+import static net.jloop.rejoice.Lexer.EOF;
 
 public final class Rejoice implements RuntimeFactory {
 
@@ -93,8 +102,66 @@ public final class Rejoice implements RuntimeFactory {
         library.define(Symbol.of("["), new Mlist(Symbol.of("]")));
         library.define(Symbol.of("define"), new Mdefine(Symbol.of(":"), Symbol.of(";")));
 
+        // Configure lexer
+        Lexer lexer = new Lexer(new LexerRule() {
+            @Override
+            public int dispatcher() {
+                return '/';
+            }
+
+            @Override
+            public Lexer.Token lex(PushbackReader reader) throws IOException {
+                int c;
+                if ((c = reader.read()) != EOF) {
+                    if (c == '/') {
+                        StringBuilder buf = new StringBuilder();
+                        int d;
+                        while ((d = reader.read()) != EOF) {
+                            if (d == '\r') {
+                                int f;
+                                if ((f = reader.read()) != EOF && f != '\n') {
+                                    reader.unread(f);
+                                }
+                                break;
+                            } else if (d == '\n') {
+                                break;
+                            } else {
+                                buf.append(d);
+                            }
+                        }
+                        return Lexer.Token.of(Lexer.Token.Type.Comment, buf.toString());
+                    } else if (c >= '!' && c <= 'z' && c != '[' && c != ']') {
+                        // Consume a symbol that begins with '/' but not `//`
+                        StringBuilder buf = new StringBuilder().append("/").append((char) c);
+                        int d;
+                        while ((d = reader.read()) != EOF) {
+                            if (d >= '!' && d <= 'z' && d != '[' && d != ']') {
+                                buf.append((char) d);
+                            } else {
+                                reader.unread(d);
+                                break;
+                            }
+                        }
+                        return Lexer.Token.of(Lexer.Token.Type.Symbol, buf.toString());
+                    } else {
+                        // Push back c for the next lex call
+                        reader.unread(c);
+                        return Lexer.Token.of(Lexer.Token.Type.Symbol, "/");
+                    }
+                } else {
+                    return Lexer.Token.of(Lexer.Token.Type.Symbol, "/");
+                }
+            }
+        });
+
+        // Configure parser
+        Parser parser = new Parser(lexer);
+
+        // Configure interpreter
+        Interpreter interpreter = new Interpreter(parser, library);
+
         // Initialize
-        Runtime runtime = new Runtime("Rejoice", library);
+        Runtime runtime = new Runtime("Rejoice", interpreter);
         runtime.load(Runtime.class.getResourceAsStream("/core.rejoice"));
         return runtime;
     }

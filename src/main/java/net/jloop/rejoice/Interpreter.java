@@ -7,10 +7,11 @@ import java.util.Optional;
 
 public final class Interpreter {
 
-    private final Parser parser = new Parser();
+    private final Parser parser;
     private final Library library;
 
-    public Interpreter(Library library) {
+    public Interpreter(Parser parser, Library library) {
+        this.parser = parser;
         this.library = library;
     }
 

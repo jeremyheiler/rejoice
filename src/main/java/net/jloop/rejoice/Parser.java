@@ -7,13 +7,20 @@ import net.jloop.rejoice.types.Symbol;
 
 public final class Parser {
 
-    private final Lexer lexer = new Lexer();
+    private final Lexer lexer;
+
+    public Parser(Lexer lexer) {
+        this.lexer = lexer;
+    }
 
     public Atom parse(Input input) {
         Lexer.Token token = lexer.lex(input);
         switch (token.getType()) {
             case Bool -> {
                 return Bool.of(token.getLexeme());
+            }
+            case Comment -> {
+                return parse(input);
             }
             case EOF -> {
                 return null;

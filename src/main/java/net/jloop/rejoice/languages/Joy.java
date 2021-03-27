@@ -1,6 +1,10 @@
 package net.jloop.rejoice.languages;
 
+import net.jloop.rejoice.Interpreter;
+import net.jloop.rejoice.Lexer;
+import net.jloop.rejoice.LexerRule;
 import net.jloop.rejoice.Library;
+import net.jloop.rejoice.Parser;
 import net.jloop.rejoice.Runtime;
 import net.jloop.rejoice.RuntimeFactory;
 import net.jloop.rejoice.functions.Capp1;
@@ -40,6 +44,11 @@ import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.functions.Oswap;
 import net.jloop.rejoice.functions.Oswapd;
 import net.jloop.rejoice.types.Symbol;
+
+import java.io.IOException;
+import java.io.PushbackReader;
+
+import static net.jloop.rejoice.Lexer.EOF;
 
 public class Joy implements RuntimeFactory {
 
@@ -89,7 +98,41 @@ public class Joy implements RuntimeFactory {
         // Macros
         library.define(Symbol.of("["), new Mlist(Symbol.of("]")));
 
+        // Configure lexer
+        Lexer lexer = new Lexer(new LexerRule() {
+            @Override
+            public int dispatcher() {
+                return '#';
+            }
+
+            @Override
+            public Lexer.Token lex(PushbackReader reader) throws IOException {
+                StringBuilder buf = new StringBuilder();
+                int c;
+                while ((c = reader.read()) != EOF) {
+                    if (c == '\r') {
+                        int f;
+                        if ((f = reader.read()) != EOF && f != '\n') {
+                            reader.unread(f);
+                        }
+                        break;
+                    } else if (c == '\n') {
+                        break;
+                    } else {
+                        buf.append(c);
+                    }
+                }
+                return Lexer.Token.of(Lexer.Token.Type.Comment, buf.toString());
+            }
+        });
+
+        // Configure parser
+        Parser parser = new Parser(lexer);
+
+        // Configure interpreter
+        Interpreter interpreter = new Interpreter(parser, library);
+
         // Initialize
-        return new Runtime("Joy", library);
+        return new Runtime("Joy", interpreter);
     }
 }

@@ -5,7 +5,13 @@ import java.io.PushbackReader;
 
 public final class Lexer {
 
-    private static final int EOF = -1;
+    public static final int EOF = -1;
+
+    private final LexerRule comment;
+
+    public Lexer(LexerRule comment) {
+        this.comment = comment;
+    }
 
     public Token lex(Input input) {
         PushbackReader reader = input.getReader();
@@ -41,6 +47,8 @@ public final class Lexer {
                     return Token.of(Token.Type.Symbol, "[");
                 } else if (c == ']') {
                     return Token.of(Token.Type.Symbol, "]");
+                } else if (c == comment.dispatcher()) {
+                    return comment.lex(reader);
                 } else {
                     // Parse a literal
                     if (c >= '!' && c <= 'z') { // Valid characters except for [ and ] which are filtered out above
@@ -73,7 +81,6 @@ public final class Lexer {
             throw new RuntimeError("LEX", cause);
         }
     }
-
     public static final class Token {
 
         private final Type type;
@@ -104,6 +111,7 @@ public final class Lexer {
 
         public enum Type {
             Bool,
+            Comment,
             EOF,
             Int,
             Str,

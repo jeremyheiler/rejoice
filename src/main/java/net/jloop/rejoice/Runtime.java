@@ -9,13 +9,13 @@ public class Runtime {
     private final Interpreter interpreter;
     private Stack stack;
 
-    public Runtime(String language, Library library) {
-        this(language, library, new Stack());
+    public Runtime(String language, Interpreter interpreter) {
+        this(language, interpreter, new Stack());
     }
 
-    public Runtime(String language, Library library, Stack stack) {
+    public Runtime(String language, Interpreter interpreter, Stack stack) {
         this.language = language;
-        this.interpreter = new Interpreter(library);
+        this.interpreter = interpreter;
         this.stack = stack;
     }
 
