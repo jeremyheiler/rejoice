@@ -22,6 +22,7 @@ import net.jloop.rejoice.functions.Cnullary;
 import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
+import net.jloop.rejoice.functions.M_multilinecomment;
 import net.jloop.rejoice.functions.Mlist;
 import net.jloop.rejoice.functions.O_divide;
 import net.jloop.rejoice.functions.O_minus;
@@ -97,6 +98,7 @@ public class Joy implements RuntimeFactory {
 
         // Macros
         library.define(Symbol.of("["), new Mlist(Symbol.of("]")));
+        library.define(Symbol.of("(*"), new M_multilinecomment(Symbol.of("*)")));
 
         // Configure lexer
         Lexer lexer = new Lexer(new LexerRule() {
@@ -122,7 +124,7 @@ public class Joy implements RuntimeFactory {
                         buf.append(c);
                     }
                 }
-                return Lexer.Token.of(Lexer.Token.Type.Comment, buf.toString());
+                return Lexer.Token.of(Lexer.Token.Type.LineComment, buf.toString());
             }
         });
 

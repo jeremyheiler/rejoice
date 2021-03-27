@@ -111,9 +111,10 @@ public final class Lexer {
 
         public enum Type {
             Bool,
-            Comment,
             EOF,
             Int,
+            LineComment,
+            MultilineComment,
             Str,
             Symbol
         }

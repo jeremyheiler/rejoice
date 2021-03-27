@@ -1,5 +1,6 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Comment;
 import net.jloop.rejoice.types.List;
 import net.jloop.rejoice.types.Symbol;
 
@@ -52,6 +53,8 @@ public final class Interpreter {
                     throw new RuntimeError("INTERPRET", "Could not find symbol '" + symbol.getName() + "' in the library");
                 }
             }
+        } else if (atom instanceof Comment) {
+            return stack;
         } else {
             return stack.push(atom);
         }

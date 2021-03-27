@@ -22,6 +22,7 @@ import net.jloop.rejoice.functions.Cnullary;
 import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
+import net.jloop.rejoice.functions.M_multilinecomment;
 import net.jloop.rejoice.functions.Mdefine;
 import net.jloop.rejoice.functions.Mlist;
 import net.jloop.rejoice.functions.O_E_;
@@ -101,6 +102,7 @@ public final class Rejoice implements RuntimeFactory {
         // Macros
         library.define(Symbol.of("["), new Mlist(Symbol.of("]")));
         library.define(Symbol.of("define"), new Mdefine(Symbol.of(":"), Symbol.of(";")));
+        library.define(Symbol.of("/*"), new M_multilinecomment(Symbol.of("*/")));
 
         // Configure lexer
         Lexer lexer = new Lexer(new LexerRule() {
@@ -129,7 +131,7 @@ public final class Rejoice implements RuntimeFactory {
                                 buf.append(d);
                             }
                         }
-                        return Lexer.Token.of(Lexer.Token.Type.Comment, buf.toString());
+                        return Lexer.Token.of(Lexer.Token.Type.LineComment, buf.toString());
                     } else if (c >= '!' && c <= 'z' && c != '[' && c != ']') {
                         // Consume a symbol that begins with '/' but not `//`
                         StringBuilder buf = new StringBuilder().append("/").append((char) c);
