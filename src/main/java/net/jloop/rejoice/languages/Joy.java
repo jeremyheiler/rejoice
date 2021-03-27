@@ -22,13 +22,13 @@ import net.jloop.rejoice.functions.Cnullary;
 import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
-import net.jloop.rejoice.functions.M_multilinecomment;
+import net.jloop.rejoice.functions.M_MultilineComment;
 import net.jloop.rejoice.functions.Mlist;
-import net.jloop.rejoice.functions.O_divide;
-import net.jloop.rejoice.functions.O_minus;
-import net.jloop.rejoice.functions.O_mod;
-import net.jloop.rejoice.functions.O_multiply;
-import net.jloop.rejoice.functions.O_plus;
+import net.jloop.rejoice.functions.O_Divide;
+import net.jloop.rejoice.functions.O_Minus;
+import net.jloop.rejoice.functions.O_Modulus;
+import net.jloop.rejoice.functions.O_Multiply;
+import net.jloop.rejoice.functions.O_Plus;
 import net.jloop.rejoice.functions.Oabs;
 import net.jloop.rejoice.functions.Ochoice;
 import net.jloop.rejoice.functions.Odup;
@@ -58,11 +58,11 @@ public class Joy implements RuntimeFactory {
         Library library = new Library();
 
         // Operators
-        library.define(Symbol.of("/"), new O_divide());
-        library.define(Symbol.of("-"), new O_minus());
-        library.define(Symbol.of("%"), new O_mod());
-        library.define(Symbol.of("*"), new O_multiply());
-        library.define(Symbol.of("+"), new O_plus());
+        library.define(Symbol.of("/"), new O_Divide());
+        library.define(Symbol.of("-"), new O_Minus());
+        library.define(Symbol.of("%"), new O_Modulus());
+        library.define(Symbol.of("*"), new O_Multiply());
+        library.define(Symbol.of("+"), new O_Plus());
         library.define(Symbol.of("="), new Oequal_Q_());
         library.define(Symbol.of("abs"), new Oabs());
         library.define(Symbol.of("choice"), new Ochoice());
@@ -98,7 +98,7 @@ public class Joy implements RuntimeFactory {
 
         // Macros
         library.define(Symbol.of("["), new Mlist(Symbol.of("]")));
-        library.define(Symbol.of("(*"), new M_multilinecomment(Symbol.of("*)")));
+        library.define(Symbol.of("(*"), new M_MultilineComment(Symbol.of("*)")));
 
         // Configure lexer
         Lexer lexer = new Lexer(new LexerRule() {

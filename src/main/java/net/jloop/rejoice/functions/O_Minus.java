@@ -6,7 +6,7 @@ import net.jloop.rejoice.types.Int64;
 
 // i j -> k
 
-public final class O_minus implements Operator {
+public final class O_Minus implements Operator {
 
     @Override
     public Stack evaluate(Stack stack) {

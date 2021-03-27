@@ -5,11 +5,11 @@ import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.types.Symbol;
 
-public class M_multilinecomment implements Macro {
+public class M_MultilineComment implements Macro {
 
     private final Symbol terminator;
 
-    public M_multilinecomment(Symbol terminator) {
+    public M_MultilineComment(Symbol terminator) {
         this.terminator = terminator;
     }
 
