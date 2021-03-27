@@ -4,6 +4,7 @@ import net.jloop.rejoice.languages.Joy;
 import net.jloop.rejoice.languages.Rejoice;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -25,7 +26,8 @@ public class Main {
 
         if (command.equals("eval")) {
 
-            String eval = "";
+            String eval = null;
+            String load = null;
             String mode = "rejoice";
 
             // TODO(jeremy): If there are no opts or anything after --, accept input from stdin
@@ -51,11 +53,13 @@ public class Main {
                             System.exit(1);
                         }
                     } else {
-                        if (opt.equals("mode")) {
-                            mode = args[i];
-                        } else {
-                            System.err.println("ERROR: Unknown option '" + opt + "'");
-                            System.exit(1);
+                        switch (opt) {
+                            case "load" -> load = args[i]; // TODO(jeremy) Support loading multiple files
+                            case "mode" -> mode = args[i];
+                            default -> {
+                                System.err.println("ERROR: Unknown option '" + opt + "'");
+                                System.exit(1);
+                            }
                         }
                         opt = null;
                     }
@@ -74,7 +78,12 @@ public class Main {
 
             try {
                 Runtime runtime = runtimes.get(mode).create();
-                runtime.eval(new Input(new StringReader(eval)));
+                if (load != null) {
+                    runtime.eval(new Input(new FileReader(load)));
+                }
+                if (eval != null) {
+                    runtime.eval(new Input(new StringReader(eval)));
+                }
                 System.exit(0);
             } catch (RuntimeError error) {
                 System.out.println(error.getStage() + " ERROR: " + error.getMessage());
@@ -96,6 +105,7 @@ public class Main {
         if (command.equals("repl")) {
 
             String eval = null;
+            String load = null;
             String mode = "rejoice";
 
             if (args.length > 1) {
@@ -110,13 +120,14 @@ public class Main {
                             System.exit(1);
                         }
                     } else {
-                        if (opt.equals("eval")) {
-                            eval = args[i];
-                        } else if (opt.equals("mode")) {
-                            mode = args[i];
-                        } else {
-                            System.err.println("ERROR: Unknown option '" + opt + "'");
-                            System.exit(1);
+                        switch (opt) {
+                            case "eval" -> eval = args[i];
+                            case "load" -> load = args[i]; // TODO(jeremy) Support loading multiple files
+                            case "mode" -> mode = args[i];
+                            default -> {
+                                System.err.println("ERROR: Unknown option '" + opt + "'");
+                                System.exit(1);
+                            }
                         }
                         opt = null;
                     }
@@ -128,6 +139,9 @@ public class Main {
             try {
                 Runtime runtime = runtimes.get(mode).create();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                if (load != null) {
+                    runtime.eval(new Input(new FileReader(load)));
+                }
                 if (eval != null) {
                     runtime.eval(new Input(new StringReader(eval)));
                 }
