@@ -2,28 +2,37 @@ package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
 
+import java.util.HashMap;
 import java.util.Objects;
 
-public class Symbol implements Atom {
+public final class Symbol implements Atom {
 
-    private final String value;
+    private static final HashMap<String, Symbol> interns = new HashMap<>();
 
-    private Symbol(String value) {
-        this.value = value;
+    private final String name;
+
+    private Symbol(String name) {
+        this.name = name;
     }
 
-    // TODO(jeremy): Intern symbols
-    public static Symbol of(String symbol) {
-        return new Symbol(symbol);
+    public static Symbol of(String name) {
+        Symbol symbol;
+        if (interns.containsKey(name)) {
+            symbol = interns.get(name);
+        } else {
+            symbol = new Symbol(name);
+            interns.put(name, symbol);
+        }
+        return symbol;
     }
 
     public String getName() {
-        return value;
+        return name;
     }
 
     @Override
     public String print() {
-        return value;
+        return name;
     }
 
     @Override
@@ -31,11 +40,11 @@ public class Symbol implements Atom {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Symbol symbol = (Symbol) o;
-        return Objects.equals(value, symbol.value);
+        return Objects.equals(name, symbol.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(name);
     }
 }
