@@ -5,29 +5,55 @@ The purpose of this language is to stick to the Joy philosophy, but not necessar
 
 For more about Joy, check out the [Joy archive](http://joy-lang.org) for papers, tutorials, and code from Dr Manfred von Thun, the creator of Joy.
 
-## Build and Run
+## Building the source
 
 There currently are no released packages. 
 
-To run Rejoice, checkout the code and run the following at the project's root: 
+To build Rejoice, run the following at the project's root directory. 
 
 ```
 mvn package
 ````
 
-To start a REPL, use the `repl` command.
+## Evaluating code
+
+The `eval` command executes the provided program and exits the process.
+
+```
+java -jar target/rejoice-{version}.jar eval '1 2 + !'
+```
+
+The command has a `--mode` option that selects either the `rejoice` (defualt) or `joy` runtime. If any options are provided, the program must be provided after `--` to indicate that there are no more options to handle.
+
+```
+java -jar target/rejoice-{version}.jar eval --mode joy -- '1 2 succ put'
+```
+
+## Running a REPL
+
+The `repl` command will start a REPL. Type `Ctl-C` to quit the REPL.
 
 ```
 java -jar target/rejoice-{version}.jar repl
 ```
 
-To evaluate code and exit, use the `eval` command.
+As with the `eval` command, `repl` supports the `--mode` option to select either the `rejoice` (default) or `joy` runtime.
 
 ```
-java -jar target/rejoice-{version}.jar eval "1 2 +"
+java -jar target/rejoice-{version}.jar repl --mode joy
 ```
 
-Run the command `help` to see all the available commands. 
+Another option is `--eval`, which will execute the provided program immediately after starting the REPL.
+
+The following program will be executed with the `joy` runtime and leave `0` on the stack.
+
+```
+java -jar target/rejoice-{version}.jar repl --mode joy --eval '1 pred'
+```
+
+## Help
+
+The `help` command will list all available commands. 
 
 ## License
 
