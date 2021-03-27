@@ -87,50 +87,50 @@ public class Main {
     private static final Library library = new Library();
 
     static {
-        Library.Definitions<Operator> operators = library.operators();
-        operators.define("/", Operators::_divide);
-        operators.define("=", Operators::_equal);
-        operators.define("-", Operators::_minus);
-        operators.define("%", Operators::_mod);
-        operators.define("*", Operators::_multiply);
-        operators.define("+", Operators::_plus);
-        operators.define("abs", Operators::abs);
-        operators.define("choice", Operators::choice);
-        operators.define("dup", Operators::dup);
-        operators.define("dupd", Operators::dupd);
-        operators.define("min", Operators::min);
-        operators.define("max", Operators::max);
-        operators.define("opcase", Operators::opcase);
-        operators.define("pop", Operators::pop);
-        operators.define("popd", Operators::popd);
-        operators.define("pred", Operators::pred);
-        operators.define("print!", Operators::print_BANG_);
-        operators.define("rolldown", Operators::rolldown);
-        operators.define("rollup", Operators::rollup);
-        operators.define("sign", Operators::sign);
-        operators.define("succ", Operators::succ);
-        operators.define("swap", Operators::swap);
-        operators.define("swapd", Operators::swapd);
+        // Operators
+        library.define(Symbol.of("/"), Operators::_divide);
+        library.define(Symbol.of("="), Operators::_equal);
+        library.define(Symbol.of("-"), Operators::_minus);
+        library.define(Symbol.of("%"), Operators::_mod);
+        library.define(Symbol.of("*"), Operators::_multiply);
+        library.define(Symbol.of("+"), Operators::_plus);
+        library.define(Symbol.of("abs"), Operators::abs);
+        library.define(Symbol.of("choice"), Operators::choice);
+        library.define(Symbol.of("dup"), Operators::dup);
+        library.define(Symbol.of("dupd"), Operators::dupd);
+        library.define(Symbol.of("min"), Operators::min);
+        library.define(Symbol.of("max"), Operators::max);
+        library.define(Symbol.of("opcase"), Operators::opcase);
+        library.define(Symbol.of("pop"), Operators::pop);
+        library.define(Symbol.of("popd"), Operators::popd);
+        library.define(Symbol.of("pred"), Operators::pred);
+        library.define(Symbol.of("print!"), Operators::print_BANG_);
+        library.define(Symbol.of("rolldown"), Operators::rolldown);
+        library.define(Symbol.of("rollup"), Operators::rollup);
+        library.define(Symbol.of("sign"), Operators::sign);
+        library.define(Symbol.of("succ"), Operators::succ);
+        library.define(Symbol.of("swap"), Operators::swap);
+        library.define(Symbol.of("swapd"), Operators::swapd);
 
-        Library.Definitions<Combinator> combinators = library.combinators();
-        combinators.define("app1", Combinators::app1);
-        combinators.define("app2", Combinators::app2);
-        combinators.define("app3", Combinators::app3);
-        combinators.define("b", Combinators::b);
-        combinators.define("cleave", Combinators::cleave);
-        combinators.define("dip", Combinators::dip);
-        combinators.define("dipd", Combinators::dipd);
-        combinators.define("dipdd", Combinators::dipdd);
-        combinators.define("i", Combinators::i);
-        combinators.define("ifte", Combinators::ifte);
-        combinators.define("map", Combinators::map);
-        combinators.define("nullary", Combinators::nullary);
-        combinators.define("while", Combinators::_while);
-        combinators.define("x", Combinators::x);
-        combinators.define("y", Combinators::y);
+        // Combinators
+        library.define(Symbol.of("app1"), Combinators::app1);
+        library.define(Symbol.of("app2"), Combinators::app2);
+        library.define(Symbol.of("app3"), Combinators::app3);
+        library.define(Symbol.of("b"), Combinators::b);
+        library.define(Symbol.of("cleave"), Combinators::cleave);
+        library.define(Symbol.of("dip"), Combinators::dip);
+        library.define(Symbol.of("dipd"), Combinators::dipd);
+        library.define(Symbol.of("dipdd"), Combinators::dipdd);
+        library.define(Symbol.of("i"), Combinators::i);
+        library.define(Symbol.of("ifte"), Combinators::ifte);
+        library.define(Symbol.of("map"), Combinators::map);
+        library.define(Symbol.of("nullary"), Combinators::nullary);
+        library.define(Symbol.of("while"), Combinators::_while);
+        library.define(Symbol.of("x"), Combinators::x);
+        library.define(Symbol.of("y"), Combinators::y);
 
-        Library.Definitions<Macro> macros = library.macros();
-        macros.define("[", new Macros.ListLiteral(Symbol.of("]")));
-        macros.define("define", new Macros.Define(Symbol.of(":"), Symbol.of(";")));
+        // Macros
+        library.define(Symbol.of("["), new Macros.ListLiteral(Symbol.of("]")));
+        library.define(Symbol.of("define"), new Macros.Define(Symbol.of(":"), Symbol.of(";")));
     }
 }

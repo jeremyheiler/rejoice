@@ -34,29 +34,22 @@ public final class Interpreter {
         return stack;
     }
 
-    public Stack interpret(Stack stack, Atom atom, Next next, Mode mode) {
+    protected Stack interpret(Stack stack, Atom atom, Next next, Mode mode) {
         if (atom instanceof Symbol) {
             Symbol symbol = (Symbol) atom;
-            Optional<Macro> macro = library.macros().lookup(symbol);
+            Optional<Function> function = library.lookup(symbol);
             if (mode == Mode.Macro) {
-                if (macro.isPresent()) {
-                    return macro.get().evaluate(stack, this, next);
+                if (function.isPresent() && function.get() instanceof Macro) {
+                    return function.get().invoke(stack, this, next);
                 } else {
                     return stack.push(symbol);
                 }
             } else {
-                if (macro.isPresent()) {
-                    return macro.get().evaluate(stack, this, next);
+                if (function.isPresent()) {
+                    return function.get().invoke(stack, this, next);
+                } else {
+                    throw new RuntimeError("INTERPRET", "Could not find symbol '" + symbol.getName() + "' in the library");
                 }
-                Optional<Combinator> combinator = library.combinators().lookup(symbol);
-                if (combinator.isPresent()) {
-                    return combinator.get().evaluate(stack, this);
-                }
-                Optional<Operator> operator = library.operators().lookup(symbol);
-                if (operator.isPresent()) {
-                    return operator.get().evaluate(stack);
-                }
-                throw new RuntimeError("INTERPRET", "Could not find symbol '" + symbol.getName() + "' in the library");
             }
         } else {
             return stack.push(atom);

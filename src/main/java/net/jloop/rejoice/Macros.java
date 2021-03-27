@@ -60,7 +60,7 @@ public final class Macros {
             List body = new List();
             while ((atom = next.next()) != null) {
                 if (atom.equals(terminator)) {
-                    interpreter.library().operators().define(name, s -> interpreter.interpret(s, body));
+                    interpreter.library().define(name, s -> interpreter.interpret(s, body));
                     return stack;
                 }
                 body.append(atom);

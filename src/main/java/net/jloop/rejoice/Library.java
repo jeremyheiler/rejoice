@@ -7,40 +7,25 @@ import java.util.Optional;
 
 public class Library {
 
-    private final Definitions<Operator> operators = new Definitions<>();
-    private final Definitions<Combinator> combinators = new Definitions<>();
-    private final Definitions<Macro> macros = new Definitions<>();
+    private final HashMap<Symbol, Function> functions = new HashMap<>();
 
-    public Definitions<Operator> operators() {
-        return operators;
+    public void define(Symbol symbol, Function function) {
+        functions.put(symbol, function);
     }
 
-    public Definitions<Combinator> combinators() {
-        return combinators;
+    public void define(Symbol symbol, Operator operator) {
+        functions.put(symbol, operator);
     }
 
-    public Definitions<Macro> macros() {
-        return macros;
+    public void define(Symbol symbol, Combinator combinator) {
+        functions.put(symbol, combinator);
     }
 
-    public static class Definitions<T> {
+    public void define(Symbol symbol, Macro macro) {
+        functions.put(symbol, macro);
+    }
 
-        private final HashMap<Symbol, T> defs = new HashMap<>();
-
-        public void define(String symbol, T def) {
-            define(Symbol.of(symbol), def);
-        }
-
-        public void define(Symbol symbol, T def) {
-            defs.put(symbol, def);
-        }
-
-        public Optional<T> lookup(String symbol) {
-            return lookup(Symbol.of(symbol));
-        }
-
-        public Optional<T> lookup(Symbol symbol) {
-            return Optional.ofNullable(defs.get(symbol));
-        }
+    public Optional<Function> lookup(Symbol symbol) {
+        return Optional.ofNullable(functions.get(symbol));
     }
 }
