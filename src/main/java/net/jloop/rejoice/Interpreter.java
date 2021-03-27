@@ -26,7 +26,7 @@ public final class Interpreter {
         return interpret(stack, new NextFromList(list));
     }
 
-    private Stack interpret(Stack stack, Next next) {
+    public Stack interpret(Stack stack, Next next) {
         Atom atom;
         while ((atom = next.next()) != null) {
             stack = interpret(stack, atom, next, Mode.Eval);
@@ -34,7 +34,7 @@ public final class Interpreter {
         return stack;
     }
 
-    protected Stack interpret(Stack stack, Atom atom, Next next, Mode mode) {
+    public Stack interpret(Stack stack, Atom atom, Next next, Mode mode) {
         if (atom instanceof Symbol) {
             Symbol symbol = (Symbol) atom;
             Optional<Function> function = library.lookup(symbol);
