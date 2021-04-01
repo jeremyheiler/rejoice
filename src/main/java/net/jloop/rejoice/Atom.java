@@ -1,6 +1,4 @@
 package net.jloop.rejoice;
 
-public interface Atom {
-
-    String print();
+public interface Atom extends Value {
 }

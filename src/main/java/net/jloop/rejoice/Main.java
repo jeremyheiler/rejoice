@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.StringReader;
 import java.util.HashMap;
 
 public class Main {
@@ -82,7 +81,7 @@ public class Main {
                     runtime.eval(new Input(new FileReader(load)));
                 }
                 if (eval != null) {
-                    runtime.eval(new Input(new StringReader(eval)));
+                    runtime.eval(new Input(eval));
                 }
                 System.exit(0);
             } catch (RuntimeError error) {
@@ -143,13 +142,14 @@ public class Main {
                     runtime.eval(new Input(new FileReader(load)));
                 }
                 if (eval != null) {
-                    runtime.eval(new Input(new StringReader(eval)));
+                    runtime.eval(new Input(eval));
                 }
+                // TODO(jeremy) Exit when the 'quit' operator is evaluated
                 while (true) {
                     try {
                         System.out.print("> ");
                         String line = reader.readLine();
-                        runtime.eval(new Input(new StringReader(line)));
+                        runtime.eval(new Input(line));
                     } catch (RuntimeError error) {
                         System.out.println(error.getStage() + " ERROR: " + error.getMessage());
                         if (error.getCause() != null) {

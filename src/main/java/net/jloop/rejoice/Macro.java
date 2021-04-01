@@ -1,12 +1,9 @@
 package net.jloop.rejoice;
 
+import java.util.Iterator;
+
 @FunctionalInterface
-public interface Macro extends Function {
+public interface Macro {
 
-    Stack evaluate(Stack stack, Interpreter interpreter, Interpreter.Next next);
-
-    @Override
-    default Stack invoke(Stack stack, Interpreter interpreter, Interpreter.Next next) {
-        return evaluate(stack, interpreter, next);
-    }
+    Iterable<Value> evaluate(Compiler compiler, Iterator<Atom> atoms);
 }

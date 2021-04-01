@@ -1,54 +1,46 @@
 package net.jloop.rejoice.types;
 
-import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Stack;
+import net.jloop.rejoice.Value;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class List implements Atom, Iterable<Atom> {
+public class List implements Value, Iterable<Value> {
 
-    private final ArrayList<Atom> atoms;
+    private final ArrayList<Value> values;
 
     public List() {
-        this.atoms = new ArrayList<>();
+        this.values = new ArrayList<>();
     }
 
-    public List(ArrayList<Atom> atoms) {
-        this.atoms = atoms;
+    public List(ArrayList<Value> values) {
+        this.values = values;
     }
 
-    public static List from(Stack stack) {
-        List list = new List();
-        for (Atom atom : stack) {
-            list.append(atom);
-        }
-        return list;
-    }
-
-    public void append(Atom atom) {
-        atoms.add(atom);
+    public List append(Value value) {
+        values.add(value);
+        return this;
     }
 
     public int size() {
-        return atoms.size();
+        return values.size();
     }
 
-    public Atom first() {
-        if (atoms.isEmpty()) {
+    public Value first() {
+        if (values.isEmpty()) {
             return null;
         } else {
-            return atoms.get(0);
+            return values.get(0);
         }
     }
 
     public List rest() {
-        if (atoms.isEmpty()) {
+        if (values.isEmpty()) {
             return new List();
         } else {
-            ArrayList<Atom> atoms = new ArrayList<>(this.atoms);
-            atoms.remove(0);
-            return new List(atoms);
+            ArrayList<Value> values = new ArrayList<>(this.values);
+            values.remove(0);
+            return new List(values);
         }
     }
 
@@ -57,20 +49,20 @@ public class List implements Atom, Iterable<Atom> {
         StringBuilder buf = new StringBuilder();
         buf.append("[");
         boolean first = true;
-        for (Atom atom : atoms) {
+        for (Value value : values) {
             if (first) {
                 first = false;
             } else {
                 buf.append(" ");
             }
-            buf.append(atom.print());
+            buf.append(value.print());
         }
         buf.append("]");
         return buf.toString();
     }
 
     @Override
-    public Iterator<Atom> iterator() {
-        return atoms.iterator();
+    public Iterator<Value> iterator() {
+        return values.iterator();
     }
 }

@@ -1,9 +1,11 @@
 package net.jloop.rejoice.languages;
 
+import net.jloop.rejoice.Compiler;
+import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Interpreter;
 import net.jloop.rejoice.Lexer;
 import net.jloop.rejoice.LexerRule;
-import net.jloop.rejoice.Library;
+import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.Parser;
 import net.jloop.rejoice.Runtime;
 import net.jloop.rejoice.RuntimeFactory;
@@ -22,11 +24,8 @@ import net.jloop.rejoice.functions.Cnullary;
 import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
-import net.jloop.rejoice.functions.M_MultilineComment;
-import net.jloop.rejoice.functions.Mdefine;
-import net.jloop.rejoice.functions.Mlist;
-import net.jloop.rejoice.functions.O_E_;
 import net.jloop.rejoice.functions.O_Divide;
+import net.jloop.rejoice.functions.O_E_;
 import net.jloop.rejoice.functions.O_Minus;
 import net.jloop.rejoice.functions.O_Modulus;
 import net.jloop.rejoice.functions.O_Multiply;
@@ -46,10 +45,15 @@ import net.jloop.rejoice.functions.Orollup;
 import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.functions.Oswap;
 import net.jloop.rejoice.functions.Oswapd;
+import net.jloop.rejoice.macros.M_List;
+import net.jloop.rejoice.macros.M_MultilineComment;
+import net.jloop.rejoice.macros.Mdefine;
 import net.jloop.rejoice.types.Symbol;
 
 import java.io.IOException;
 import java.io.PushbackReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import static net.jloop.rejoice.Lexer.EOF;
 
@@ -57,55 +61,53 @@ public final class Rejoice implements RuntimeFactory {
 
     @Override
     public Runtime create() {
-        Library library = new Library();
 
-        // Operators
-        library.define(Symbol.of("/"), new O_Divide());
-        library.define(Symbol.of("!"), new O_E_());
-        library.define(Symbol.of("-"), new O_Minus());
-        library.define(Symbol.of("%"), new O_Modulus());
-        library.define(Symbol.of("*"), new O_Multiply());
-        library.define(Symbol.of("+"), new O_Plus());
-        library.define(Symbol.of("abs"), new Oabs());
-        library.define(Symbol.of("choice"), new Ochoice());
-        library.define(Symbol.of("dup"), new Odup());
-        library.define(Symbol.of("dupd"), new Odupd());
-        library.define(Symbol.of("equal?"), new Oequal_Q_());
-        library.define(Symbol.of("max"), new Omax());
-        library.define(Symbol.of("min"), new Omin());
-        library.define(Symbol.of("opcase"), new Oopcase());
-        library.define(Symbol.of("pop"), new Opop());
-        library.define(Symbol.of("popd"), new Opopd());
-        library.define(Symbol.of("rolldown"), new Orolldown());
-        library.define(Symbol.of("rollup"), new Orollup());
-        library.define(Symbol.of("sign"), new Osign());
-        library.define(Symbol.of("swap"), new Oswap());
-        library.define(Symbol.of("swapd"), new Oswapd());
-
-        // Combinators
-        library.define(Symbol.of("app1"), new Capp1());
-        library.define(Symbol.of("app2"), new Capp2());
-        library.define(Symbol.of("app3"), new Capp3());
-        library.define(Symbol.of("b"), new Cb());
-        library.define(Symbol.of("cleave"), new Ccleave());
-        library.define(Symbol.of("dip"), new Cdip());
-        library.define(Symbol.of("dipd"), new Cdipd());
-        library.define(Symbol.of("dipdd"), new Cdipdd());
-        library.define(Symbol.of("i"), new Ci());
-        library.define(Symbol.of("ifte"), new Cifte());
-        library.define(Symbol.of("map"), new Cmap());
-        library.define(Symbol.of("nullary"), new Cnullary());
-        library.define(Symbol.of("while"), new Cwhile());
-        library.define(Symbol.of("x"), new Cx());
-        library.define(Symbol.of("y"), new Cy());
+        // Operators and Combinators
+        Map<Symbol, Function> functions = new HashMap<>();
+        functions.put(Symbol.of("/"), new O_Divide());
+        functions.put(Symbol.of("!"), new O_E_());
+        functions.put(Symbol.of("-"), new O_Minus());
+        functions.put(Symbol.of("%"), new O_Modulus());
+        functions.put(Symbol.of("*"), new O_Multiply());
+        functions.put(Symbol.of("+"), new O_Plus());
+        functions.put(Symbol.of("abs"), new Oabs());
+        functions.put(Symbol.of("app1"), new Capp1());
+        functions.put(Symbol.of("app2"), new Capp2());
+        functions.put(Symbol.of("app3"), new Capp3());
+        functions.put(Symbol.of("b"), new Cb());
+        functions.put(Symbol.of("choice"), new Ochoice());
+        functions.put(Symbol.of("cleave"), new Ccleave());
+        functions.put(Symbol.of("dip"), new Cdip());
+        functions.put(Symbol.of("dipd"), new Cdipd());
+        functions.put(Symbol.of("dipdd"), new Cdipdd());
+        functions.put(Symbol.of("dup"), new Odup());
+        functions.put(Symbol.of("dupd"), new Odupd());
+        functions.put(Symbol.of("equal?"), new Oequal_Q_());
+        functions.put(Symbol.of("i"), new Ci());
+        functions.put(Symbol.of("ifte"), new Cifte());
+        functions.put(Symbol.of("map"), new Cmap());
+        functions.put(Symbol.of("max"), new Omax());
+        functions.put(Symbol.of("min"), new Omin());
+        functions.put(Symbol.of("nullary"), new Cnullary());
+        functions.put(Symbol.of("opcase"), new Oopcase());
+        functions.put(Symbol.of("pop"), new Opop());
+        functions.put(Symbol.of("popd"), new Opopd());
+        functions.put(Symbol.of("rolldown"), new Orolldown());
+        functions.put(Symbol.of("rollup"), new Orollup());
+        functions.put(Symbol.of("sign"), new Osign());
+        functions.put(Symbol.of("swap"), new Oswap());
+        functions.put(Symbol.of("swapd"), new Oswapd());
+        functions.put(Symbol.of("while"), new Cwhile());
+        functions.put(Symbol.of("x"), new Cx());
+        functions.put(Symbol.of("y"), new Cy());
 
         // Macros
-        library.define(Symbol.of("["), new Mlist(Symbol.of("]")));
-        library.define(Symbol.of("define"), new Mdefine(Symbol.of(":"), Symbol.of(";")));
-        library.define(Symbol.of("/*"), new M_MultilineComment(Symbol.of("*/")));
+        Map<Symbol, Macro> macros = new HashMap<>();
+        macros.put(Symbol.of("["), new M_List(Symbol.of("]")));
+        macros.put(Symbol.of("define"), new Mdefine(Symbol.of(":"), Symbol.of(";")));
+        macros.put(Symbol.of("/*"), new M_MultilineComment(Symbol.of("*/")));
 
-        // Configure lexer
-        Lexer lexer = new Lexer(new LexerRule() {
+        LexerRule comment = new LexerRule() {
             @Override
             public int dispatcher() {
                 return '/';
@@ -154,16 +156,22 @@ public final class Rejoice implements RuntimeFactory {
                     return Lexer.Token.of(Lexer.Token.Type.Symbol, "/");
                 }
             }
-        });
+        };
+
+        // Configure lexer
+        Lexer lexer = new Lexer(comment);
 
         // Configure parser
-        Parser parser = new Parser(lexer);
+        Parser parser = new Parser();
+
+        // Configure compiler
+        Compiler compiler = new Compiler(macros, functions);
 
         // Configure interpreter
-        Interpreter interpreter = new Interpreter(parser, library);
+        Interpreter interpreter = new Interpreter(functions);
 
         // Initialize
-        Runtime runtime = new Runtime("Rejoice", interpreter);
+        Runtime runtime = new Runtime("Rejoice", interpreter, compiler, parser, lexer);
         runtime.load(Runtime.class.getResourceAsStream("/core.rejoice"));
         return runtime;
     }

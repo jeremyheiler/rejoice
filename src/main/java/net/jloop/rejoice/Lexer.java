@@ -2,15 +2,57 @@ package net.jloop.rejoice;
 
 import java.io.IOException;
 import java.io.PushbackReader;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+// TODO(jeremy): Maybe move some of the logic up one level into the parser.
+// For example, if the lexer returns a NewLine token, then the parser could return a symbol
+// token for '//' and call a lexer function that will consume all characters until a new line
+// is found. This same logic could be used for parsing strings and other 'delimited' lexemes.
+// The advantage of doing this in the lexer is that there doesn't need to be extra whitespace
+// around the tokens. That is, the string '"foo"' could be parsed as is, instead of '" foo"',
+// as you would see in a forth-like language. This ia precursor to "parsing words".
 
 public final class Lexer {
 
     public static final int EOF = -1;
 
+    // TODO(jeremy): Store rules in a map, keyed on the dispatch character.
     private final LexerRule comment;
 
     public Lexer(LexerRule comment) {
         this.comment = comment;
+    }
+
+    public Iterable<Token> iterable(Input input) {
+        return () -> new Iterator<>() {
+
+            private Token token;
+
+            @Override
+            public boolean hasNext() {
+                return (token = Lexer.this.lex(input)).type() != Token.Type.EOF;
+            }
+
+            @Override
+            public Token next() {
+                // If token is null, then hasNext() wasn't called to get the
+                // next token, however next() should still succeed if it can.
+                if (token == null) {
+                    Token token = Lexer.this.lex(input);
+                    if (token.type() == Token.Type.EOF) {
+                        throw new NoSuchElementException();
+                    } else {
+                        this.token = token;
+                        return token;
+                    }
+                } else {
+                    Token token = this.token;
+                    this.token = null;
+                    return token;
+                }
+            }
+        };
     }
 
     public Token lex(Input input) {
@@ -47,17 +89,22 @@ public final class Lexer {
                     return Token.of(Token.Type.Symbol, "[");
                 } else if (c == ']') {
                     return Token.of(Token.Type.Symbol, "]");
+                } else if ( c == ';') {
+                    return Token.of(Token.Type.Symbol, ";");
+                } else if ( c == '.') {
+                    return Token.of(Token.Type.Symbol, ".");
                 } else if (c == comment.dispatcher()) {
                     return comment.lex(reader);
                 } else {
                     // Parse a literal
-                    if (c >= '!' && c <= 'z') { // Valid characters except for [ and ] which are filtered out above
+                    if (c >= '!' && c <= 'z') { // Valid characters except for '[', ']', ';', and '.' which are filtered out above
                         StringBuilder buf = new StringBuilder().append((char) c);
-                        while ((c = reader.read()) != EOF) {
-                            if (c >= '!' && c <= 'z' && c != '[' && c != ']') {
-                                buf.append((char) c);
+                        int d;
+                        while ((d = reader.read()) != EOF) {
+                            if (d >= '!' && d <= 'z' && d != '[' && d != ']' && d != ';' && d != '.') {
+                                buf.append((char) d);
                             } else {
-                                reader.unread(c);
+                                reader.unread(d);
                                 break;
                             }
                         }
@@ -81,6 +128,7 @@ public final class Lexer {
             throw new RuntimeError("LEX", cause);
         }
     }
+
     public static final class Token {
 
         private final Type type;
@@ -101,11 +149,11 @@ public final class Lexer {
             return new Token(type, lexeme);
         }
 
-        public Type getType() {
+        public Type type() {
             return type;
         }
 
-        public String getLexeme() {
+        public String lexeme() {
             return lexeme;
         }
 
@@ -114,7 +162,6 @@ public final class Lexer {
             EOF,
             Int,
             LineComment,
-            MultilineComment,
             Str,
             Symbol
         }
