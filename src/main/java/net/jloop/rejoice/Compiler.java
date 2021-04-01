@@ -39,7 +39,7 @@ public final class Compiler {
 
             @Override
             public Value next() {
-                // If the values list is empty, then hasNext() wasn't called to
+                // If the values list is empty, and hasNext() wasn't called to
                 // collect more, however next() should still succeed if it can.
                 if (values.isEmpty()) {
                     for (Value value : compile(atoms.next(), atoms)) {

@@ -28,8 +28,6 @@ public final class Interpreter {
             } else {
                 throw new RuntimeError("INTERPRET", "Unable to resolve symbol '" + symbol.getName() + "'.");
             }
-        } else if (value instanceof Comment) {
-            return stack;
         } else {
             return stack.push(value);
         }

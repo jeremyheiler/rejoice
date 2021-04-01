@@ -36,7 +36,7 @@ public final class Lexer {
 
             @Override
             public Token next() {
-                // If token is null, then hasNext() wasn't called to get the
+                // If token is null, and hasNext() wasn't called to get the
                 // next token, however next() should still succeed if it can.
                 if (token == null) {
                     Token token = Lexer.this.lex(input);
