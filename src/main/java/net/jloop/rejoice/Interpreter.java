@@ -12,24 +12,20 @@ public final class Interpreter {
         this.functions = functions;
     }
 
-    public Stack interpret(Stack stack, Iterable<Value> values) {
+    public Stack interpret(Stack stack, Iterable<? extends Value> values) {
         for (Value value : values) {
-            stack = interpret(stack, value);
+            if (value instanceof Symbol) {
+                Symbol symbol = (Symbol) value;
+                if (functions.containsKey(value)) {
+                    Function function = functions.get(value);
+                    stack = function.invoke(stack, this);
+                } else {
+                    throw new RuntimeError("INTERPRET", "Unable to resolve symbol '" + symbol.getName() + "'");
+                }
+            } else {
+                stack.push(value);
+            }
         }
         return stack;
-    }
-
-    private Stack interpret(Stack stack, Value value) {
-        if (value instanceof Symbol) {
-            Symbol symbol = (Symbol) value;
-            if (functions.containsKey(value)) {
-                Function function = functions.get(value);
-                return function.invoke(stack, this);
-            } else {
-                throw new RuntimeError("INTERPRET", "Unable to resolve symbol '" + symbol.getName() + "'.");
-            }
-        } else {
-            return stack.push(value);
-        }
     }
 }

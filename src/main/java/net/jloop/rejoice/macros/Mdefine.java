@@ -1,110 +1,61 @@
 package net.jloop.rejoice.macros;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Compiler;
 import net.jloop.rejoice.Macro;
+import net.jloop.rejoice.PushIterator;
+import net.jloop.rejoice.Rewriter;
 import net.jloop.rejoice.RuntimeError;
-import net.jloop.rejoice.Value;
+import net.jloop.rejoice.types.Int64;
+import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Symbol;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public final class Mdefine implements Macro {
 
+    private final Symbol op_define;
+    private final Symbol op_list;
     private final Symbol separator;
     private final Symbol terminator;
 
-    public Mdefine(Symbol separator, Symbol terminator) {
+    public Mdefine(Symbol op_define, Symbol op_list, Symbol separator, Symbol terminator) {
+        this.op_define = op_define;
+        this.op_list = op_list;
         this.separator = separator;
         this.terminator = terminator;
     }
 
     @Override
-    public Iterable<Value> evaluate(Compiler compiler, Iterator<Atom> atoms) {
-
-        // Find the name for the new definition
+    public Iterator<Atom> rewrite(Rewriter rewriter, Iterator<Atom> iterator) {
 
         Symbol name = null;
-        ArrayList<Value> extra = new ArrayList<>();
-        while (atoms.hasNext()) {
-            for (Value value : compiler.compile(atoms.next(), atoms)) {
-                if (name == null) {
-                    if (value instanceof Symbol) {
-                        name = (Symbol) value;
-                    } else {
-                        throw new RuntimeError("MACRO", "Expecting a Symbol for the definition name, but found " + value.getClass().getSimpleName());
-                    }
+        if (iterator.hasNext()) {
+            Atom atom = iterator.next();
+            if (atom instanceof Symbol) {
+                name = (Symbol) atom;
+            } else {
+                throw new RuntimeError("MACRO", "Expecting a Symbol, but found " + atom.getClass().getSimpleName());
+            }
+        }
+
+        if (iterator.hasNext()) {
+            Atom atom = iterator.next();
+            if (!atom.equals(separator)) {
+                if (atom instanceof Symbol) {
+                    throw new RuntimeError("MACRO", "Expecting Symbol '" + separator.getName() + "' , but found Symbol '" + ((Symbol) atom).getName() + "'");
                 } else {
-                    extra.add(value);
+                    throw new RuntimeError("MACRO", "Expecting Symbol '" + separator.getName() + "' , but found " + atom.getClass().getSimpleName());
                 }
             }
-            if (name != null) {
-                break;
-            }
-        }
-        if (name == null) {
-            throw new RuntimeError("MACRO", "Unexpected EOF; Incomplete definition");
         }
 
-        // Find the separator symbol for the definition
-
-        boolean found = false;
-        for (Value value : extra) {
-            if (value.equals(separator)) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            extra = new ArrayList<>();
-            while (atoms.hasNext()) {
-                for (Value value : compiler.compile(atoms.next(), atoms)) {
-                    if (found) {
-                        extra.add(value);
-                    } else if (value instanceof Symbol) {
-                        if (value.equals(separator)) {
-                            found = true;
-                        }
-                    } else {
-                        throw new RuntimeError("MACRO", "Expecting the Symbol '" + separator.getName() + "' after the definition name, but found " + value.getClass().getSimpleName());
-                    }
-                }
-                if (found) {
-                    break;
-                }
-            }
-            if (!found) {
-                throw new RuntimeError("MACRO", "Unexpected EOF; Incomplete definition");
-            }
-        }
-
-        // Collect the body for the definition
-
-        ArrayList<Value> body = extra;
-        extra = new ArrayList<>();
-        boolean terminated = false;
-        while (atoms.hasNext()) {
-            for (Value value : compiler.compile(atoms.next(), atoms)) {
-                if (terminated) {
-                    extra.add(value);
-                } else if (value.equals(terminator)) {
-                    terminated = true;
-                } else {
-                    body.add(value);
-                }
-            }
-            if (terminated) {
-                break;
-            }
-        }
-        if (!terminated) {
-            throw new RuntimeError("MACRO", "Unexpected EOF; Incomplete definition");
-        }
-
-        // Create the definition
-
-        compiler.define(name, body);
-        return extra;
+        List<Atom> atoms = rewriter.collect(iterator, terminator);
+        return new PushIterator<>(iterator)
+                .push(op_define)
+                .push(new Quote(name))
+                .push(op_list)
+                .push(new Int64(atoms.size()))
+                .push(atoms);
     }
 }

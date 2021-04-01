@@ -2,8 +2,7 @@ package net.jloop.rejoice;
 
 import java.io.IOException;
 import java.io.PushbackReader;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
 
 // TODO(jeremy): Maybe move some of the logic up one level into the parser.
 // For example, if the lexer returns a NewLine token, then the parser could return a symbol
@@ -24,38 +23,16 @@ public final class Lexer {
         this.comment = comment;
     }
 
-    public Iterable<Token> iterable(Input input) {
-        return () -> new Iterator<>() {
-
-            private Token token;
-
-            @Override
-            public boolean hasNext() {
-                return (token = Lexer.this.lex(input)).type() != Token.Type.EOF;
-            }
-
-            @Override
-            public Token next() {
-                // If token is null, and hasNext() wasn't called to get the
-                // next token, however next() should still succeed if it can.
-                if (token == null) {
-                    Token token = Lexer.this.lex(input);
-                    if (token.type() == Token.Type.EOF) {
-                        throw new NoSuchElementException();
-                    } else {
-                        this.token = token;
-                        return token;
-                    }
-                } else {
-                    Token token = this.token;
-                    this.token = null;
-                    return token;
-                }
-            }
-        };
+    public Iterable<Token> lex(Input input) {
+        ArrayList<Token> tokens = new ArrayList<>();
+        Token token;
+        while ((token = next(input)).type != Token.Type.EOF) {
+            tokens.add(token);
+        }
+        return tokens;
     }
 
-    public Token lex(Input input) {
+    private Token next(Input input) {
         PushbackReader reader = input.getReader();
         try {
             int c;

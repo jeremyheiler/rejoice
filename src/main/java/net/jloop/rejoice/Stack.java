@@ -16,6 +16,10 @@ public final class Stack implements Iterable<Value> {
         this.values = values;
     }
 
+    public int size() {
+        return values.size();
+    }
+
     public <V extends Value> V peek(Class<V> type) {
         Value value = values.get(values.size() - 1);
         if (!type.isInstance(value)) {

@@ -3,6 +3,7 @@ package net.jloop.rejoice.types;
 import net.jloop.rejoice.Value;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class List implements Value, Iterable<Value> {
@@ -13,12 +14,22 @@ public class List implements Value, Iterable<Value> {
         this.values = new ArrayList<>();
     }
 
+    public List(Value ... values) {
+        this.values = new ArrayList<>();
+        this.values.addAll(Arrays.asList(values));
+    }
+
     public List(ArrayList<Value> values) {
         this.values = values;
     }
 
     public List append(Value value) {
         values.add(value);
+        return this;
+    }
+
+    public List prepend(Value value) {
+        values.add(0, value);
         return this;
     }
 

@@ -12,6 +12,10 @@ public class Int64 implements Atom {
         this.value = value;
     }
 
+    public long get() {
+        return value;
+    }
+
     public Int64 abs() {
         if (value < 0) {
             return new Int64(-value);

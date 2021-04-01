@@ -1,6 +1,6 @@
 package net.jloop.rejoice.languages;
 
-import net.jloop.rejoice.Compiler;
+import net.jloop.rejoice.Rewriter;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Interpreter;
 import net.jloop.rejoice.Lexer;
@@ -102,7 +102,7 @@ public class Joy implements RuntimeFactory {
 
         // Macros
         Map<Symbol, Macro> macros = new HashMap<>();
-        macros.put(Symbol.of("["), new M_List(Symbol.of("]")));
+        macros.put(Symbol.of("["), new M_List(Symbol.of("]"), Symbol.of("list")));
         macros.put(Symbol.of("(*"), new M_MultilineComment(Symbol.of("*)")));
 
         LexerRule comment = new LexerRule() {
@@ -138,13 +138,13 @@ public class Joy implements RuntimeFactory {
         // Configure parser
         Parser parser = new Parser();
 
-        // Configure compiler
-        Compiler compiler = new Compiler(macros, functions);
+        // Configure expander
+        Rewriter expander = new Rewriter(macros);
 
         // Configure interpreter
         Interpreter interpreter = new Interpreter(functions);
 
         // Initialize
-        return new Runtime("Joy", interpreter, compiler, parser, lexer);
+        return new Runtime("Joy", interpreter, expander, parser, lexer);
     }
 }

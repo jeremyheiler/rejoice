@@ -1,12 +1,12 @@
 package net.jloop.rejoice.languages;
 
-import net.jloop.rejoice.Compiler;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Interpreter;
 import net.jloop.rejoice.Lexer;
 import net.jloop.rejoice.LexerRule;
 import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.Parser;
+import net.jloop.rejoice.Rewriter;
 import net.jloop.rejoice.Runtime;
 import net.jloop.rejoice.RuntimeFactory;
 import net.jloop.rejoice.functions.Capp1;
@@ -32,9 +32,11 @@ import net.jloop.rejoice.functions.O_Multiply;
 import net.jloop.rejoice.functions.O_Plus;
 import net.jloop.rejoice.functions.Oabs;
 import net.jloop.rejoice.functions.Ochoice;
+import net.jloop.rejoice.functions.Odefine_E_;
 import net.jloop.rejoice.functions.Odup;
 import net.jloop.rejoice.functions.Odupd;
 import net.jloop.rejoice.functions.Oequal_Q_;
+import net.jloop.rejoice.functions.Olist;
 import net.jloop.rejoice.functions.Omax;
 import net.jloop.rejoice.functions.Omin;
 import net.jloop.rejoice.functions.Oopcase;
@@ -77,6 +79,7 @@ public final class Rejoice implements RuntimeFactory {
         functions.put(Symbol.of("b"), new Cb());
         functions.put(Symbol.of("choice"), new Ochoice());
         functions.put(Symbol.of("cleave"), new Ccleave());
+        functions.put(Symbol.of("define!"), new Odefine_E_(functions));
         functions.put(Symbol.of("dip"), new Cdip());
         functions.put(Symbol.of("dipd"), new Cdipd());
         functions.put(Symbol.of("dipdd"), new Cdipdd());
@@ -85,6 +88,7 @@ public final class Rejoice implements RuntimeFactory {
         functions.put(Symbol.of("equal?"), new Oequal_Q_());
         functions.put(Symbol.of("i"), new Ci());
         functions.put(Symbol.of("ifte"), new Cifte());
+        functions.put(Symbol.of("list"), new Olist());
         functions.put(Symbol.of("map"), new Cmap());
         functions.put(Symbol.of("max"), new Omax());
         functions.put(Symbol.of("min"), new Omin());
@@ -103,8 +107,8 @@ public final class Rejoice implements RuntimeFactory {
 
         // Macros
         Map<Symbol, Macro> macros = new HashMap<>();
-        macros.put(Symbol.of("["), new M_List(Symbol.of("]")));
-        macros.put(Symbol.of("define"), new Mdefine(Symbol.of(":"), Symbol.of(";")));
+        macros.put(Symbol.of("["), new M_List(Symbol.of("]"), Symbol.of("list")));
+        macros.put(Symbol.of("define"), new Mdefine(Symbol.of("define!"), Symbol.of("list"), Symbol.of(":"), Symbol.of(";")));
         macros.put(Symbol.of("/*"), new M_MultilineComment(Symbol.of("*/")));
 
         LexerRule comment = new LexerRule() {
@@ -164,14 +168,14 @@ public final class Rejoice implements RuntimeFactory {
         // Configure parser
         Parser parser = new Parser();
 
-        // Configure compiler
-        Compiler compiler = new Compiler(macros, functions);
+        // Configure expander
+        Rewriter expander = new Rewriter(macros);
 
         // Configure interpreter
         Interpreter interpreter = new Interpreter(functions);
 
         // Initialize
-        Runtime runtime = new Runtime("Rejoice", interpreter, compiler, parser, lexer);
+        Runtime runtime = new Runtime("Rejoice", interpreter, expander, parser, lexer);
         runtime.load(Runtime.class.getResourceAsStream("/core.rejoice"));
         return runtime;
     }

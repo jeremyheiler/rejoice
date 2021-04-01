@@ -1,45 +1,31 @@
 package net.jloop.rejoice.macros;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Compiler;
 import net.jloop.rejoice.Macro;
-import net.jloop.rejoice.RuntimeError;
-import net.jloop.rejoice.Value;
-import net.jloop.rejoice.types.List;
+import net.jloop.rejoice.PushIterator;
+import net.jloop.rejoice.Rewriter;
+import net.jloop.rejoice.types.Int64;
 import net.jloop.rejoice.types.Symbol;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public final class M_List implements Macro {
 
     private final Symbol terminator;
+    private final Symbol op_list;
 
-    public M_List(Symbol terminator) {
+    public M_List(Symbol terminator, Symbol operator) {
         this.terminator = terminator;
+        this.op_list = operator;
     }
 
     @Override
-    public Iterable<Value> evaluate(Compiler compiler, Iterator<Atom> atoms) {
-        List list = new List();
-        boolean terminated = false;
-        ArrayList<Value> values = new ArrayList<>();
-        while (atoms.hasNext()) {
-            for (Value value : compiler.compile(atoms.next(), atoms)) {
-                if (terminated) {
-                    values.add(value);
-                } else if (value.equals(terminator)) {
-                    terminated = true;
-                    values.add(list);
-                } else {
-                    list.append(value);
-                }
-            }
-        }
-        if (terminated) {
-            return values;
-        } else {
-            throw new RuntimeError("MACRO", "Unexpected EOF; Incomplete list");
-        }
+    public Iterator<Atom> rewrite(Rewriter rewriter, Iterator<Atom> iterator) {
+        List<Atom> atoms = rewriter.collect(iterator, terminator);
+        return new PushIterator<>(iterator)
+                .push(op_list)
+                .push(new Int64(atoms.size()))
+                .push(atoms);
     }
 }

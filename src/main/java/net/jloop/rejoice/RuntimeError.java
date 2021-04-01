@@ -13,6 +13,10 @@ public class RuntimeError extends RuntimeException {
         this(stage, "", cause);
     }
 
+    public RuntimeError(String stage, Exception cause, String message) {
+        this(stage, message, cause);
+    }
+
     public RuntimeError(String stage, String message) {
         this(stage, message, null);
     }
