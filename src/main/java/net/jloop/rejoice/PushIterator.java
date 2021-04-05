@@ -26,6 +26,14 @@ public class PushIterator<E> implements Iterator<E> {
         return this;
     }
 
+    public PushIterator<E> push(Iterator<E> iterator) {
+        ArrayList<E> list = new ArrayList<>();
+        while (iterator.hasNext()) {
+            list.add(iterator.next());
+        }
+        return push(list);
+    }
+
     @Override
     public boolean hasNext() {
         return !front.isEmpty() || iterator.hasNext();

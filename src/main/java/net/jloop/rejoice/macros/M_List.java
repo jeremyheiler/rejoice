@@ -2,7 +2,6 @@ package net.jloop.rejoice.macros;
 
 import net.jloop.rejoice.Atom;
 import net.jloop.rejoice.Macro;
-import net.jloop.rejoice.PushIterator;
 import net.jloop.rejoice.Rewriter;
 import net.jloop.rejoice.types.Int64;
 import net.jloop.rejoice.types.Symbol;
@@ -21,11 +20,10 @@ public final class M_List implements Macro {
     }
 
     @Override
-    public Iterator<Atom> rewrite(Rewriter rewriter, Iterator<Atom> iterator) {
+    public List<Atom> rewrite(Rewriter rewriter, Iterator<Atom> iterator) {
         List<Atom> atoms = rewriter.collect(iterator, terminator);
-        return new PushIterator<>(iterator)
-                .push(op_list)
-                .push(new Int64(atoms.size()))
-                .push(atoms);
+        atoms.add(new Int64(atoms.size()));
+        atoms.add(op_list);
+        return atoms;
     }
 }

@@ -25,7 +25,7 @@ import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
 import net.jloop.rejoice.functions.O_Divide;
-import net.jloop.rejoice.functions.O_E_;
+import net.jloop.rejoice.functions.O_PrintStack;
 import net.jloop.rejoice.functions.O_Minus;
 import net.jloop.rejoice.functions.O_Modulus;
 import net.jloop.rejoice.functions.O_Multiply;
@@ -49,7 +49,7 @@ import net.jloop.rejoice.functions.Oswap;
 import net.jloop.rejoice.functions.Oswapd;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_MultilineComment;
-import net.jloop.rejoice.macros.Mdefine;
+import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.types.Symbol;
 
 import java.io.IOException;
@@ -67,7 +67,7 @@ public final class Rejoice implements RuntimeFactory {
         // Operators and Combinators
         Map<Symbol, Function> functions = new HashMap<>();
         functions.put(Symbol.of("/"), new O_Divide());
-        functions.put(Symbol.of("!"), new O_E_());
+        functions.put(Symbol.of("!"), new O_PrintStack());
         functions.put(Symbol.of("-"), new O_Minus());
         functions.put(Symbol.of("%"), new O_Modulus());
         functions.put(Symbol.of("*"), new O_Multiply());
@@ -108,8 +108,8 @@ public final class Rejoice implements RuntimeFactory {
         // Macros
         Map<Symbol, Macro> macros = new HashMap<>();
         macros.put(Symbol.of("["), new M_List(Symbol.of("]"), Symbol.of("list")));
-        macros.put(Symbol.of("define"), new Mdefine(Symbol.of("define!"), Symbol.of("list"), Symbol.of(":"), Symbol.of(";")));
-        macros.put(Symbol.of("/*"), new M_MultilineComment(Symbol.of("*/")));
+        macros.put(Symbol.of("define"), new M_Define(Symbol.of("define!"), Symbol.of("list"), Symbol.of(":"), Symbol.of(";")));
+        macros.put(Symbol.of("/*"), new M_MultilineComment(Symbol.of("/*"), Symbol.of("*/")));
 
         LexerRule comment = new LexerRule() {
             @Override

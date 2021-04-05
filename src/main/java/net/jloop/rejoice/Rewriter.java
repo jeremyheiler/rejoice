@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public final class Rewriter {
 
@@ -21,8 +23,8 @@ public final class Rewriter {
         ArrayList<Atom> atoms = new ArrayList<>();
         while (iterator.hasNext()) {
             Atom atom = iterator.next();
-            if ((atom instanceof Symbol) && isMacro((Symbol) atom)) {
-                iterator = rewriteMacro((Symbol) atom, iterator);
+            if ((atom instanceof Symbol) && macros.containsKey(atom)) {
+                atoms.addAll(macros.get(atom).rewrite(this, iterator));
             } else {
                 atoms.add(atom);
             }
@@ -30,15 +32,28 @@ public final class Rewriter {
         return atoms;
     }
 
+    // TODO(jeremy): Refactor these methods into a CollectBuilder
+
     public List<Atom> collect(Iterator<Atom> iterator, Symbol terminator) {
+        return collect(iterator, macros.keySet(), Set.of(terminator), null);
+    }
+
+    public List<Atom> collect(Iterator<Atom> iterator, Set<Symbol> terminators, Consumer<Symbol> termination) {
+        return collect(iterator, macros.keySet(), terminators, termination);
+    }
+
+    public List<Atom> collect(Iterator<Atom> iterator, Set<Symbol> macroNames, Set<Symbol> terminators, Consumer<Symbol> termination) {
         ArrayList<Atom> atoms = new ArrayList<>();
         while (iterator.hasNext()) {
             Atom atom = iterator.next();
             if (atom instanceof Symbol) {
-                if (atom.equals(terminator)) {
+                if (terminators.contains(atom)) {
+                    if (termination != null) {
+                        termination.accept((Symbol) atom);
+                    }
                     return atoms;
-                } else if (isMacro((Symbol) atom)) {
-                    iterator = rewriteMacro((Symbol) atom, iterator);
+                } else if (macroNames.contains(atom)) {
+                    iterator = new ConcatIterator<>(macros.get(atom).rewrite(this, iterator), iterator);
                 } else {
                     atoms.add(new Quote(atom));
                 }
@@ -47,13 +62,5 @@ public final class Rewriter {
             }
         }
         throw new RuntimeError("MACRO", "Unexpected EOF");
-    }
-
-    private boolean isMacro(Symbol name) {
-        return macros.containsKey(name);
-    }
-
-    private Iterator<Atom> rewriteMacro(Symbol name, Iterator<Atom> iterator) {
-        return macros.get(name).rewrite(this, iterator);
     }
 }

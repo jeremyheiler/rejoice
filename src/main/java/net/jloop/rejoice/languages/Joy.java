@@ -1,12 +1,12 @@
 package net.jloop.rejoice.languages;
 
-import net.jloop.rejoice.Rewriter;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Interpreter;
 import net.jloop.rejoice.Lexer;
 import net.jloop.rejoice.LexerRule;
 import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.Parser;
+import net.jloop.rejoice.Rewriter;
 import net.jloop.rejoice.Runtime;
 import net.jloop.rejoice.RuntimeFactory;
 import net.jloop.rejoice.functions.Capp1;
@@ -25,16 +25,18 @@ import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
 import net.jloop.rejoice.functions.O_Divide;
-import net.jloop.rejoice.functions.O_E_;
+import net.jloop.rejoice.functions.O_PrintStack;
 import net.jloop.rejoice.functions.O_Minus;
 import net.jloop.rejoice.functions.O_Modulus;
 import net.jloop.rejoice.functions.O_Multiply;
 import net.jloop.rejoice.functions.O_Plus;
 import net.jloop.rejoice.functions.Oabs;
 import net.jloop.rejoice.functions.Ochoice;
+import net.jloop.rejoice.functions.Odefine_E_;
 import net.jloop.rejoice.functions.Odup;
 import net.jloop.rejoice.functions.Odupd;
 import net.jloop.rejoice.functions.Oequal_Q_;
+import net.jloop.rejoice.functions.Olist;
 import net.jloop.rejoice.functions.Omax;
 import net.jloop.rejoice.functions.Omin;
 import net.jloop.rejoice.functions.Oopcase;
@@ -45,6 +47,8 @@ import net.jloop.rejoice.functions.Orollup;
 import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.functions.Oswap;
 import net.jloop.rejoice.functions.Oswapd;
+import net.jloop.rejoice.macros.M_Define;
+import net.jloop.rejoice.macros.M_Libra;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_MultilineComment;
 import net.jloop.rejoice.types.Symbol;
@@ -64,12 +68,13 @@ public class Joy implements RuntimeFactory {
         // Operators and Combinators
         Map<Symbol, Function> functions = new HashMap<>();
         functions.put(Symbol.of("/"), new O_Divide());
-        functions.put(Symbol.of("!"), new O_E_());
         functions.put(Symbol.of("-"), new O_Minus());
         functions.put(Symbol.of("%"), new O_Modulus());
         functions.put(Symbol.of("*"), new O_Multiply());
         functions.put(Symbol.of("+"), new O_Plus());
         functions.put(Symbol.of("="), new Oequal_Q_());
+        functions.put(Symbol.of("."), new O_PrintStack());
+        functions.put(Symbol.of("rejoice#list"), new Olist());
         functions.put(Symbol.of("abs"), new Oabs());
         functions.put(Symbol.of("app1"), new Capp1());
         functions.put(Symbol.of("app2"), new Capp2());
@@ -77,6 +82,7 @@ public class Joy implements RuntimeFactory {
         functions.put(Symbol.of("b"), new Cb());
         functions.put(Symbol.of("choice"), new Ochoice());
         functions.put(Symbol.of("cleave"), new Ccleave());
+        functions.put(Symbol.of("rejoice#define!"), new Odefine_E_(functions));
         functions.put(Symbol.of("dip"), new Cdip());
         functions.put(Symbol.of("dipd"), new Cdipd());
         functions.put(Symbol.of("dipdd"), new Cdipdd());
@@ -102,8 +108,12 @@ public class Joy implements RuntimeFactory {
 
         // Macros
         Map<Symbol, Macro> macros = new HashMap<>();
-        macros.put(Symbol.of("["), new M_List(Symbol.of("]"), Symbol.of("list")));
-        macros.put(Symbol.of("(*"), new M_MultilineComment(Symbol.of("*)")));
+        macros.put(Symbol.of("["), new M_List(Symbol.of("]"), Symbol.of("rejoice#list")));
+        macros.put(Symbol.of("(*"), new M_MultilineComment(Symbol.of("(*"), Symbol.of("*)")));
+        macros.put(Symbol.of("LIBRA"), new M_Libra(
+                new M_Define(Symbol.of("rejoice#define!"), Symbol.of("rejoice#list"), Symbol.of("=="), Symbol.of(";")),
+                new M_MultilineComment(Symbol.of("(*"), Symbol.of("*)")),
+                Symbol.of(".")));
 
         LexerRule comment = new LexerRule() {
             @Override

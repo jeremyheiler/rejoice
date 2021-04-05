@@ -1,9 +1,10 @@
 package net.jloop.rejoice;
 
 import java.util.Iterator;
+import java.util.List;
 
 @FunctionalInterface
 public interface Macro {
 
-    Iterator<Atom> rewrite(Rewriter rewriter, Iterator<Atom> atoms);
+    List<Atom> rewrite(Rewriter rewriter, Iterator<Atom> iterator);
 }
