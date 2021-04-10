@@ -7,8 +7,6 @@ import net.jloop.rejoice.types.Symbol;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 public class M_MultilineComment implements Macro {
 
@@ -21,8 +19,12 @@ public class M_MultilineComment implements Macro {
     }
 
     @Override
-    public List<Atom> rewrite(Rewriter rewriter, Iterator<Atom> iterator) {
-        rewriter.collect(iterator, Set.of(dispatcher), Set.of(terminator), null);
+    public Iterable<Atom> rewrite(Rewriter rewriter, Iterator<Atom> input) {
+        while (true) {
+            if (input.next().equals(terminator)) {
+                break;
+            }
+        }
         return Collections.emptyList();
     }
 

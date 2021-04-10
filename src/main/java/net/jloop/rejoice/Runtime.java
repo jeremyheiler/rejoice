@@ -30,7 +30,7 @@ public class Runtime {
     }
 
     public void eval(Input input) {
-        stack = interpreter.interpret(stack, rewriter.rewrite(parser.parse(lexer.lex(input))));
+        stack = interpreter.interpret(stack, rewriter.rewrite(parser.parse(lexer.lex(input)).iterator()));
     }
 
     public String language() {

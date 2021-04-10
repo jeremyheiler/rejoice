@@ -8,6 +8,6 @@ public interface Function {
     Stack invoke(Stack stack, Interpreter interpreter);
 
     static Function of(List body) {
-        return ((stack, interpreter) -> interpreter.interpret(stack, body));
+        return (stack, interpreter) -> interpreter.interpret(stack, body);
     }
 }

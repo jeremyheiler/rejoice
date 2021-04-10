@@ -26,7 +26,7 @@ public final class Symbol implements Atom {
         return symbol;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 

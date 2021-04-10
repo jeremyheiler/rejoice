@@ -108,7 +108,7 @@ public final class Rejoice implements RuntimeFactory {
         // Macros
         Map<Symbol, Macro> macros = new HashMap<>();
         macros.put(Symbol.of("["), new M_List(Symbol.of("]"), Symbol.of("list")));
-        macros.put(Symbol.of("define"), new M_Define(Symbol.of("define!"), Symbol.of("list"), Symbol.of(":"), Symbol.of(";")));
+        macros.put(Symbol.of("define"), new M_Define(Symbol.of("define!"), Symbol.of(":"), Symbol.of(";"), Symbol.of("["), Symbol.of("]")));
         macros.put(Symbol.of("/*"), new M_MultilineComment(Symbol.of("/*"), Symbol.of("*/")));
 
         LexerRule comment = new LexerRule() {
@@ -168,14 +168,14 @@ public final class Rejoice implements RuntimeFactory {
         // Configure parser
         Parser parser = new Parser();
 
-        // Configure expander
-        Rewriter expander = new Rewriter(macros);
+        // Configure rewriter
+        Rewriter rewriter = new Rewriter(macros);
 
         // Configure interpreter
         Interpreter interpreter = new Interpreter(functions);
 
         // Initialize
-        Runtime runtime = new Runtime("Rejoice", interpreter, expander, parser, lexer);
+        Runtime runtime = new Runtime("Rejoice", interpreter, rewriter, parser, lexer);
         runtime.load(Runtime.class.getResourceAsStream("/core.rejoice"));
         return runtime;
     }

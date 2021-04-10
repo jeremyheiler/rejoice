@@ -20,10 +20,10 @@ public final class M_List implements Macro {
     }
 
     @Override
-    public List<Atom> rewrite(Rewriter rewriter, Iterator<Atom> iterator) {
-        List<Atom> atoms = rewriter.collect(iterator, terminator);
-        atoms.add(new Int64(atoms.size()));
-        atoms.add(op_list);
-        return atoms;
+    public Iterable<Atom> rewrite(Rewriter rewriter, Iterator<Atom> input) {
+        List<Atom> output = rewriter.collect(input, terminator, true);
+        output.add(new Int64(output.size()));
+        output.add(op_list);
+        return output;
     }
 }

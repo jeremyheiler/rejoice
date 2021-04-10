@@ -12,15 +12,13 @@ public final class Interpreter {
         this.functions = functions;
     }
 
-    public Stack interpret(Stack stack, Iterable<? extends Value> values) {
-        for (Value value : values) {
+    public Stack interpret(Stack stack, Iterable<? extends Value> input) {
+        for (Value value : input) {
             if (value instanceof Symbol) {
-                Symbol symbol = (Symbol) value;
                 if (functions.containsKey(value)) {
-                    Function function = functions.get(value);
-                    stack = function.invoke(stack, this);
+                    stack = functions.get((Symbol) value).invoke(stack, this);
                 } else {
-                    throw new RuntimeError("INTERPRET", "Unable to resolve symbol '" + symbol.getName() + "'");
+                    throw new RuntimeError("INTERPRET", "Unable to resolve symbol '" + value.print() + "'");
                 }
             } else {
                 stack.push(value);

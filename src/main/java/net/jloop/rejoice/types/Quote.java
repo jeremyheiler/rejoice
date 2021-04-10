@@ -4,18 +4,18 @@ import net.jloop.rejoice.Atom;
 
 public class Quote implements Atom {
 
-    private final Atom quoted;
+    private final Symbol symbol;
 
-    public Quote(Atom quoted) {
-        this.quoted = quoted;
+    public Quote(Symbol symbol) {
+        this.symbol = symbol;
     }
 
-    public Atom get() {
-        return quoted;
+    public Symbol get() {
+        return symbol;
     }
 
     @Override
     public String print() {
-        return "'" + quoted.print();
+        return "'" + symbol.print();
     }
 }

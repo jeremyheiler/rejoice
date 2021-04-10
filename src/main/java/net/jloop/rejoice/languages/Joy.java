@@ -25,11 +25,11 @@ import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
 import net.jloop.rejoice.functions.O_Divide;
-import net.jloop.rejoice.functions.O_PrintStack;
 import net.jloop.rejoice.functions.O_Minus;
 import net.jloop.rejoice.functions.O_Modulus;
 import net.jloop.rejoice.functions.O_Multiply;
 import net.jloop.rejoice.functions.O_Plus;
+import net.jloop.rejoice.functions.O_PrintStack;
 import net.jloop.rejoice.functions.Oabs;
 import net.jloop.rejoice.functions.Ochoice;
 import net.jloop.rejoice.functions.Odefine_E_;
@@ -47,7 +47,6 @@ import net.jloop.rejoice.functions.Orollup;
 import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.functions.Oswap;
 import net.jloop.rejoice.functions.Oswapd;
-import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.macros.M_Libra;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_MultilineComment;
@@ -111,9 +110,13 @@ public class Joy implements RuntimeFactory {
         macros.put(Symbol.of("["), new M_List(Symbol.of("]"), Symbol.of("rejoice#list")));
         macros.put(Symbol.of("(*"), new M_MultilineComment(Symbol.of("(*"), Symbol.of("*)")));
         macros.put(Symbol.of("LIBRA"), new M_Libra(
-                new M_Define(Symbol.of("rejoice#define!"), Symbol.of("rejoice#list"), Symbol.of("=="), Symbol.of(";")),
                 new M_MultilineComment(Symbol.of("(*"), Symbol.of("*)")),
-                Symbol.of(".")));
+                Symbol.of("rejoice#define!"),
+                Symbol.of("=="),
+                Symbol.of(";"),
+                Symbol.of("."),
+                Symbol.of("["),
+                Symbol.of("]")));
 
         LexerRule comment = new LexerRule() {
             @Override
@@ -148,13 +151,13 @@ public class Joy implements RuntimeFactory {
         // Configure parser
         Parser parser = new Parser();
 
-        // Configure expander
-        Rewriter expander = new Rewriter(macros);
+        // Configure rewriter
+        Rewriter rewriter = new Rewriter(macros);
 
         // Configure interpreter
         Interpreter interpreter = new Interpreter(functions);
 
         // Initialize
-        return new Runtime("Joy", interpreter, expander, parser, lexer);
+        return new Runtime("Joy", interpreter, rewriter, parser, lexer);
     }
 }

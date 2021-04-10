@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public final class Rewriter {
 
@@ -18,49 +17,80 @@ public final class Rewriter {
         this.macros = macros;
     }
 
-    public Iterable<Atom> rewrite(Iterable<Atom> iterable) {
-        Iterator<Atom> iterator = iterable.iterator();
-        ArrayList<Atom> atoms = new ArrayList<>();
-        while (iterator.hasNext()) {
-            Atom atom = iterator.next();
-            if ((atom instanceof Symbol) && macros.containsKey(atom)) {
-                atoms.addAll(macros.get(atom).rewrite(this, iterator));
+    public Iterable<Atom> rewrite(Iterator<Atom> input) {
+        ArrayList<Atom> output = new ArrayList<>();
+        while (input.hasNext()) {
+            Atom next = input.next();
+            if ((next instanceof Symbol) && macros.containsKey(next)) {
+                input = new ConcatIterator<>(macros.get(next).rewrite(this, input), input);
             } else {
-                atoms.add(atom);
+                output.add(next);
             }
         }
-        return atoms;
+        return output;
     }
 
-    // TODO(jeremy): Refactor these methods into a CollectBuilder
-
-    public List<Atom> collect(Iterator<Atom> iterator, Symbol terminator) {
-        return collect(iterator, macros.keySet(), Set.of(terminator), null);
+    public List<Atom> collect(Iterator<Atom> input, Symbol terminator) {
+        return collect(input, Set.of(terminator), false);
     }
 
-    public List<Atom> collect(Iterator<Atom> iterator, Set<Symbol> terminators, Consumer<Symbol> termination) {
-        return collect(iterator, macros.keySet(), terminators, termination);
+    public List<Atom> collect(Iterator<Atom> input, Set<Symbol> terminators) {
+        return collect(input, terminators, false);
     }
 
-    public List<Atom> collect(Iterator<Atom> iterator, Set<Symbol> macroNames, Set<Symbol> terminators, Consumer<Symbol> termination) {
-        ArrayList<Atom> atoms = new ArrayList<>();
-        while (iterator.hasNext()) {
-            Atom atom = iterator.next();
-            if (atom instanceof Symbol) {
-                if (terminators.contains(atom)) {
-                    if (termination != null) {
-                        termination.accept((Symbol) atom);
+    public List<Atom> collect(Iterator<Atom> input, Symbol terminator, boolean quote) {
+        return collect(input, Set.of(terminator), quote);
+    }
+
+    public List<Atom> collect(Iterator<Atom> input, Set<Symbol> terminators, boolean quote) {
+        List<Atom> output = new ArrayList<>();
+        collectInto(output, input, terminators, quote);
+        return output;
+    }
+
+    public void collectInto(List<Atom> output, Iterator<Atom> input, Symbol terminator, boolean quote) {
+        collectInto(output, input, Set.of(terminator), quote);
+    }
+
+    public Symbol collectInto(List<Atom> output, Iterator<Atom> input, Set<Symbol> terminators, boolean quote) {
+        while (true) {
+            if (input.hasNext()) {
+                Atom next = input.next();
+                if (next instanceof Symbol) {
+                    if (terminators.contains(next)) {
+                        return (Symbol) next;
+                    } else if (macros.containsKey(next)) {
+                        for (Atom atom : macros.get(next).rewrite(this, input)) {
+                            output.add(atom instanceof Symbol && quote ? new Quote((Symbol) atom) : atom);
+                        }
+                    } else if (quote) {
+                        output.add(new Quote((Symbol) next));
+                    } else {
+                        output.add(next);
                     }
-                    return atoms;
-                } else if (macroNames.contains(atom)) {
-                    iterator = new ConcatIterator<>(macros.get(atom).rewrite(this, iterator), iterator);
                 } else {
-                    atoms.add(new Quote(atom));
+                    output.add(next);
                 }
             } else {
-                atoms.add(atom);
+                throw new RuntimeError("MACRO", "Unexpected EOF");
             }
         }
-        throw new RuntimeError("MACRO", "Unexpected EOF");
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Atom> T match(Iterator<Atom> input, Class<T> type) {
+        Atom next = input.next();
+        if (type.isInstance(next)) {
+            return (T) next;
+        } else {
+            throw new RuntimeError("MACRO", "Expecting a Symbol, but found " + next.getClass().getSimpleName() + " '" + next.print() + "'");
+        }
+    }
+
+    public void match(Iterator<Atom> input, Symbol symbol) {
+        Atom next = input.next();
+        if (!next.equals(symbol)) {
+            throw new RuntimeError("MACRO", "Expecting Symbol '" + symbol.print() + "' , but found " + next.getClass().getSimpleName() + " '" + next.print() + "'");
+        }
     }
 }
