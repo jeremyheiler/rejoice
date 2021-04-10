@@ -12,11 +12,12 @@ public final class Parser {
     public Iterable<Atom> parse(Iterable<Lexer.Token> tokens) {
         ArrayList<Atom> atoms = new ArrayList<>();
         for (Lexer.Token token : tokens) {
-            if (token != null) {
-                if (token.type() == Lexer.Token.Type.EOF) {
-                    break;
-                } else {
-                    atoms.add(translate(token));
+            if (token.type() == Lexer.Token.Type.EOF) {
+                break;
+            } else {
+                Atom atom = translate(token);
+                if (atom != null) {
+                    atoms.add(atom);
                 }
             }
         }

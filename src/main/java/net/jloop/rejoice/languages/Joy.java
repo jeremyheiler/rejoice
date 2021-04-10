@@ -3,7 +3,6 @@ package net.jloop.rejoice.languages;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Interpreter;
 import net.jloop.rejoice.Lexer;
-import net.jloop.rejoice.LexerRule;
 import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.Parser;
 import net.jloop.rejoice.Rewriter;
@@ -53,12 +52,8 @@ import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_MultilineComment;
 import net.jloop.rejoice.types.Symbol;
 
-import java.io.IOException;
-import java.io.PushbackReader;
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.jloop.rejoice.Lexer.EOF;
 
 public class Joy implements RuntimeFactory {
 
@@ -120,35 +115,8 @@ public class Joy implements RuntimeFactory {
                 Symbol.of("["),
                 Symbol.of("]")));
 
-        LexerRule comment = new LexerRule() {
-            @Override
-            public int dispatcher() {
-                return '#';
-            }
-
-            @Override
-            public Lexer.Token lex(PushbackReader reader) throws IOException {
-                StringBuilder buf = new StringBuilder();
-                int c;
-                while ((c = reader.read()) != EOF) {
-                    if (c == '\r') {
-                        int f;
-                        if ((f = reader.read()) != EOF && f != '\n') {
-                            reader.unread(f);
-                        }
-                        break;
-                    } else if (c == '\n') {
-                        break;
-                    } else {
-                        buf.append(c);
-                    }
-                }
-                return Lexer.Token.of(Lexer.Token.Type.LineComment, buf.toString());
-            }
-        };
-
         // Configure lexer
-        Lexer lexer = new Lexer(comment);
+        Lexer lexer = new Lexer(new Lexer.SingleCharacterLineCommentRule('#'));
 
         // Configure parser
         Parser parser = new Parser();

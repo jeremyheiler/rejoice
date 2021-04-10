@@ -3,7 +3,6 @@ package net.jloop.rejoice.languages;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Interpreter;
 import net.jloop.rejoice.Lexer;
-import net.jloop.rejoice.LexerRule;
 import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.Parser;
 import net.jloop.rejoice.Rewriter;
@@ -25,11 +24,11 @@ import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
 import net.jloop.rejoice.functions.O_Divide;
-import net.jloop.rejoice.functions.O_PrintStack;
 import net.jloop.rejoice.functions.O_Minus;
 import net.jloop.rejoice.functions.O_Modulus;
 import net.jloop.rejoice.functions.O_Multiply;
 import net.jloop.rejoice.functions.O_Plus;
+import net.jloop.rejoice.functions.O_PrintStack;
 import net.jloop.rejoice.functions.Oabs;
 import net.jloop.rejoice.functions.Ochoice;
 import net.jloop.rejoice.functions.Odefine_E_;
@@ -47,17 +46,13 @@ import net.jloop.rejoice.functions.Orollup;
 import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.functions.Oswap;
 import net.jloop.rejoice.functions.Oswapd;
+import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_MultilineComment;
-import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.types.Symbol;
 
-import java.io.IOException;
-import java.io.PushbackReader;
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.jloop.rejoice.Lexer.EOF;
 
 public final class Rejoice implements RuntimeFactory {
 
@@ -111,59 +106,8 @@ public final class Rejoice implements RuntimeFactory {
         macros.put(Symbol.of("define"), new M_Define(Symbol.of("define!"), Symbol.of(":"), Symbol.of(";"), Symbol.of("["), Symbol.of("]")));
         macros.put(Symbol.of("/*"), new M_MultilineComment(Symbol.of("/*"), Symbol.of("*/")));
 
-        LexerRule comment = new LexerRule() {
-            @Override
-            public int dispatcher() {
-                return '/';
-            }
-
-            @Override
-            public Lexer.Token lex(PushbackReader reader) throws IOException {
-                int c;
-                if ((c = reader.read()) != EOF) {
-                    if (c == '/') {
-                        StringBuilder buf = new StringBuilder();
-                        int d;
-                        while ((d = reader.read()) != EOF) {
-                            if (d == '\r') {
-                                int f;
-                                if ((f = reader.read()) != EOF && f != '\n') {
-                                    reader.unread(f);
-                                }
-                                break;
-                            } else if (d == '\n') {
-                                break;
-                            } else {
-                                buf.append(d);
-                            }
-                        }
-                        return Lexer.Token.of(Lexer.Token.Type.LineComment, buf.toString());
-                    } else if (c >= '!' && c <= 'z' && c != '[' && c != ']') {
-                        // Consume a symbol that begins with '/' but not `//`
-                        StringBuilder buf = new StringBuilder().append("/").append((char) c);
-                        int d;
-                        while ((d = reader.read()) != EOF) {
-                            if (d >= '!' && d <= 'z' && d != '[' && d != ']') {
-                                buf.append((char) d);
-                            } else {
-                                reader.unread(d);
-                                break;
-                            }
-                        }
-                        return Lexer.Token.of(Lexer.Token.Type.Symbol, buf.toString());
-                    } else {
-                        // Push back c for the next lex call
-                        reader.unread(c);
-                        return Lexer.Token.of(Lexer.Token.Type.Symbol, "/");
-                    }
-                } else {
-                    return Lexer.Token.of(Lexer.Token.Type.Symbol, "/");
-                }
-            }
-        };
-
         // Configure lexer
-        Lexer lexer = new Lexer(comment);
+        Lexer lexer = new Lexer(new Lexer.DoubleSlashLineCommentRule());
 
         // Configure parser
         Parser parser = new Parser();

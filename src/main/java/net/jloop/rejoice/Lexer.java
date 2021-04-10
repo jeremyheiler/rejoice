@@ -66,9 +66,9 @@ public final class Lexer {
                     return Token.of(Token.Type.Symbol, "[");
                 } else if (c == ']') {
                     return Token.of(Token.Type.Symbol, "]");
-                } else if ( c == ';') {
+                } else if (c == ';') {
                     return Token.of(Token.Type.Symbol, ";");
-                } else if ( c == '.') {
+                } else if (c == '.') {
                     return Token.of(Token.Type.Symbol, ".");
                 } else if (c == comment.dispatcher()) {
                     return comment.lex(reader);
@@ -141,6 +141,89 @@ public final class Lexer {
             LineComment,
             Str,
             Symbol
+        }
+    }
+
+    public static final class SingleCharacterLineCommentRule implements LexerRule {
+
+        private final char dispatcher;
+
+        public SingleCharacterLineCommentRule(char dispatcher) {
+            this.dispatcher = dispatcher;
+        }
+
+        @Override
+        public int dispatcher() {
+            return dispatcher;
+        }
+
+        @Override
+        public Lexer.Token lex(PushbackReader reader) throws IOException {
+            StringBuilder buf = new StringBuilder();
+            int c;
+            while ((c = reader.read()) != EOF) {
+                if (c == '\r') {
+                    int f;
+                    if ((f = reader.read()) != EOF && f != '\n') {
+                        reader.unread(f);
+                    }
+                    break;
+                } else if (c == '\n') {
+                    break;
+                } else {
+                    buf.append(c);
+                }
+            }
+            return Lexer.Token.of(Lexer.Token.Type.LineComment, buf.toString());
+        }
+    }
+
+    public static final class DoubleSlashLineCommentRule implements LexerRule {
+
+        @Override
+        public int dispatcher() {
+            return '/';
+        }
+
+        @Override
+        public Lexer.Token lex(PushbackReader reader) throws IOException {
+            int d;
+            if ((d = reader.read()) != EOF) {
+                if (d == '/') { // two
+                    StringBuilder buf = new StringBuilder();
+                    int e;
+                    while ((e = reader.read()) != EOF) {
+                        if (e == '\r') {
+                            int f;
+                            if ((f = reader.read()) != EOF && f != '\n') {
+                                reader.unread(f);
+                            }
+                            break;
+                        } else if (e == '\n') {
+                            break;
+                        } else {
+                            buf.append(e);
+                        }
+                    }
+                    return Lexer.Token.of(Lexer.Token.Type.LineComment, buf.toString());
+                } else if (d == ' ' || d == '\t' || d == '\n') {
+                    return Lexer.Token.of(Lexer.Token.Type.Symbol, "/"); // one
+                } else {
+                    StringBuilder buf = new StringBuilder().append("/"); // one
+                    int e;
+                    while ((e = reader.read()) != EOF) {
+                        if (e >= '!' && e <= 'z' && e != '[' && e != ']' && e != ';' && e != '.') {
+                            buf.append((char) e);
+                        } else {
+                            reader.unread(e);
+                            break;
+                        }
+                    }
+                    return Token.of(Token.Type.Symbol, buf.toString());
+                }
+            } else {
+                return Lexer.Token.of(Lexer.Token.Type.Symbol, "/"); // one
+            }
         }
     }
 }
