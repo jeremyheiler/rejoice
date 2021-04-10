@@ -42,6 +42,7 @@ import net.jloop.rejoice.functions.Omin;
 import net.jloop.rejoice.functions.Oopcase;
 import net.jloop.rejoice.functions.Opop;
 import net.jloop.rejoice.functions.Opopd;
+import net.jloop.rejoice.functions.Oputchars;
 import net.jloop.rejoice.functions.Orolldown;
 import net.jloop.rejoice.functions.Orollup;
 import net.jloop.rejoice.functions.Osign;
@@ -96,6 +97,7 @@ public class Joy implements RuntimeFactory {
         functions.put(Symbol.of("opcase"), new Oopcase());
         functions.put(Symbol.of("pop"), new Opop());
         functions.put(Symbol.of("popd"), new Opopd());
+        functions.put(Symbol.of("putchars"), new Oputchars());
         functions.put(Symbol.of("rolldown"), new Orolldown());
         functions.put(Symbol.of("rollup"), new Orollup());
         functions.put(Symbol.of("sign"), new Osign());

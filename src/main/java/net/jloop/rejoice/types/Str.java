@@ -14,6 +14,10 @@ public class Str implements Atom {
         return new Str(this.value + that.value);
     }
 
+    public String get() {
+        return value.translateEscapes();
+    }
+
     @Override
     public String print() {
         return "\"" + value + "\"";
