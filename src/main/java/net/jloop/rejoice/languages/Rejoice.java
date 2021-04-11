@@ -107,7 +107,7 @@ public final class Rejoice implements RuntimeFactory {
         macros.put(Symbol.of("/*"), new M_MultilineComment(Symbol.of("/*"), Symbol.of("*/")));
 
         // Configure lexer
-        Lexer lexer = new Lexer(new Lexer.DoubleSlashLineCommentRule());
+        Lexer lexer = new Lexer('\\', true);
 
         // Configure parser
         Parser parser = new Parser();

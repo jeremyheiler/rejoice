@@ -1,7 +1,9 @@
 package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.Bool;
+import net.jloop.rejoice.types.Char;
 import net.jloop.rejoice.types.Int64;
+import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Str;
 import net.jloop.rejoice.types.Symbol;
 
@@ -29,6 +31,9 @@ public final class Parser {
             case Bool -> {
                 return Bool.of(token.lexeme());
             }
+            case Character -> {
+                return new Char(token.lexeme(), token.lexeme().substring(1).translateEscapes().charAt(0));
+            }
             case Int -> {
                 return new Int64(Long.parseLong(token.lexeme()));
             }
@@ -39,7 +44,12 @@ public final class Parser {
                 return new Str(token.lexeme());
             }
             case Symbol -> {
-                return Symbol.of(token.lexeme());
+                String lexeme = token.lexeme();
+                if (lexeme.startsWith("'")) {
+                    return new Quote(Symbol.of(lexeme.substring(1)));
+                } else {
+                    return Symbol.of(lexeme);
+                }
             }
             default -> throw new IllegalStateException("Unexpected token of type: " + token.type());
         }

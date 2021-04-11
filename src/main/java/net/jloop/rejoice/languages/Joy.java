@@ -116,7 +116,7 @@ public class Joy implements RuntimeFactory {
                 Symbol.of("]")));
 
         // Configure lexer
-        Lexer lexer = new Lexer(new Lexer.SingleCharacterLineCommentRule('#'));
+        Lexer lexer = new Lexer('\'', false);
 
         // Configure parser
         Parser parser = new Parser();
