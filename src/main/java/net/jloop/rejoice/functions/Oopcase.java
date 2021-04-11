@@ -1,7 +1,8 @@
 package net.jloop.rejoice.functions;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Operator;
+import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Function;
 import net.jloop.rejoice.RuntimeError;
 import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.Value;
@@ -11,10 +12,10 @@ import net.jloop.rejoice.types.List;
 // Given a list of lists, return the rest of the first list where the type of the first element of that list matches the type of x.
 // If none match, return the last list. If there's only one sub list, return the whole sub list.
 
-public final class Oopcase implements Operator {
+public final class Oopcase implements Function {
 
     @Override
-    public Stack evaluate(Stack stack) {
+    public Stack invoke(Stack stack, Context context) {
         List list = stack.consume(List.class);
         Atom atom = stack.consume(Atom.class);
         if (list.size() == 0) {

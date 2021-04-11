@@ -1,15 +1,16 @@
 package net.jloop.rejoice.functions;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Operator;
+import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Stack;
 
 // x y z -> y z x
 
-public final class Orolldown implements Operator {
+public final class Orolldown implements Function {
 
     @Override
-    public Stack evaluate(Stack stack) {
+    public Stack invoke(Stack stack, Context context) {
         Atom z = stack.consume(Atom.class);
         Atom y = stack.consume(Atom.class);
         Atom x = stack.consume(Atom.class);

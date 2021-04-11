@@ -5,9 +5,23 @@ import net.jloop.rejoice.types.List;
 @FunctionalInterface
 public interface Function {
 
-    Stack invoke(Stack stack, Interpreter interpreter);
+    Stack invoke(Stack stack, Context context);
 
-    static Function of(List body) {
-        return (stack, interpreter) -> interpreter.interpret(stack, body);
+    final class Interpreted implements Function {
+
+        private final List body;
+
+        public Interpreted(List body) {
+            this.body = body;
+        }
+
+        @Override
+        public Stack invoke(Stack stack, Context context) {
+            return context.interpreter().interpret(stack, context, body);
+        }
+
+        public List body() {
+            return body;
+        }
     }
 }

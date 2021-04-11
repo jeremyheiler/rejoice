@@ -37,7 +37,6 @@ public final class Lexer {
         ArrayList<Token> tokens = new ArrayList<>();
         Token token = null;
         while ((token = next(input, token)).type != Token.Type.EOF) {
-            System.out.println(token.type + " " + token.lexeme);
             tokens.add(token);
         }
         return tokens;

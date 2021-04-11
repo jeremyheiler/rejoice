@@ -2,28 +2,34 @@ package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
 
-import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class Symbol implements Atom {
 
-    private static final HashMap<String, Symbol> interns = new HashMap<>();
-
+    private final String namespace;
     private final String name;
 
-    private Symbol(String name) {
+    private Symbol(String namespace, String name) {
+        this.namespace = namespace;
         this.name = name;
     }
 
+    public static Symbol of(String namespace, String name) {
+        return new Symbol(namespace, name);
+    }
+
     public static Symbol of(String name) {
-        Symbol symbol;
-        if (interns.containsKey(name)) {
-            symbol = interns.get(name);
+        int i = name.indexOf('/');
+        if (i == -1 || name.equals("/")) {
+            return new Symbol(null, name);
         } else {
-            symbol = new Symbol(name);
-            interns.put(name, symbol);
+            return new Symbol(name.substring(0, i), name.substring(i + 1));
         }
-        return symbol;
+    }
+
+    public Optional<String> namespace() {
+        return Optional.ofNullable(namespace);
     }
 
     public String name() {
@@ -32,7 +38,11 @@ public final class Symbol implements Atom {
 
     @Override
     public String print() {
-        return name;
+        if (namespace == null) {
+            return name;
+        } else {
+            return namespace + "/" + name;
+        }
     }
 
     @Override
@@ -40,11 +50,11 @@ public final class Symbol implements Atom {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Symbol symbol = (Symbol) o;
-        return Objects.equals(name, symbol.name);
+        return Objects.equals(namespace, symbol.namespace) && name.equals(symbol.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(namespace, name);
     }
 }

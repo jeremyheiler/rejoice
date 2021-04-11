@@ -1,9 +1,10 @@
 package net.jloop.rejoice.languages;
 
-import net.jloop.rejoice.Function;
+import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Interpreter;
 import net.jloop.rejoice.Lexer;
 import net.jloop.rejoice.Macro;
+import net.jloop.rejoice.Module;
 import net.jloop.rejoice.Parser;
 import net.jloop.rejoice.Rewriter;
 import net.jloop.rejoice.Runtime;
@@ -35,9 +36,11 @@ import net.jloop.rejoice.functions.Odefine_E_;
 import net.jloop.rejoice.functions.Odup;
 import net.jloop.rejoice.functions.Odupd;
 import net.jloop.rejoice.functions.Oequal_Q_;
+import net.jloop.rejoice.functions.Oinclude;
 import net.jloop.rejoice.functions.Olist;
 import net.jloop.rejoice.functions.Omax;
 import net.jloop.rejoice.functions.Omin;
+import net.jloop.rejoice.functions.Omodule;
 import net.jloop.rejoice.functions.Oopcase;
 import net.jloop.rejoice.functions.Opop;
 import net.jloop.rejoice.functions.Opopd;
@@ -60,45 +63,47 @@ public final class Rejoice implements RuntimeFactory {
     public Runtime create() {
 
         // Operators and Combinators
-        Map<Symbol, Function> functions = new HashMap<>();
-        functions.put(Symbol.of("/"), new O_Divide());
-        functions.put(Symbol.of("!"), new O_PrintStack());
-        functions.put(Symbol.of("-"), new O_Minus());
-        functions.put(Symbol.of("%"), new O_Modulus());
-        functions.put(Symbol.of("*"), new O_Multiply());
-        functions.put(Symbol.of("+"), new O_Plus());
-        functions.put(Symbol.of("abs"), new Oabs());
-        functions.put(Symbol.of("app1"), new Capp1());
-        functions.put(Symbol.of("app2"), new Capp2());
-        functions.put(Symbol.of("app3"), new Capp3());
-        functions.put(Symbol.of("b"), new Cb());
-        functions.put(Symbol.of("choice"), new Ochoice());
-        functions.put(Symbol.of("cleave"), new Ccleave());
-        functions.put(Symbol.of("define!"), new Odefine_E_(functions));
-        functions.put(Symbol.of("dip"), new Cdip());
-        functions.put(Symbol.of("dipd"), new Cdipd());
-        functions.put(Symbol.of("dipdd"), new Cdipdd());
-        functions.put(Symbol.of("dup"), new Odup());
-        functions.put(Symbol.of("dupd"), new Odupd());
-        functions.put(Symbol.of("equal?"), new Oequal_Q_());
-        functions.put(Symbol.of("i"), new Ci());
-        functions.put(Symbol.of("ifte"), new Cifte());
-        functions.put(Symbol.of("list"), new Olist());
-        functions.put(Symbol.of("map"), new Cmap());
-        functions.put(Symbol.of("max"), new Omax());
-        functions.put(Symbol.of("min"), new Omin());
-        functions.put(Symbol.of("nullary"), new Cnullary());
-        functions.put(Symbol.of("opcase"), new Oopcase());
-        functions.put(Symbol.of("pop"), new Opop());
-        functions.put(Symbol.of("popd"), new Opopd());
-        functions.put(Symbol.of("rolldown"), new Orolldown());
-        functions.put(Symbol.of("rollup"), new Orollup());
-        functions.put(Symbol.of("sign"), new Osign());
-        functions.put(Symbol.of("swap"), new Oswap());
-        functions.put(Symbol.of("swapd"), new Oswapd());
-        functions.put(Symbol.of("while"), new Cwhile());
-        functions.put(Symbol.of("x"), new Cx());
-        functions.put(Symbol.of("y"), new Cy());
+        Module m_native = new Module("native");
+        m_native.define(Symbol.of("/"), new O_Divide());
+        m_native.define(Symbol.of("!"), new O_PrintStack());
+        m_native.define(Symbol.of("-"), new O_Minus());
+        m_native.define(Symbol.of("%"), new O_Modulus());
+        m_native.define(Symbol.of("*"), new O_Multiply());
+        m_native.define(Symbol.of("+"), new O_Plus());
+        m_native.define(Symbol.of("abs"), new Oabs());
+        m_native.define(Symbol.of("app1"), new Capp1());
+        m_native.define(Symbol.of("app2"), new Capp2());
+        m_native.define(Symbol.of("app3"), new Capp3());
+        m_native.define(Symbol.of("b"), new Cb());
+        m_native.define(Symbol.of("choice"), new Ochoice());
+        m_native.define(Symbol.of("cleave"), new Ccleave());
+        m_native.define(Symbol.of("define!"), new Odefine_E_(true));
+        m_native.define(Symbol.of("dip"), new Cdip());
+        m_native.define(Symbol.of("dipd"), new Cdipd());
+        m_native.define(Symbol.of("dipdd"), new Cdipdd());
+        m_native.define(Symbol.of("dup"), new Odup());
+        m_native.define(Symbol.of("dupd"), new Odupd());
+        m_native.define(Symbol.of("equal?"), new Oequal_Q_());
+        m_native.define(Symbol.of("i"), new Ci());
+        m_native.define(Symbol.of("ifte"), new Cifte());
+        m_native.define(Symbol.of("include"), new Oinclude());
+        m_native.define(Symbol.of("list"), new Olist());
+        m_native.define(Symbol.of("map"), new Cmap());
+        m_native.define(Symbol.of("max"), new Omax());
+        m_native.define(Symbol.of("min"), new Omin());
+        m_native.define(Symbol.of("module"), new Omodule());
+        m_native.define(Symbol.of("nullary"), new Cnullary());
+        m_native.define(Symbol.of("opcase"), new Oopcase());
+        m_native.define(Symbol.of("pop"), new Opop());
+        m_native.define(Symbol.of("popd"), new Opopd());
+        m_native.define(Symbol.of("rolldown"), new Orolldown());
+        m_native.define(Symbol.of("rollup"), new Orollup());
+        m_native.define(Symbol.of("sign"), new Osign());
+        m_native.define(Symbol.of("swap"), new Oswap());
+        m_native.define(Symbol.of("swapd"), new Oswapd());
+        m_native.define(Symbol.of("while"), new Cwhile());
+        m_native.define(Symbol.of("x"), new Cx());
+        m_native.define(Symbol.of("y"), new Cy());
 
         // Macros
         Map<Symbol, Macro> macros = new HashMap<>();
@@ -116,11 +121,13 @@ public final class Rejoice implements RuntimeFactory {
         Rewriter rewriter = new Rewriter(macros);
 
         // Configure interpreter
-        Interpreter interpreter = new Interpreter(functions);
+        Interpreter interpreter = new Interpreter();
 
         // Initialize
-        Runtime runtime = new Runtime("Rejoice", interpreter, rewriter, parser, lexer);
-        runtime.load(Runtime.class.getResourceAsStream("/core.rejoice"));
+        Context context = new Context(interpreter);
+        Runtime runtime = new Runtime("Rejoice", interpreter, rewriter, parser, lexer, context);
+        Module core = new Module("core").include(m_native);
+        runtime.load(core, Runtime.class.getResourceAsStream("/core.rejoice"));
         return runtime;
     }
 }

@@ -1,27 +1,25 @@
 package net.jloop.rejoice.functions;
 
+import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Function;
-import net.jloop.rejoice.Operator;
 import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.types.List;
 import net.jloop.rejoice.types.Quote;
-import net.jloop.rejoice.types.Symbol;
 
-import java.util.Map;
+public final class Odefine_E_ implements Function {
 
-public final class Odefine_E_ implements Operator {
+    private final boolean pub;
 
-    private final Map<Symbol, Function> functions;
-
-    public Odefine_E_(Map<Symbol, Function> functions) {
-        this.functions = functions;
+    public Odefine_E_(boolean pub) {
+        this.pub = pub;
     }
 
     @Override
-    public Stack evaluate(Stack stack) {
+    public Stack invoke(Stack stack, Context context) {
         Quote name = stack.consume(Quote.class);
         List body = stack.consume(List.class);
-        functions.put(name.get(), Function.of(body));
+        Function function = new Function.Interpreted(body);
+        context.current().define(name.get(), function, pub);
         return stack;
     }
 }

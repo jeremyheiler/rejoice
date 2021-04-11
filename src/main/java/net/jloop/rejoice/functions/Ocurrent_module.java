@@ -5,12 +5,10 @@ import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.types.Str;
 
-public final class Oputchars implements Function {
+public final class Ocurrent_module implements Function {
 
     @Override
     public Stack invoke(Stack stack, Context context) {
-        Str string = stack.consume(Str.class);
-        System.out.print(string.get());
-        return stack;
+        return stack.push(new Str(context.current().name()));
     }
 }

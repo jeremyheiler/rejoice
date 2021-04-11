@@ -1,13 +1,13 @@
 package net.jloop.rejoice.functions;
 
-import net.jloop.rejoice.Combinator;
-import net.jloop.rejoice.Interpreter;
+import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Stack;
 
-public final class Cy implements Combinator {
+public final class Cy implements Function {
 
     @Override
-    public Stack evaluate(Stack stack, Interpreter interpreter) {
+    public Stack invoke(Stack stack, Context context) {
         throw new UnsupportedOperationException("y");
     }
 }

@@ -1,19 +1,19 @@
 package net.jloop.rejoice.functions;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Combinator;
-import net.jloop.rejoice.Interpreter;
+import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.types.List;
 
 // [p] -> r
 
-public final class Cnullary implements Combinator {
+public final class Cnullary implements Function {
 
     @Override
-    public Stack evaluate(Stack stack, Interpreter interpreter) {
+    public Stack invoke(Stack stack, Context context) {
         List p = stack.consume(List.class);
-        Atom r = interpreter.interpret(stack.copy(), p).consume(Atom.class);
+        Atom r = context.interpreter().interpret(stack.copy(), context, p).consume(Atom.class);
         return stack.push(r);
     }
 }

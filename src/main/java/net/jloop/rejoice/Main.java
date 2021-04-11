@@ -77,6 +77,7 @@ public class Main {
 
             try {
                 Runtime runtime = runtimes.get(mode).create();
+                runtime.context().load(new Module("user").require(runtime.context().get("core")));
                 if (load != null) {
                     runtime.eval(new Input(new FileReader(load)));
                 }
@@ -137,6 +138,7 @@ public class Main {
 
             try {
                 Runtime runtime = runtimes.get(mode).create();
+                runtime.context().load(new Module("user").require(runtime.context().get("core")));
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 if (load != null) {
                     runtime.eval(new Input(new FileReader(load)));
@@ -152,18 +154,14 @@ public class Main {
                         runtime.eval(new Input(line));
                     } catch (RuntimeError error) {
                         System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                        if (error.getCause() != null) {
-                            error.getCause().printStackTrace();
-                        }
+                        error.printStackTrace();
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
             } catch (RuntimeError error) {
                 System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                if (error.getCause() != null) {
-                    error.getCause().printStackTrace();
-                }
+                error.printStackTrace();
                 System.exit(1);
             } catch (Exception ex) {
                 ex.printStackTrace();

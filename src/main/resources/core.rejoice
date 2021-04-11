@@ -1,4 +1,5 @@
-define 2pop : pop pop ;
 
-define inc : 1 + ;
-define dec : 1 - ;
+define 2pop: pop pop;
+
+define inc: 1 +;
+define dec: 1 -;

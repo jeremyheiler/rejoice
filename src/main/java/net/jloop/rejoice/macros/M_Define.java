@@ -31,7 +31,7 @@ public final class M_Define implements Macro {
         rewriter.match(input, separator);
         ArrayList<Atom> output = new ArrayList<>();
         output.add(listStart);
-        rewriter.collectInto(output, input, terminator, true);
+        rewriter.collectInto(output, input, terminator, false);
         output.add(listEnd);
         output.add(new Quote(name));
         output.add(op_define);

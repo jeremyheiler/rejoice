@@ -20,6 +20,11 @@ public final class Stack implements Iterable<Value> {
         return values.size();
     }
 
+    public <V extends Value> boolean check(Class<V> type) {
+        Value value = values.get(values.size() - 1);
+        return type.isInstance(value);
+    }
+
     public <V extends Value> V peek(Class<V> type) {
         Value value = values.get(values.size() - 1);
         if (!type.isInstance(value)) {
@@ -31,6 +36,12 @@ public final class Stack implements Iterable<Value> {
 
     public <V extends Value> V consume(Class<V> type) {
         V value = peek(type);
+        pop();
+        return value;
+    }
+
+    public Value consume() {
+        Value value = peek(Value.class);
         pop();
         return value;
     }

@@ -1,17 +1,17 @@
 package net.jloop.rejoice.functions;
 
-import net.jloop.rejoice.Combinator;
-import net.jloop.rejoice.Interpreter;
+import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.types.List;
 
 // [p] -> ...
 
-public final class Ci implements Combinator {
+public final class Ci implements Function {
 
     @Override
-    public Stack evaluate(Stack stack, Interpreter interpreter) {
+    public Stack invoke(Stack stack, Context context) {
         List p = stack.consume(List.class);
-        return interpreter.interpret(stack, p);
+        return context.interpreter().interpret(stack, context, p);
     }
 }
