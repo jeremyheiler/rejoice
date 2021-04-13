@@ -1,5 +1,7 @@
 
 define 2pop: pop pop;
 
+define print-line: print \newline print;
+
 define inc: 1 +;
 define dec: 1 -;

@@ -15,6 +15,7 @@ import net.jloop.rejoice.functions.Cnullary;
 import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
+import net.jloop.rejoice.functions.F_print;
 import net.jloop.rejoice.functions.O_Divide;
 import net.jloop.rejoice.functions.O_Minus;
 import net.jloop.rejoice.functions.O_Modulus;
@@ -132,6 +133,7 @@ public class Runtime {
         m_native.define("opcase", new Oopcase());
         m_native.define("pop", new Opop());
         m_native.define("popd", new Opopd());
+        m_native.define("print", new F_print());
         m_native.define("rolldown", new Orolldown());
         m_native.define("rollup", new Orollup());
         m_native.define("sign", new Osign());

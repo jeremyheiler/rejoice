@@ -50,9 +50,6 @@ public class Char implements Atom {
 
     @Override
     public String value() {
-        if (Character.isISOControl(value)) {
-            return "\\u" + Integer.toHexString(value);
-        }
         if (value == ' ') {
             return "\\space";
         }
@@ -70,6 +67,9 @@ public class Char implements Atom {
         }
         if (value == '\t') {
             return "\\tab";
+        }
+        if (Character.isISOControl(value)) {
+            return "\\u" + Integer.toHexString(value);
         }
         return String.valueOf(value);
     }

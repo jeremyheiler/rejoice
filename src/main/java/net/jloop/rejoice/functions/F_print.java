@@ -3,14 +3,14 @@ package net.jloop.rejoice.functions;
 import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Stack;
-import net.jloop.rejoice.types.Str;
+import net.jloop.rejoice.Value;
 
-public final class Oputchars implements Function {
+public final class F_print implements Function {
 
     @Override
     public Stack invoke(Stack stack, Context context) {
-        Str string = stack.consume(Str.class);
-        System.out.print(string.get());
+        Value value = stack.consume();
+        System.out.print(value.print());
         return stack;
     }
 }

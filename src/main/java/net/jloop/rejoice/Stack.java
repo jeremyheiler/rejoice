@@ -60,7 +60,7 @@ public final class Stack implements Iterable<Value> {
         ArrayList<Value> list = new ArrayList<>(values);
         Collections.reverse(list);
         for (Value value : list) {
-            System.out.println(value.print());
+            System.out.println(value.value());
         }
     }
 
