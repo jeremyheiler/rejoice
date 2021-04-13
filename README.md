@@ -23,10 +23,10 @@ The `eval` command executes the provided program and exits the process.
 java -jar target/rejoice-{version}.jar eval '1 2 + !'
 ```
 
-The command has a `--mode` option that selects either the `rejoice` (defualt) or `joy` runtime. If any options are provided, the program must be provided after `--` to indicate that there are no more options to handle.
+The command has a `--load` option that will load a module from a file. If any options are provided, the program must be provided after `--` to indicate that there are no more options to handle.
 
 ```
-java -jar target/rejoice-{version}.jar eval --mode joy -- '1 2 succ put'
+java -jar target/rejoice-{version}.jar eval --load foo.rejoice -- 'foo/bar'
 ```
 
 ## Running a REPL
@@ -37,18 +37,18 @@ The `repl` command will start a REPL. Type `Ctl-C` to quit the REPL.
 java -jar target/rejoice-{version}.jar repl
 ```
 
-As with the `eval` command, `repl` supports the `--mode` option to select either the `rejoice` (default) or `joy` runtime.
+As with the `eval` command, `repl` supports the `--load` option to load a module from a file.
 
 ```
-java -jar target/rejoice-{version}.jar repl --mode joy
+java -jar target/rejoice-{version}.jar repl --load foo.rejoice
 ```
 
 Another option is `--eval`, which will execute the provided program immediately after starting the REPL.
 
-The following program will be executed with the `joy` runtime and leave `0` on the stack.
+The following program will load the `foo` module execute the `bar` function from that module.
 
 ```
-java -jar target/rejoice-{version}.jar repl --mode joy --eval '1 pred'
+java -jar target/rejoice-{version}.jar repl --load foo.rejoice --eval 'foo/bar'
 ```
 
 ## Help

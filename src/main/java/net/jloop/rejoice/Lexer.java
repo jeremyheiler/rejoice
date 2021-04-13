@@ -17,17 +17,8 @@ public final class Lexer {
     public static final int EOF = -1;
 
     private static final String whitespace = " \t\r\n";
-    private static final String adjacent = ".:;[]";
+    private static final String adjacent = ".:;[]{}";
     private static final String allow = "!$%&()*+,-/0123456789<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~";
-    private static final String deny = "#\"\\'{}" + adjacent;
-
-    private final char charDispatcher;
-    private final boolean allowQuoting;
-
-    public Lexer(char charDispatcher, boolean allowQuoting) {
-        this.charDispatcher = charDispatcher;
-        this.allowQuoting = allowQuoting;
-    }
 
     private boolean contains(String s, int c) {
         return s.indexOf(c) != -1;
@@ -99,7 +90,7 @@ public final class Lexer {
                     }
                     buffer.append((char) d);
                 }
-            } else if (c == charDispatcher) {
+            } else if (c == '\\') {
                 StringBuilder buffer = new StringBuilder().append((char) c);
                 while (true) {
                     int d = reader.read();
@@ -119,7 +110,7 @@ public final class Lexer {
                 } else {
                     throw new RuntimeError("LEX", "Invalid character literal: " + lexeme);
                 }
-            } else if (allowQuoting && c == '\'') {
+            } else if (c == '\'') {
                 StringBuilder buffer = new StringBuilder().append("'");
                 while (true) {
                     int d = reader.read();

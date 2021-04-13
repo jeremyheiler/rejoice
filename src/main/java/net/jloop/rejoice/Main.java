@@ -1,22 +1,11 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.languages.Joy;
-import net.jloop.rejoice.languages.Rejoice;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.HashMap;
 
 public class Main {
-
-    private static final HashMap<String, RuntimeFactory> runtimes = new HashMap<>();
-
-    static {
-        runtimes.put("joy", new Joy());
-        runtimes.put("rejoice", new Rejoice());
-    }
 
     public static void main(String[] args) {
         System.out.println("Rejoice 0.0.1-alpha");
@@ -27,7 +16,6 @@ public class Main {
 
             String eval = null;
             String load = null;
-            String mode = "rejoice";
 
             // TODO(jeremy): If there are no opts or anything after --, accept input from stdin
 
@@ -54,7 +42,6 @@ public class Main {
                     } else {
                         switch (opt) {
                             case "load" -> load = args[i]; // TODO(jeremy) Support loading multiple files
-                            case "mode" -> mode = args[i];
                             default -> {
                                 System.err.println("ERROR: Unknown option '" + opt + "'");
                                 System.exit(1);
@@ -69,14 +56,12 @@ public class Main {
                 System.err.println("Examples:");
                 System.err.println();
                 System.err.println("\trejoice eval '1 inc !'");
-                System.err.println("\trejoice eval --mode joy -- '1 succ put'");
+                System.err.println("\trejoice eval --load foo.rejoice -- 'foo/bar !'");
                 System.exit(1);
             }
 
-            System.out.println("Mode: " + mode);
-
             try {
-                Runtime runtime = runtimes.get(mode).create();
+                Runtime runtime = Runtime.create();
                 runtime.context().load(new Module("user").require(runtime.context().get("core")));
                 if (load != null) {
                     runtime.eval(new Input(new FileReader(load)));
@@ -106,7 +91,6 @@ public class Main {
 
             String eval = null;
             String load = null;
-            String mode = "rejoice";
 
             if (args.length > 1) {
                 String opt = null;
@@ -123,7 +107,6 @@ public class Main {
                         switch (opt) {
                             case "eval" -> eval = args[i];
                             case "load" -> load = args[i]; // TODO(jeremy) Support loading multiple files
-                            case "mode" -> mode = args[i];
                             default -> {
                                 System.err.println("ERROR: Unknown option '" + opt + "'");
                                 System.exit(1);
@@ -134,10 +117,8 @@ public class Main {
                 }
             }
 
-            System.out.println("Mode: " + mode);
-
             try {
-                Runtime runtime = runtimes.get(mode).create();
+                Runtime runtime = Runtime.create();
                 runtime.context().load(new Module("user").require(runtime.context().get("core")));
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 if (load != null) {
@@ -154,14 +135,14 @@ public class Main {
                         runtime.eval(new Input(line));
                     } catch (RuntimeError error) {
                         System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                        error.printStackTrace();
+                        error.printStackTrace(System.out);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
             } catch (RuntimeError error) {
                 System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                error.printStackTrace();
+                error.printStackTrace(System.out);
                 System.exit(1);
             } catch (Exception ex) {
                 ex.printStackTrace();

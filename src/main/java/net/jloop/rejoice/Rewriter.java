@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public final class Rewriter {
 
@@ -30,35 +29,20 @@ public final class Rewriter {
         return output;
     }
 
-    public List<Atom> collect(Iterator<Atom> input, Symbol terminator) {
-        return collect(input, Set.of(terminator), false);
-    }
-
-    public List<Atom> collect(Iterator<Atom> input, Set<Symbol> terminators) {
-        return collect(input, terminators, false);
-    }
-
     public List<Atom> collect(Iterator<Atom> input, Symbol terminator, boolean quote) {
-        return collect(input, Set.of(terminator), quote);
-    }
-
-    public List<Atom> collect(Iterator<Atom> input, Set<Symbol> terminators, boolean quote) {
         List<Atom> output = new ArrayList<>();
-        collectInto(output, input, terminators, quote);
+        collectInto(output, input, terminator, quote);
         return output;
     }
 
+    // TODO: Maybe return the number of atoms collected?
     public void collectInto(List<Atom> output, Iterator<Atom> input, Symbol terminator, boolean quote) {
-        collectInto(output, input, Set.of(terminator), quote);
-    }
-
-    public Symbol collectInto(List<Atom> output, Iterator<Atom> input, Set<Symbol> terminators, boolean quote) {
         while (true) {
             if (input.hasNext()) {
                 Atom next = input.next();
                 if (next instanceof Symbol) {
-                    if (terminators.contains(next)) {
-                        return (Symbol) next;
+                    if (next.equals(terminator)) {
+                        break;
                     } else if (macros.containsKey(next)) {
                         for (Atom atom : macros.get(next).rewrite(this, input)) {
                             output.add(atom instanceof Symbol && quote ? new Quote((Symbol) atom) : atom);
