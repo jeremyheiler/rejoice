@@ -19,7 +19,7 @@ public final class Odefine_E_ implements Function {
         Quote name = stack.consume(Quote.class);
         List body = stack.consume(List.class);
         Function function = new Function.Interpreted(body);
-        context.current().define(name.get(), function, pub);
+        context.current().define(name.get().name(), function, pub);
         return stack;
     }
 }

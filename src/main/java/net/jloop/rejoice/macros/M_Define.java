@@ -11,30 +11,16 @@ import java.util.Iterator;
 
 public final class M_Define implements Macro {
 
-    private final Symbol op_define;
-    private final Symbol separator;
-    private final Symbol terminator;
-    private final Symbol listStart;
-    private final Symbol listEnd;
-
-    public M_Define(Symbol op_define, Symbol separator, Symbol terminator, Symbol listStart, Symbol listEnd) {
-        this.op_define = op_define;
-        this.separator = separator;
-        this.terminator = terminator;
-        this.listStart = listStart;
-        this.listEnd = listEnd;
-    }
-
     @Override
     public Iterable<Atom> rewrite(Rewriter rewriter, Iterator<Atom> input) {
         Symbol name = rewriter.match(input, Symbol.class);
-        rewriter.match(input, separator);
+        rewriter.match(input, Symbol.of(":"));
         ArrayList<Atom> output = new ArrayList<>();
-        output.add(listStart);
-        rewriter.collectInto(output, input, terminator, false);
-        output.add(listEnd);
+        output.add(Symbol.of("["));
+        rewriter.collectInto(output, input, Symbol.of(";"), false);
+        output.add(Symbol.of("]"));
         output.add(new Quote(name));
-        output.add(op_define);
+        output.add(Symbol.of("define!"));
         return output;
     }
 }

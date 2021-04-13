@@ -43,7 +43,6 @@ import net.jloop.rejoice.functions.Oswapd;
 import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_MultilineComment;
-import net.jloop.rejoice.types.Symbol;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -99,54 +98,55 @@ public class Runtime {
 
     public static Runtime create() {
 
-        // Operators and Combinators
+        // Functions
         Module m_native = new Module("native");
-        m_native.define(Symbol.of("/"), new O_Divide());
-        m_native.define(Symbol.of("!"), new O_PrintStack());
-        m_native.define(Symbol.of("-"), new O_Minus());
-        m_native.define(Symbol.of("%"), new O_Modulus());
-        m_native.define(Symbol.of("*"), new O_Multiply());
-        m_native.define(Symbol.of("+"), new O_Plus());
-        m_native.define(Symbol.of("abs"), new Oabs());
-        m_native.define(Symbol.of("app1"), new Capp1());
-        m_native.define(Symbol.of("app2"), new Capp2());
-        m_native.define(Symbol.of("app3"), new Capp3());
-        m_native.define(Symbol.of("b"), new Cb());
-        m_native.define(Symbol.of("choice"), new Ochoice());
-        m_native.define(Symbol.of("cleave"), new Ccleave());
-        m_native.define(Symbol.of("define!"), new Odefine_E_(true));
-        m_native.define(Symbol.of("dip"), new Cdip());
-        m_native.define(Symbol.of("dipd"), new Cdipd());
-        m_native.define(Symbol.of("dipdd"), new Cdipdd());
-        m_native.define(Symbol.of("dup"), new Odup());
-        m_native.define(Symbol.of("dupd"), new Odupd());
-        m_native.define(Symbol.of("equal?"), new Oequal_Q_());
-        m_native.define(Symbol.of("i"), new Ci());
-        m_native.define(Symbol.of("ifte"), new Cifte());
-        m_native.define(Symbol.of("include"), new Oinclude());
-        m_native.define(Symbol.of("list"), new Olist());
-        m_native.define(Symbol.of("map"), new Cmap());
-        m_native.define(Symbol.of("max"), new Omax());
-        m_native.define(Symbol.of("min"), new Omin());
-        m_native.define(Symbol.of("module"), new Omodule());
-        m_native.define(Symbol.of("nullary"), new Cnullary());
-        m_native.define(Symbol.of("opcase"), new Oopcase());
-        m_native.define(Symbol.of("pop"), new Opop());
-        m_native.define(Symbol.of("popd"), new Opopd());
-        m_native.define(Symbol.of("rolldown"), new Orolldown());
-        m_native.define(Symbol.of("rollup"), new Orollup());
-        m_native.define(Symbol.of("sign"), new Osign());
-        m_native.define(Symbol.of("swap"), new Oswap());
-        m_native.define(Symbol.of("swapd"), new Oswapd());
-        m_native.define(Symbol.of("while"), new Cwhile());
-        m_native.define(Symbol.of("x"), new Cx());
-        m_native.define(Symbol.of("y"), new Cy());
+        m_native.define("/", new O_Divide());
+        m_native.define("!", new O_PrintStack());
+        m_native.define("-", new O_Minus());
+        m_native.define("%", new O_Modulus());
+        m_native.define("*", new O_Multiply());
+        m_native.define("+", new O_Plus());
+        m_native.define("abs", new Oabs());
+        m_native.define("app1", new Capp1());
+        m_native.define("app2", new Capp2());
+        m_native.define("app3", new Capp3());
+        m_native.define("b", new Cb());
+        m_native.define("choice", new Ochoice());
+        m_native.define("cleave", new Ccleave());
+        m_native.define("define!", new Odefine_E_(true));
+        m_native.define("dip", new Cdip());
+        m_native.define("dipd", new Cdipd());
+        m_native.define("dipdd", new Cdipdd());
+        m_native.define("dup", new Odup());
+        m_native.define("dupd", new Odupd());
+        m_native.define("equal?", new Oequal_Q_());
+        m_native.define("i", new Ci());
+        m_native.define("ifte", new Cifte());
+        m_native.define("include", new Oinclude());
+        m_native.define("list", new Olist());
+        m_native.define("map", new Cmap());
+        m_native.define("max", new Omax());
+        m_native.define("min", new Omin());
+        m_native.define("module", new Omodule());
+        m_native.define("nullary", new Cnullary());
+        m_native.define("opcase", new Oopcase());
+        m_native.define("pop", new Opop());
+        m_native.define("popd", new Opopd());
+        m_native.define("rolldown", new Orolldown());
+        m_native.define("rollup", new Orollup());
+        m_native.define("sign", new Osign());
+        m_native.define("swap", new Oswap());
+        m_native.define("swapd", new Oswapd());
+        m_native.define("while", new Cwhile());
+        m_native.define("x", new Cx());
+        m_native.define("y", new Cy());
 
         // Macros
-        Map<Symbol, Macro> macros = new HashMap<>();
-        macros.put(Symbol.of("["), new M_List(Symbol.of("]"), Symbol.of("list")));
-        macros.put(Symbol.of("define"), new M_Define(Symbol.of("define!"), Symbol.of(":"), Symbol.of(";"), Symbol.of("["), Symbol.of("]")));
-        macros.put(Symbol.of("/*"), new M_MultilineComment(Symbol.of("/*"), Symbol.of("*/")));
+        // TODO: Scope macros to modules
+        Map<String, Macro> macros = new HashMap<>();
+        macros.put("[", new M_List());
+        macros.put("define", new M_Define());
+        macros.put("/*", new M_MultilineComment());
 
         // Configure lexer
         Lexer lexer = new Lexer();

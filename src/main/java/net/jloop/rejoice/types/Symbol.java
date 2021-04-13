@@ -7,16 +7,12 @@ import java.util.Optional;
 
 public final class Symbol implements Atom {
 
-    private final String namespace;
+    private final String path;
     private final String name;
 
-    private Symbol(String namespace, String name) {
-        this.namespace = namespace;
+    private Symbol(String path, String name) {
+        this.path = path;
         this.name = name;
-    }
-
-    public static Symbol of(String namespace, String name) {
-        return new Symbol(namespace, name);
     }
 
     public static Symbol of(String name) {
@@ -28,8 +24,8 @@ public final class Symbol implements Atom {
         }
     }
 
-    public Optional<String> namespace() {
-        return Optional.ofNullable(namespace);
+    public Optional<String> path() {
+        return Optional.ofNullable(path);
     }
 
     public String name() {
@@ -38,10 +34,10 @@ public final class Symbol implements Atom {
 
     @Override
     public String print() {
-        if (namespace == null) {
+        if (path == null) {
             return name;
         } else {
-            return namespace + "/" + name;
+            return path + "/" + name;
         }
     }
 
@@ -50,11 +46,11 @@ public final class Symbol implements Atom {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Symbol symbol = (Symbol) o;
-        return Objects.equals(namespace, symbol.namespace) && name.equals(symbol.name);
+        return Objects.equals(path, symbol.path) && name.equals(symbol.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespace, name);
+        return Objects.hash(path, name);
     }
 }

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public final class Module {
 
-    private final Map<Symbol, Definition> definitions = new HashMap<>();
+    private final Map<String, Definition> definitions = new HashMap<>();
     private final List<Module> includes = new ArrayList<>();
     private final List<Module> requires = new ArrayList<>();
 
@@ -31,18 +31,16 @@ public final class Module {
         return this;
     }
 
-    public Module define(Symbol name, Function function) {
+    public Module define(String name, Function function) {
         define(name, function, true);
         return this;
     }
 
-    public Module define(Symbol name, Function function, boolean pub) {
-        if (name.namespace().isPresent()) {
-            throw new RuntimeError("MODULE", "Cannot use a namespaced symbol when defining a function");
-        }
+    public Module define(String name, Function function, boolean pub) {
+        // TODO: Restrict what is allowed in a name?
         // TODO: Maybe remove this restriction?
         if (definitions.containsKey(name)) {
-            throw new RuntimeError("MODULE", "Attempted to redefine a function with the name '" + name.print() + "'");
+            throw new RuntimeError("MODULE", "Attempted to redefine a function with the name '" + name + "'");
         }
         definitions.put(name, new Definition(name, function, pub));
         return this;
@@ -61,21 +59,21 @@ public final class Module {
         }
     }
 
-    public Optional<Definition> get(Context context, Symbol name) {
-        if (name.namespace().isPresent()) {
-            return context.get(name.namespace().get()).get(context, Symbol.of(name.name()));
-        } else if (definitions.containsKey(name)) {
-            return Optional.of(definitions.get(name));
+    public Optional<Definition> get(Context context, Symbol symbol) {
+        if (symbol.path().isPresent()) {
+            return context.get(symbol.path().get()).get(context, Symbol.of(symbol.name()));
+        } else if (definitions.containsKey(symbol.name())) {
+            return Optional.of(definitions.get(symbol.name()));
         } else {
             for (Module module : includes) {
-                Optional<Definition> definition = module.get(context, name);
+                Optional<Definition> definition = module.get(context, symbol);
                 if (definition.isPresent()) {
                     return definition;
                 }
             }
             if (this == context.current()) {
                 for (Module module : requires) {
-                    Optional<Definition> definition = module.get(context, name);
+                    Optional<Definition> definition = module.get(context, symbol);
                     if (definition.isPresent()) {
                         return definition;
                     }

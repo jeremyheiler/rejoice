@@ -10,9 +10,9 @@ import java.util.Map;
 
 public final class Rewriter {
 
-    private final Map<Symbol, Macro> macros;
+    private final Map<String, Macro> macros;
 
-    public Rewriter(Map<Symbol, Macro> macros) {
+    public Rewriter(Map<String, Macro> macros) {
         this.macros = macros;
     }
 
@@ -20,8 +20,8 @@ public final class Rewriter {
         ArrayList<Atom> output = new ArrayList<>();
         while (input.hasNext()) {
             Atom next = input.next();
-            if ((next instanceof Symbol) && macros.containsKey(next)) {
-                input = new ConcatIterator<>(macros.get(next).rewrite(this, input), input);
+            if ((next instanceof Symbol) && macros.containsKey(((Symbol) next).name())) {
+                input = new ConcatIterator<>(macros.get(((Symbol) next).name()).rewrite(this, input), input);
             } else {
                 output.add(next);
             }
@@ -43,8 +43,8 @@ public final class Rewriter {
                 if (next instanceof Symbol) {
                     if (next.equals(terminator)) {
                         break;
-                    } else if (macros.containsKey(next)) {
-                        for (Atom atom : macros.get(next).rewrite(this, input)) {
+                    } else if (macros.containsKey(((Symbol) next).name())) {
+                        for (Atom atom : macros.get(((Symbol) next).name()).rewrite(this, input)) {
                             output.add(atom instanceof Symbol && quote ? new Quote((Symbol) atom) : atom);
                         }
                     } else if (quote) {
