@@ -22,6 +22,11 @@ public enum Bool implements Atom {
 
     @Override
     public String print() {
+        return value();
+    }
+
+    @Override
+    public String value() {
         return this == True ? "true" : "false";
     }
 }

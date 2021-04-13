@@ -64,6 +64,11 @@ public class Int64 implements Atom {
 
     @Override
     public String print() {
+        return value();
+    }
+
+    @Override
+    public String value() {
         return String.valueOf(value);
     }
 

@@ -32,7 +32,7 @@ public final class Parser {
                 return Bool.of(token.lexeme());
             }
             case Character -> {
-                return new Char(token.lexeme(), token.lexeme().substring(1).translateEscapes().charAt(0));
+                return Char.of(token.lexeme());
             }
             case Int -> {
                 return new Int64(Long.parseLong(token.lexeme()));

@@ -31,6 +31,11 @@ public class Str implements Atom, Cons {
 
     @Override
     public String print() {
+        return value;
+    }
+
+    @Override
+    public String value() {
         return "\"" + value + "\"";
     }
 }

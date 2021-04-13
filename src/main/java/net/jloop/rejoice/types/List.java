@@ -67,19 +67,22 @@ public class List implements Value, Cons, Iterable<Value> {
 
     @Override
     public String print() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("[");
+        return value();
+    }
+
+    @Override
+    public String value() {
+        StringBuilder buffer = new StringBuilder().append("[");
         boolean first = true;
         for (Value value : values) {
             if (first) {
                 first = false;
             } else {
-                buf.append(" ");
+                buffer.append(" ");
             }
-            buf.append(value.print());
+            buffer.append(value.value());
         }
-        buf.append("]");
-        return buf.toString();
+        return buffer.append("]").toString();
     }
 
     @Override

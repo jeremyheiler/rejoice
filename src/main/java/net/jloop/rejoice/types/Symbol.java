@@ -34,6 +34,11 @@ public final class Symbol implements Atom {
 
     @Override
     public String print() {
+        return value();
+    }
+
+    @Override
+    public String value() {
         if (path == null) {
             return name;
         } else {

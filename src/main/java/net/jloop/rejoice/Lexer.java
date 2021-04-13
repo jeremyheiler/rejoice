@@ -105,7 +105,7 @@ public final class Lexer {
                 String lexeme = buffer.toString();
                 // TODO(jeremy): Match all printable characters in the last case, not just alphanumerics.
                 // TODO(jeremy): Be more restrictive in which single characters can be escaped?
-                if (lexeme.substring(1).matches("^(?:\\\\u[A-Za-z0-9]{4}|[\\\\0-9]+|\\\\[a-z]|[A-Za-z0-9_])$")) {
+                if (lexeme.substring(1).matches("^(?:u[A-Fa-f0-9]{4}|[\\\\0-9]+|\\\\[a-z]|[A-Za-z]+)$")) {
                     return Token.of(Token.Type.Character, buffer.toString());
                 } else {
                     throw new RuntimeError("LEX", "Invalid character literal: " + lexeme);
