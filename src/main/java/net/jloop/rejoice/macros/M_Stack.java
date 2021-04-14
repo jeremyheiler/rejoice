@@ -9,13 +9,13 @@ import net.jloop.rejoice.types.Symbol;
 import java.util.Iterator;
 import java.util.List;
 
-public final class M_List implements Macro {
+public final class M_Stack implements Macro {
 
     @Override
     public Iterable<Atom> rewrite(Rewriter rewriter, Iterator<Atom> input) {
-        List<Atom> output = rewriter.collect(input, Symbol.of(")"), true);
+        List<Atom> output = rewriter.collect(input, Symbol.of("]"), true);
         output.add(new Int64(output.size()));
-        output.add(Symbol.of("list"));
+        output.add(Symbol.of("stack"));
         return output;
     }
 }

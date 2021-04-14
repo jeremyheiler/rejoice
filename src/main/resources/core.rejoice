@@ -79,7 +79,7 @@ define swapd: # x y z -> y x z
   %stack-demote
   %stack-pop
   swap
-  [swap] swap %stack-apply
+  (swap) swap %stack-apply
   swap
   %stack-push
   %stack-promote;
@@ -116,7 +116,7 @@ define print : %print ;
 define print-line : %print \newline %print pop;
 
 # booleans
-define not : [false] [true] if* ;
+define not : (false) (true) if* ;
 
 # integers
 define inc : 1 + ;
@@ -126,6 +126,12 @@ define even? : 2 % zero? ;
 define odd? : even? not ;
 
 # lists
+define new-list: # -> List
+  %new-list;
+
 #define length : %length ;
 #define empty? : length zero? ;
-define cons : %cons ;
+
+define cons: # x List -> List
+  #docs "Adds x to the front of the list."
+  %cons;

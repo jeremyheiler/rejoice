@@ -21,6 +21,7 @@ import net.jloop.rejoice.functions.F_pop;
 import net.jloop.rejoice.functions.F_print;
 import net.jloop.rejoice.functions.F_roll_down;
 import net.jloop.rejoice.functions.F_roll_up;
+import net.jloop.rejoice.functions.F_stack;
 import net.jloop.rejoice.functions.F_stack_apply;
 import net.jloop.rejoice.functions.F_stack_demote;
 import net.jloop.rejoice.functions.F_stack_get;
@@ -46,6 +47,7 @@ import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_MultilineComment;
+import net.jloop.rejoice.macros.M_Stack;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -135,6 +137,7 @@ public class Runtime {
         m_native.define("%roll-down", new F_roll_down());
         m_native.define("%roll-up", new F_roll_up());
         m_native.define("sign", new Osign());
+        m_native.define("stack", new F_stack());
         m_native.define("%stack-apply", new F_stack_apply());
         m_native.define("%stack-demote", new F_stack_demote());
         m_native.define("%stack-get", new F_stack_get());
@@ -150,7 +153,8 @@ public class Runtime {
         // Macros
         // TODO: Scope macros to modules
         Map<String, Macro> macros = new HashMap<>();
-        macros.put("[", new M_List());
+        macros.put("(", new M_List());
+        macros.put("[", new M_Stack());
         macros.put("define", new M_Define());
         macros.put("/*", new M_MultilineComment());
 

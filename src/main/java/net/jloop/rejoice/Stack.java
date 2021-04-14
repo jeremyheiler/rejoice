@@ -88,7 +88,7 @@ public final class Stack implements Value, Iterable<Value> {
 
     @Override
     public String value() {
-        StringBuilder buffer = new StringBuilder("(");
+        StringBuilder buffer = new StringBuilder("[");
         boolean first = true;
         for (Value value : values) {
             if (first) {
@@ -98,7 +98,7 @@ public final class Stack implements Value, Iterable<Value> {
             }
             buffer.append(value.value());
         }
-        return buffer.append(")").toString();
+        return buffer.append("]").toString();
     }
 
     public Stack copy() {

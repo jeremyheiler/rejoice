@@ -1,13 +1,12 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Value;
-import net.jloop.rejoice.protocols.Cons;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class List implements Value, Cons, Iterable<Value> {
+public class List implements Value, Iterable<Value> {
 
     private final ArrayList<Value> values;
 
@@ -22,11 +21,6 @@ public class List implements Value, Cons, Iterable<Value> {
 
     public List(ArrayList<Value> values) {
         this.values = values;
-    }
-
-    @Override
-    public void cons(Value value) {
-        prepend(value);
     }
 
     public List append(Value value) {
@@ -72,7 +66,7 @@ public class List implements Value, Cons, Iterable<Value> {
 
     @Override
     public String value() {
-        StringBuilder buffer = new StringBuilder().append("[");
+        StringBuilder buffer = new StringBuilder().append("(");
         boolean first = true;
         for (Value value : values) {
             if (first) {
@@ -82,7 +76,7 @@ public class List implements Value, Cons, Iterable<Value> {
             }
             buffer.append(value.value());
         }
-        return buffer.append("]").toString();
+        return buffer.append(")").toString();
     }
 
     @Override
