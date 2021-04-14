@@ -3,7 +3,6 @@ package net.jloop.rejoice;
 import net.jloop.rejoice.types.Bool;
 import net.jloop.rejoice.types.Char;
 import net.jloop.rejoice.types.Int64;
-import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Str;
 import net.jloop.rejoice.types.Symbol;
 
@@ -46,7 +45,8 @@ public final class Parser {
             case Symbol -> {
                 String lexeme = token.lexeme();
                 if (lexeme.startsWith("'")) {
-                    return new Quote(Symbol.of(lexeme.substring(1)));
+                    // TODO: Handle multiple leading single quotes
+                    return Symbol.of(lexeme.substring(1)).quote();
                 } else {
                     return Symbol.of(lexeme);
                 }

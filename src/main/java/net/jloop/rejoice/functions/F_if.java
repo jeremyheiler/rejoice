@@ -8,7 +8,7 @@ import net.jloop.rejoice.types.List;
 
 // [b] [t] [f] -> ...
 
-public final class Cifte implements Function {
+public final class F_if implements Function {
 
     @Override
     public Stack invoke(Stack stack, Context context) {

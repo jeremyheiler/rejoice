@@ -1,7 +1,131 @@
+## Stack Primitives
 
-define 2pop: pop pop;
+# Terminology:
+# - Main Stack: The stack held by the interpreter.
+# - Value Stack: A stack that's a value on the main stack.
 
-define print-line: print \newline print;
+define stack-apply: # List Stack -> Stack
+  #doc "Expects the top element to be a stack. Evaluates the List with the stack, instead of the main stack."
+  %stack-apply;
 
-define inc: 1 +;
-define dec: 1 -;
+define stack-demote: # -> Stack
+  #doc "Pushes the existing stack onto a new main stack."
+  %stack-demote;
+
+define stack-get: # Stack n -> Stack x
+  #doc "Pushes the nth element from the value stack.
+  %stack-get;
+
+define stack-peek: # Stack -> Stack x
+  #doc "Expects the top element to be a stack. Pushes a copy of top element of that stack onto the main stack."
+  %stack-peek;
+
+define stack-pop: # Stack -> Stack x
+  #doc "Expects the top element to be a stack. Pops the top element off that stack, and pushes it onto the main stack."
+  %stack-pop;
+
+define stack-promote: # Stack ->
+  #doc "Expects the top element to be a stack. Makes that stack the new main stack."
+  %stack-promote;
+
+define stack-push: # Stack x -> Stack
+  #doc "Pushes x onto the stack."
+  %stack-push;
+
+## Stack
+
+define !:
+  #doc "Prints the main stack."
+  %stack-demote print-line %stack-promote;
+
+define dup: # x -> x x
+  #doc "Pushes a copy of x onto the stack."
+  %stack-demote %stack-peek swap %stack-push %stack-promote;
+
+define dupd: # x y -> x x y
+  #doc "Pushes a copy of x onto the stack, keeping y on the top."
+  swap dup %roll-down;
+
+define pop: # x ->
+  #doc "Removes the top element of the stack."
+  %pop;
+
+define pop2: # x y ->
+  #doc "Removes the top two elements of the stack."
+  %pop %pop;
+
+define pop3: # x y z ->
+  #doc "Removes the top three elements of the stack."
+  %pop %pop %pop;
+
+# TODO: pop-n
+
+define popd: # x y -> y
+  #doc "Removes x from the stack while keeping y."
+  swap %pop;
+
+define roll-down: # x y z -> y z x
+  %roll-down;
+
+define roll-up: # x y z -> z x y
+  %roll-up;
+
+define swap: # x y -> y x
+  #doc "Swaps the top to elements of the stack."
+  %stack-demote 2 %stack-take %stack-push %stack-promote;
+
+define swapd: # x y z -> y x z
+  #doc ""
+  %stack-demote
+  %stack-pop
+  swap
+  [swap] swap %stack-apply
+  swap
+  %stack-push
+  %stack-promote;
+
+define dip : # x List -> x (TODO: How can this describe the effect of applying List?)
+  #doc "Evaluates List against the stack with out x, pushing x back onto the stack after.
+  %stack-demote  # push the stack onto a new main stack
+  %stack-pop   # pop p off the stack, pushing it onto the main stack
+  swap        # move the stack back to the top
+  %stack-pop   # pop x off the stack, pushing it onto the main stack
+  %roll-up     # bring x back to the top
+  %stack-apply # apply p against the stack
+  swap
+  %stack-push  # push x back onto the stack
+  %stack-promote    # pop the stack, and make it the main stack
+;
+
+# Conditions
+
+define if:
+  /*doc
+    "Expects three lists: p, t, and f (where f is the top of th stack).
+    Evaluates p (the predicate) against a copy of the stack with out p, t, or f.
+    If it yields true, then t is evaluated, otherwise f is evaluated."
+  */
+  %if;
+
+define if*:
+  #doc "Like if, except instead of a predicate list, expects a boolean."
+  %roll-down 1 list %roll-up %if;
+
+# printing
+define print : %print ;
+define print-line : %print \newline %print pop;
+
+# booleans
+define not : [false] [true] if* ;
+
+# integers
+define inc : 1 + ;
+define dec : 1 - ;
+define zero? : 0 equal? ;
+define even? : 2 % zero? ;
+define odd? : even? not ;
+
+# lists
+#define length : %length ;
+#define empty? : length zero? ;
+define cons : %cons ;

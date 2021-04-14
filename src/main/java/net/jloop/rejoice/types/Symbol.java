@@ -1,6 +1,7 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
+import net.jloop.rejoice.RuntimeError;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -9,6 +10,8 @@ public final class Symbol implements Atom {
 
     private final String path;
     private final String name;
+
+    private int quote = 0;
 
     private Symbol(String path, String name) {
         this.path = path;
@@ -30,6 +33,23 @@ public final class Symbol implements Atom {
 
     public String name() {
         return name;
+    }
+
+    public boolean isQuoted() {
+        return quote > 0;
+    }
+
+    public Symbol quote() {
+        ++quote;
+        return this;
+    }
+
+    public Symbol unquote() {
+        if (quote == 0) {
+            throw new RuntimeError("INTERPRET", "Cannot unquote an unquoted symbol");
+        }
+        --quote;
+        return this;
     }
 
     @Override

@@ -14,7 +14,7 @@ public final class Cwhile implements Function {
     public Stack invoke(Stack stack, Context context) {
         List d = stack.consume(List.class);
         List b = stack.consume(List.class);
-        while (context.interpreter().interpret(stack, context, b).consume(Bool.class) == Bool.True) {
+        while (context.interpreter().interpret(stack.copy(), context, b).consume(Bool.class) == Bool.True) {
             stack = context.interpreter().interpret(stack, context, d);
         }
         return stack;

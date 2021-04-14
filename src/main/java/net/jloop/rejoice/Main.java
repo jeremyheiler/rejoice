@@ -1,9 +1,12 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Symbol;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.List;
 
 public class Main {
 
@@ -60,8 +63,10 @@ public class Main {
                 System.exit(1);
             }
 
+            Runtime runtime = Runtime.create();
             try {
-                Runtime runtime = Runtime.create();
+                Module core = new Module("core").include(runtime.context().get("native"));
+                runtime.load(core, Runtime.class.getResourceAsStream("/core.rejoice"));
                 runtime.context().load(new Module("user").require(runtime.context().get("core")));
                 if (load != null) {
                     runtime.eval(new Input(new FileReader(load)));
@@ -72,8 +77,11 @@ public class Main {
                 System.exit(0);
             } catch (RuntimeError error) {
                 System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                if (error.getCause() != null) {
-                    error.getCause().printStackTrace();
+                List<Symbol> trace = runtime.context().trace();
+                if (trace != null) {
+                    for (Symbol symbol : trace) {
+                        System.out.println("  " + symbol.print());
+                    }
                 }
                 System.exit(1);
             } catch (Exception ex) {
@@ -117,8 +125,10 @@ public class Main {
                 }
             }
 
+            Runtime runtime = Runtime.create();
             try {
-                Runtime runtime = Runtime.create();
+                Module core = new Module("core").include(runtime.context().get("native"));
+                runtime.load(core, Runtime.class.getResourceAsStream("/core.rejoice"));
                 runtime.context().load(new Module("user").require(runtime.context().get("core")));
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 if (load != null) {
@@ -135,14 +145,24 @@ public class Main {
                         runtime.eval(new Input(line));
                     } catch (RuntimeError error) {
                         System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                        error.printStackTrace(System.out);
+                        List<Symbol> trace = runtime.context().trace();
+                        if (trace != null) {
+                            for (Symbol symbol : trace) {
+                                System.out.println("\t" + symbol.print());
+                            }
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
             } catch (RuntimeError error) {
                 System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                error.printStackTrace(System.out);
+                List<Symbol> trace = runtime.context().trace();
+                if (trace != null) {
+                    for (Symbol symbol : trace) {
+                        System.out.println("  " + symbol.print());
+                    }
+                }
                 System.exit(1);
             } catch (Exception ex) {
                 ex.printStackTrace();

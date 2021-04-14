@@ -1,6 +1,5 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Symbol;
 
 import java.util.ArrayList;
@@ -41,16 +40,23 @@ public final class Rewriter {
             if (input.hasNext()) {
                 Atom next = input.next();
                 if (next instanceof Symbol) {
-                    if (next.equals(terminator)) {
+                    Symbol symbol = (Symbol) next;
+                    if (symbol.isQuoted()) {
+                        if (quote) {
+                            output.add(symbol.quote());
+                        } else {
+                            output.add(symbol);
+                        }
+                    } else if (symbol.equals(terminator)) {
                         break;
-                    } else if (macros.containsKey(((Symbol) next).name())) {
-                        for (Atom atom : macros.get(((Symbol) next).name()).rewrite(this, input)) {
-                            output.add(atom instanceof Symbol && quote ? new Quote((Symbol) atom) : atom);
+                    } else if (macros.containsKey(symbol.name())) {
+                        for (Atom atom : macros.get(symbol.name()).rewrite(this, input)) {
+                            output.add(atom instanceof Symbol && quote ? ((Symbol) atom).quote() : atom);
                         }
                     } else if (quote) {
-                        output.add(new Quote((Symbol) next));
+                        output.add(symbol.quote());
                     } else {
-                        output.add(next);
+                        output.add(symbol);
                     }
                 } else {
                     output.add(next);

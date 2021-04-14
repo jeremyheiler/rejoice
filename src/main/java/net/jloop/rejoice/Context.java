@@ -1,12 +1,17 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Symbol;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class Context {
 
     private final Interpreter interpreter;
     private final Map<String, Module> modules = new HashMap<>();
+    private final List<Symbol> trace = new ArrayList<>();
     private Module current;
 
     public Context(Interpreter interpreter) {
@@ -15,6 +20,10 @@ public final class Context {
 
     public Interpreter interpreter() {
         return interpreter;
+    }
+
+    public List<Symbol> trace() {
+        return trace;
     }
 
     public void load(Module module) {

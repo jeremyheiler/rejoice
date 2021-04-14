@@ -79,12 +79,12 @@ public final class Lexer {
                 while (true) {
                     int d = reader.read();
                     if (d == EOF || d == '\n') {
-                        return Lexer.Token.of(Lexer.Token.Type.LineComment, buffer.toString());
+                        return Lexer.Token.of(Lexer.Token.Type.LineComment, buffer.toString(), true);
                     }
                     if (d == '\r') {
                         int e;
                         if ((e = reader.read()) == EOF || e == '\n') {
-                            return Lexer.Token.of(Lexer.Token.Type.LineComment, buffer.toString());
+                            return Lexer.Token.of(Lexer.Token.Type.LineComment, buffer.toString(), true);
                         }
                         reader.unread(e);
                     }
@@ -111,6 +111,7 @@ public final class Lexer {
                     throw new RuntimeError("LEX", "Invalid character literal: " + lexeme);
                 }
             } else if (c == '\'') {
+                // TODO: Accept multiple leading single quotes
                 StringBuilder buffer = new StringBuilder().append("'");
                 while (true) {
                     int d = reader.read();

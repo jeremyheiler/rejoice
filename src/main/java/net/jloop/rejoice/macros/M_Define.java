@@ -3,7 +3,6 @@ package net.jloop.rejoice.macros;
 import net.jloop.rejoice.Atom;
 import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.Rewriter;
-import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Symbol;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ public final class M_Define implements Macro {
         output.add(Symbol.of("["));
         rewriter.collectInto(output, input, Symbol.of(";"), false);
         output.add(Symbol.of("]"));
-        output.add(new Quote(name));
+        output.add(name.quote());
         output.add(Symbol.of("define!"));
         return output;
     }

@@ -33,10 +33,10 @@ public class Char implements Atom {
         if (str.startsWith("\\u")) {
             throw new RuntimeError("PARSE", "Unicode characters literals are not yet supported");
         }
-        if (str.length() == 1) {
-            return new Char(str.charAt(0));
+        if (str.substring(1).length() == 1) {
+            return new Char(str.charAt(1));
         }
-        throw new RuntimeError("PARSE", "Character literals must represent a single character");
+        throw new RuntimeError("PARSE", "Character literals must represent a single character '" + str + "'");
     }
 
     public char get() {
@@ -71,6 +71,6 @@ public class Char implements Atom {
         if (Character.isISOControl(value)) {
             return "\\u" + Integer.toHexString(value);
         }
-        return String.valueOf(value);
+        return "\\" + value;
     }
 }

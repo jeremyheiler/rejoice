@@ -4,12 +4,10 @@ import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Stack;
 
-// x ->
-
-public final class Opop implements Function {
+public final class F_stack_pop implements Function {
 
     @Override
     public Stack invoke(Stack stack, Context context) {
-        return stack.pop();
+        return stack.push(stack.peek(Stack.class).consume());
     }
 }
