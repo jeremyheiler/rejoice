@@ -38,7 +38,7 @@ import net.jloop.rejoice.functions.O_Plus;
 import net.jloop.rejoice.functions.Oabs;
 import net.jloop.rejoice.functions.Ochoice;
 import net.jloop.rejoice.functions.Oequal_Q_;
-import net.jloop.rejoice.functions.Oinclude;
+import net.jloop.rejoice.functions.F_include;
 import net.jloop.rejoice.functions.Omax;
 import net.jloop.rejoice.functions.Omin;
 import net.jloop.rejoice.functions.F_module;
@@ -124,7 +124,7 @@ public class Runtime {
         m_native.define("equal?", new Oequal_Q_());
         m_native.define("i", new Ci());
         m_native.define("%if", new F_if());
-        m_native.define("include", new Oinclude());
+        m_native.define("include", new F_include());
         m_native.define("list", new F_list());
         m_native.define("map", new Cmap());
         m_native.define("max", new Omax());

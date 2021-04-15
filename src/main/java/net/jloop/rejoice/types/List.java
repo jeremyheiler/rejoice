@@ -28,12 +28,12 @@ public class List implements Value, Iterable<Value> {
         return this;
     }
 
-    public List prepend(Value value) {
+    public List cons(Value value) {
         values.add(0, value);
         return this;
     }
 
-    public int size() {
+    public int length() {
         return values.size();
     }
 

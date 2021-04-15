@@ -18,20 +18,20 @@ public final class Oopcase implements Function {
     public Stack invoke(Stack stack, Context context) {
         List list = stack.consume(List.class);
         Atom atom = stack.consume(Atom.class);
-        if (list.size() == 0) {
+        if (list.length() == 0) {
             throw new RuntimeError("INTERPRET", "Operator 'opcase': list cannot be empty");
         }
-        if (list.size() == 1) {
+        if (list.length() == 1) {
             return stack.push(list.first());
         }
         int count = 0;
         for (Value value : list) {
             if (value instanceof List) {
                 List l = (List) value;
-                if (++count == list.size()) { // last list
+                if (++count == list.length()) { // last list
                     return stack.push(l);
                 }
-                if (l.size() == 0) {
+                if (l.length() == 0) {
                     throw new RuntimeException("LIST cannot be empty");
                 }
                 if (l.first().getClass() == atom.getClass()) {

@@ -9,6 +9,6 @@ public final class F_cons implements Function {
 
     @Override
     public Stack invoke(Stack stack, Context context) {
-        return stack.push(stack.consume(List.class).prepend(stack.consume()));
+        return stack.push(stack.consume(List.class).cons(stack.consume()));
     }
 }

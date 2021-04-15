@@ -19,7 +19,7 @@ public class F_list implements Function {
             if (value instanceof Symbol && ((Symbol) value).isQuoted()) {
                 ((Symbol) value).unquote();
             }
-            list.prepend(value);
+            list.cons(value);
         }
         return stack.push(list);
     }

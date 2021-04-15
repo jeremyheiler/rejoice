@@ -27,7 +27,7 @@ public final class Stack implements Value, Iterable<Value> {
         return values.remove(values.size() - i);
     }
 
-    public void checkUnderflow() {
+    private void checkUnderflow() {
         if (values.isEmpty()) {
             throw new RuntimeError("STACK", "Underflow");
         }

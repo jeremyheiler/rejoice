@@ -129,7 +129,7 @@ define odd? : even? not ;
 define new-list: # -> List
   %new-list;
 
-#define length : %length ;
+#define list-length : %length ;
 #define empty? : length zero? ;
 
 define cons: # x List -> List
