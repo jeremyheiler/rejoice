@@ -1,35 +1,40 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.RuntimeError;
+import net.jloop.rejoice.ConcatIterator;
+import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Macro;
+import net.jloop.rejoice.Module;
+import net.jloop.rejoice.Quotable;
+import net.jloop.rejoice.Stack;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public final class Symbol implements Atom {
+public final class Symbol implements Atom, Quotable {
 
     private final String path;
     private final String name;
 
-    private int quotes;
-
-    private Symbol(String path, String name, int quotes) {
+    private Symbol(String path, String name) {
         this.path = path;
         this.name = name;
-        this.quotes = quotes;
     }
 
     public static Symbol of(String name) {
         int i = name.indexOf('/');
         if (i == -1 || name.equals("/")) {
-            return new Symbol(null, name, 0);
+            return new Symbol(null, name);
         } else {
-            return new Symbol(name.substring(0, i), name.substring(i + 1), 0);
+            return new Symbol(name.substring(0, i), name.substring(i + 1));
         }
     }
 
     public static Symbol of(String path, String name) {
-        return new Symbol(path, name, 0);
+        return new Symbol(path, name);
     }
 
     public Symbol.Builder builder() {
@@ -40,16 +45,14 @@ public final class Symbol implements Atom {
 
         private String path;
         private String name;
-        private int quotes;
 
         public Builder() {
             this.path = Symbol.this.path;
             this.name = Symbol.this.name;
-            this.quotes = Symbol.this.quotes;
         }
 
         public Symbol build() {
-            return new Symbol(path, name, quotes);
+            return new Symbol(path, name);
         }
 
         public Builder withPath(String path) {
@@ -63,34 +66,52 @@ public final class Symbol implements Atom {
         }
     }
 
+    @Override
+    public Iterator<Atom> rewrite(Map<String, Macro> macros, List<Atom> output, Iterator<Atom> input) {
+        if (macros.containsKey(name)) {
+            Iterable<Atom> rewritten = macros.get(name).rewrite(macros, input);
+            return new ConcatIterator<>(rewritten, input);
+        } else {
+            output.add(this);
+            return input;
+        }
+    }
+
+    @Override
+    public Stack interpret(Stack stack, Context context) {
+        Module.Resolved resolved = context.resolve(this);
+        context.trace().add(resolved.toCall());
+        stack = resolved.function().invoke(stack, context);
+        context.trace().pop();
+        return stack;
+    }
+
     public Optional<String> path() {
         return Optional.ofNullable(path);
     }
 
+    @Override
     public String name() {
         return name;
     }
 
-    public boolean isQuoted() {
-        return quotes > 0;
+    @Override
+    public Atom quote() {
+        return new Quote(this);
     }
 
-    public Symbol quote() {
-        ++quotes;
-        return this;
-    }
-
-    public Symbol unquote() {
-        if (quotes == 0) {
-            throw new RuntimeError("INTERPRET", "Cannot unquote an unquoted symbol");
+    @Override
+    public Atom unquote(Module module) {
+        if (path == null) {
+            return builder().withPath(module.name()).build();
+        } else {
+            return this;
         }
-        --quotes;
-        return this;
     }
 
     @Override
     public String print() {
-        return "'".repeat(quotes) + value();
+        return value();
     }
 
     @Override
