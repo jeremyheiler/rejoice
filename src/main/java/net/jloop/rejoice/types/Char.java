@@ -45,11 +45,6 @@ public class Char implements Atom {
 
     @Override
     public String print() {
-        return String.valueOf(value);
-    }
-
-    @Override
-    public String value() {
         if (value == ' ') {
             return "\\space";
         }
@@ -72,5 +67,10 @@ public class Char implements Atom {
             return "\\u" + Integer.toHexString(value);
         }
         return "\\" + value;
+    }
+
+    @Override
+    public String write() {
+        return String.valueOf(value);
     }
 }

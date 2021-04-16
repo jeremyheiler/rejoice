@@ -14,9 +14,12 @@ public interface Value {
         return this;
     }
 
-    // Return the printable representation of the value
+    // Prints the value such that it can be parsed again.
     String print();
 
-    // Return the parsable representation of the value
-    String value();
+    // Prints the value itself, i.e. '\x' prints 'x' and '"foo"' prints 'foo'.
+    // Most values will print the same as print(), hence the default implementation.
+    default String write() {
+        return print();
+    }
 }

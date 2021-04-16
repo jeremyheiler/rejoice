@@ -2,9 +2,9 @@ package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
 
-public class Str implements Atom {
+public final class Str implements Atom {
 
-    private String value;
+    private final String value;
 
     public Str(String value) {
         this.value = value;
@@ -20,11 +20,11 @@ public class Str implements Atom {
 
     @Override
     public String print() {
-        return value;
+        return "\"" + value + "\"";
     }
 
     @Override
-    public String value() {
-        return "\"" + value + "\"";
+    public String write() {
+        return value;
     }
 }

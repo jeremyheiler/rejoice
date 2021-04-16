@@ -61,11 +61,6 @@ public class List implements Value, Iterable<Value> {
 
     @Override
     public String print() {
-        return value();
-    }
-
-    @Override
-    public String value() {
         StringBuilder buffer = new StringBuilder().append("(");
         boolean first = true;
         for (Value value : values) {
@@ -74,7 +69,7 @@ public class List implements Value, Iterable<Value> {
             } else {
                 buffer.append(" ");
             }
-            buffer.append(value.value());
+            buffer.append(value.print());
         }
         return buffer.append(")").toString();
     }

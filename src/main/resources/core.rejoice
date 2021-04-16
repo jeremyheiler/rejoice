@@ -97,20 +97,27 @@ define if*:
   #doc "Like if, except instead of a predicate list, expects a boolean."
   %roll-down 1 %list %roll-up %if;
 
-# printing
+# Printing
+
 define print:
-  #eff "x -- x"
-  #doc "Prints the top value from the stack."
+  #doc "Prints the top value of the stack such that it could be parsed again."
   %print;
 
 define print-line:
-  #doc "Prints the top value from the stack followed by a new line."
-  %print \newline %print pop;
+  #doc "Prints the top value of the stack such that it could be parsed again, followed by a new line."
+  %print \newline %write pop;
+
+define write:
+  #doc "Prints the value represented by the the top value of the stack, i.e. '\x' prints 'x' and '"foo"" prints 'foo'."
+  %write;
+
+define write-line:
+  #doc "Prints the value represented by the the top value of the stack, i.e. '\x' prints 'x' and '"foo"" prints 'foo', followed by a new line."
+  %write \newline %write pop;
 
 define !:
-  #eff "--"
   #doc "Prints the main stack."
-  %stack-demote print-line %stack-promote;
+  %stack-demote write-line %stack-promote;
 
 # booleans
 define not : (false) (true) if* ;

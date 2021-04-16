@@ -35,6 +35,7 @@ import net.jloop.rejoice.functions.F_stack_pop;
 import net.jloop.rejoice.functions.F_stack_promote;
 import net.jloop.rejoice.functions.F_stack_push;
 import net.jloop.rejoice.functions.F_stack_take;
+import net.jloop.rejoice.functions.F_write;
 import net.jloop.rejoice.functions.O_Divide;
 import net.jloop.rejoice.functions.O_Minus;
 import net.jloop.rejoice.functions.O_Modulus;
@@ -154,6 +155,7 @@ public class Runtime {
         internal.define("%stack-push", new F_stack_push());
         internal.define("%stack-take", new F_stack_take());
         internal.define("while", new Cwhile());
+        internal.define("%write", new F_write());
         internal.define("x", new Cx());
         internal.define("y", new Cy());
 

@@ -34,12 +34,7 @@ public final class Type implements Atom {
 
     @Override
     public String print() {
-        return "^" + value();
-    }
-
-    @Override
-    public String value() {
-        return path == null ? name : path + "/" + name;
+        return "^" + (path == null ? name : path + "/" + name);
     }
 
     @Override

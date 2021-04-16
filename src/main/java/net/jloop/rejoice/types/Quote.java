@@ -29,11 +29,6 @@ public final class Quote implements Atom, Quotable {
 
     @Override
     public String print() {
-        return null;
-    }
-
-    @Override
-    public String value() {
-        return null;
+        return "'" + quotable.print();
     }
 }

@@ -73,21 +73,6 @@ public final class Stack implements Value, Iterable<Value> {
 
     @Override
     public String print() {
-        StringBuilder buffer = new StringBuilder();
-        boolean first = true;
-        for (int i = values.size() - 1; i >= 0; --i) {
-            if (first) {
-                buffer.append(values.get(i).value()).append(" <-- top");
-                first = false;
-            } else {
-                buffer.append("\n").append(values.get(i).value());
-            }
-        }
-        return buffer.toString();
-    }
-
-    @Override
-    public String value() {
         StringBuilder buffer = new StringBuilder("[");
         boolean first = true;
         for (Value value : values) {
@@ -96,9 +81,24 @@ public final class Stack implements Value, Iterable<Value> {
             } else {
                 buffer.append(" ");
             }
-            buffer.append(value.value());
+            buffer.append(value.print());
         }
         return buffer.append("]").toString();
+    }
+
+    @Override
+    public String write() {
+        StringBuilder buffer = new StringBuilder();
+        boolean first = true;
+        for (int i = values.size() - 1; i >= 0; --i) {
+            if (first) {
+                buffer.append(values.get(i).print()).append(" <-- top");
+                first = false;
+            } else {
+                buffer.append("\n").append(values.get(i).print());
+            }
+        }
+        return buffer.toString();
     }
 
     public Stack copy() {
