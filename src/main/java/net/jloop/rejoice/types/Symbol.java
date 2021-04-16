@@ -11,19 +11,55 @@ public final class Symbol implements Atom {
     private final String path;
     private final String name;
 
-    private int quote = 0;
+    private int quotes;
 
-    private Symbol(String path, String name) {
+    private Symbol(String path, String name, int quotes) {
         this.path = path;
         this.name = name;
+        this.quotes = quotes;
     }
 
     public static Symbol of(String name) {
         int i = name.indexOf('/');
         if (i == -1 || name.equals("/")) {
-            return new Symbol(null, name);
+            return new Symbol(null, name, 0);
         } else {
-            return new Symbol(name.substring(0, i), name.substring(i + 1));
+            return new Symbol(name.substring(0, i), name.substring(i + 1), 0);
+        }
+    }
+
+    public static Symbol of(String path, String name) {
+        return new Symbol(path, name, 0);
+    }
+
+    public Symbol.Builder builder() {
+        return new Builder();
+    }
+
+    public final class Builder {
+
+        private String path;
+        private String name;
+        private int quotes;
+
+        public Builder() {
+            this.path = Symbol.this.path;
+            this.name = Symbol.this.name;
+            this.quotes = Symbol.this.quotes;
+        }
+
+        public Symbol build() {
+            return new Symbol(path, name, quotes);
+        }
+
+        public Builder withPath(String path) {
+            this.path = path;
+            return this;
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
         }
     }
 
@@ -36,34 +72,30 @@ public final class Symbol implements Atom {
     }
 
     public boolean isQuoted() {
-        return quote > 0;
+        return quotes > 0;
     }
 
     public Symbol quote() {
-        ++quote;
+        ++quotes;
         return this;
     }
 
     public Symbol unquote() {
-        if (quote == 0) {
+        if (quotes == 0) {
             throw new RuntimeError("INTERPRET", "Cannot unquote an unquoted symbol");
         }
-        --quote;
+        --quotes;
         return this;
     }
 
     @Override
     public String print() {
-        return value();
+        return "'".repeat(quotes) + value();
     }
 
     @Override
     public String value() {
-        if (path == null) {
-            return name;
-        } else {
-            return path + "/" + name;
-        }
+        return path == null ? name : path + "/" + name;
     }
 
     @Override

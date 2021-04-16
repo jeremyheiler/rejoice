@@ -2,55 +2,56 @@ package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.Symbol;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public final class Context {
 
     private final Interpreter interpreter;
-    private final Map<String, Module> modules = new HashMap<>();
-    private final List<Symbol> trace = new ArrayList<>();
-    private Module current;
+    private final Modules modules = new Modules();
+    private final Trace trace = new Trace();
+
+    private Module active;
 
     public Context(Interpreter interpreter) {
         this.interpreter = interpreter;
+    }
+
+    public Module.Resolved resolve(Symbol symbol) {
+        Module module = moduleFor(symbol);
+        Optional<Module.Resolved> resolved = module.resolve(active, symbol.name());
+        if (resolved.isPresent()) {
+            return resolved.get();
+        } else {
+            throw new RuntimeError("INTERPRET", "Function '" + symbol.name() + "' was not found when called from module '" + module.name() + "'");
+        }
+    }
+
+    private Module moduleFor(Symbol symbol) {
+        Optional<String> path = symbol.path();
+        if (path.isPresent()) {
+            return modules.resolve(path.get());
+        } else {
+            return active;
+        }
     }
 
     public Interpreter interpreter() {
         return interpreter;
     }
 
-    public List<Symbol> trace() {
+    public Modules modules() {
+        return modules;
+    }
+
+    public Trace trace() {
         return trace;
     }
 
-    public void load(Module module) {
-        add(module);
-        current = module;
+    public Module active() {
+        return active;
     }
 
-    public Module current() {
-        return current;
-    }
-
-    public void add(Module module) {
-        if (modules.containsKey(module.name())) {
-            throw new RuntimeError("INTERPRET", "Module " + module.name() + " already exists");
-        }
-        modules.put(module.name(), module);
-    }
-
-    public boolean has(String name) {
-        return modules.containsKey(name);
-    }
-
-    public Module get(String name) {
-        Module module = modules.get(name);
-        if (module == null) {
-            throw new RuntimeError("INTERPRET", "Module " + name + " doesn't exist");
-        }
-        return module;
+    public void activate(Module module) {
+        active = module;
     }
 }

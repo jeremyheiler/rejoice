@@ -37,7 +37,7 @@ public final class Stack implements Value, Iterable<Value> {
         checkUnderflow();
         Value value = values.get(values.size() - 1);
         if (!type.isInstance(value)) {
-            throw new RuntimeError("STACK", "Expecting " + type.getSimpleName() + " but found " + value.getClass().getSimpleName());
+            throw new RuntimeError("STACK", "Expecting ^" + type.getSimpleName().toLowerCase() + " but found ^" + value.getClass().getSimpleName().toLowerCase());
         } else {
             return type.cast(value);
         }

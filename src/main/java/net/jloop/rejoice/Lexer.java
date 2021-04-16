@@ -18,7 +18,7 @@ public final class Lexer {
 
     private static final String whitespace = " \t\r\n";
     private static final String adjacent = ".:;()[]{}";
-    private static final String allow = "!$%&*+,-/0123456789<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~";
+    private static final String allow = "!$%&*+,-/0123456789<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz|~";
 
     private boolean contains(String s, int c) {
         return s.indexOf(c) != -1;
@@ -117,7 +117,7 @@ public final class Lexer {
                     int d = reader.read();
                     if (d == EOF) {
                         break;
-                    } else if (contains(whitespace, d) || contains(adjacent, d)){
+                    } else if (contains(whitespace, d) || contains(adjacent, d)) {
                         reader.unread(d);
                         break;
                     } else if (contains(allow, d)) {
@@ -130,6 +130,26 @@ public final class Lexer {
                     throw new RuntimeError("LEX", "Unexpected end of symbol");
                 } else {
                     return Token.of(Token.Type.Symbol, buffer.toString());
+                }
+            } else if (c == '^') {
+                StringBuilder buffer = new StringBuilder().append("^");
+                while (true) {
+                    int d = reader.read();
+                    if (d == EOF) {
+                        break;
+                    } else if (contains(whitespace, d) || contains(adjacent, d)) {
+                        reader.unread(d);
+                        break;
+                    } else if (contains(allow, d)) {
+                        buffer.append((char) d);
+                    } else {
+                        throw new RuntimeError("LEX", "Invalid type symbol character: '" + (char) d + "'");
+                    }
+                }
+                if (buffer.length() == 1) {
+                    throw new RuntimeError("LEX", "Unexpected end of type symbol");
+                } else {
+                    return Token.of(Token.Type.Type, buffer.toString());
                 }
             } else if (contains(allow, c)) {
                 // Parse a literal
@@ -206,7 +226,8 @@ public final class Lexer {
             Int,
             LineComment,
             Str,
-            Symbol
+            Symbol,
+            Type
         }
     }
 }

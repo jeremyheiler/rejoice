@@ -1,101 +1,87 @@
-## Stack Primitives
+# Implied: "core" module
+# Implied: "internal" include
 
-# Terminology:
-# - Main Stack: The stack held by the interpreter.
-# - Value Stack: A stack that's a value on the main stack.
+# Bootstrap 'list' from internal because 'define' depends on it.
+'%list 1 %list 'list define!
+'%stack 1 %list 'stack define!
 
-define stack-apply: # List Stack -> Stack
-  #doc "Expects the top element to be a stack. Evaluates the List with the stack, instead of the main stack."
-  %stack-apply;
+define include:
+  #eff "^string --"
+  #doc "Allows the module's functions to be accessed without the module's path, and exports the module's accessible functions."
+  %include;
 
-define stack-demote: # -> Stack
-  #doc "Pushes the existing stack onto a new main stack."
-  %stack-demote;
+define require:
+  #eff "^string --"
+  #doc "Allows the module's functions to be accessed without the module's path."
+  %include;
 
-define stack-get: # Stack n -> Stack x
-  #doc "Pushes the nth element from the value stack.
-  %stack-get;
-
-define stack-peek: # Stack -> Stack x
-  #doc "Expects the top element to be a stack. Pushes a copy of top element of that stack onto the main stack."
-  %stack-peek;
-
-define stack-pop: # Stack -> Stack x
-  #doc "Expects the top element to be a stack. Pops the top element off that stack, and pushes it onto the main stack."
-  %stack-pop;
-
-define stack-promote: # Stack ->
-  #doc "Expects the top element to be a stack. Makes that stack the new main stack."
-  %stack-promote;
-
-define stack-push: # Stack x -> Stack
-  #doc "Pushes x onto the stack."
-  %stack-push;
+define new:
+  #eff ^a -- a
+  #doc Excepts a type on the stack, and creates a instance of it.
+  %new;
 
 ## Stack
 
-define !:
-  #doc "Prints the main stack."
-  %stack-demote print-line %stack-promote;
+define swap:
+  #eff "x y -- y x"
+  #doc "Swaps the top to elements of the stack."
+  %stack-demote 2 %stack-take %stack-push %stack-promote;
 
-define dup: # x -> x x
+define dup:
+  #eff "x -- x x"
   #doc "Pushes a copy of x onto the stack."
   %stack-demote %stack-peek swap %stack-push %stack-promote;
 
-define dupd: # x y -> x x y
+define dupd:
+  #eff "x y -- x x y"
   #doc "Pushes a copy of x onto the stack, keeping y on the top."
   swap dup %roll-down;
 
-define pop: # x ->
+define pop:
+  #eff "x --"
   #doc "Removes the top element of the stack."
   %pop;
 
-define pop2: # x y ->
+define pop2:
+  #eff "x y --"
   #doc "Removes the top two elements of the stack."
   %pop %pop;
 
-define pop3: # x y z ->
+define pop3:
+  #eff "x y z --"
   #doc "Removes the top three elements of the stack."
   %pop %pop %pop;
 
 # TODO: pop-n
 
-define popd: # x y -> y
+define popd:
+  #eff "x y -- y"
   #doc "Removes x from the stack while keeping y."
   swap %pop;
 
-define roll-down: # x y z -> y z x
+define roll-down:
+  #eff "x y z -- y z x"
+  #doc ""
   %roll-down;
 
-define roll-up: # x y z -> z x y
+define roll-up:
+  #eff "x y z -- z x y"
+  #doc ""
   %roll-up;
 
-define swap: # x y -> y x
-  #doc "Swaps the top to elements of the stack."
-  %stack-demote 2 %stack-take %stack-push %stack-promote;
-
-define swapd: # x y z -> y x z
+define swapd:
+  #eff "x y z -- y x z"
   #doc ""
   %stack-demote
-  %stack-pop
-  swap
-  (swap) swap %stack-apply
-  swap
-  %stack-push
+  %stack-pop swap (swap) swap %stack-apply swap %stack-push
   %stack-promote;
 
-define dip : # x List -> x (TODO: How can this describe the effect of applying List?)
+define dip :
+  #eff "x ^list -- x"
   #doc "Evaluates List against the stack with out x, pushing x back onto the stack after.
-  %stack-demote  # push the stack onto a new main stack
-  %stack-pop   # pop p off the stack, pushing it onto the main stack
-  swap        # move the stack back to the top
-  %stack-pop   # pop x off the stack, pushing it onto the main stack
-  %roll-up     # bring x back to the top
-  %stack-apply # apply p against the stack
-  swap
-  %stack-push  # push x back onto the stack
-  %stack-promote    # pop the stack, and make it the main stack
-;
+  %stack-demote
+  %stack-pop swap %stack-pop %roll-up %stack-apply swap %stack-push
+  %stack-promote;
 
 # Conditions
 
@@ -109,11 +95,22 @@ define if:
 
 define if*:
   #doc "Like if, except instead of a predicate list, expects a boolean."
-  %roll-down 1 list %roll-up %if;
+  %roll-down 1 %list %roll-up %if;
 
 # printing
-define print : %print ;
-define print-line : %print \newline %print pop;
+define print:
+  #eff "x -- x"
+  #doc "Prints the top value from the stack."
+  %print;
+
+define print-line:
+  #doc "Prints the top value from the stack followed by a new line."
+  %print \newline %print pop;
+
+define !:
+  #eff "--"
+  #doc "Prints the main stack."
+  %stack-demote print-line %stack-promote;
 
 # booleans
 define not : (false) (true) if* ;
@@ -124,14 +121,3 @@ define dec : 1 - ;
 define zero? : 0 equal? ;
 define even? : 2 % zero? ;
 define odd? : even? not ;
-
-# lists
-define new-list: # -> List
-  %new-list;
-
-#define list-length : %length ;
-#define empty? : length zero? ;
-
-define cons: # x List -> List
-  #docs "Adds x to the front of the list."
-  %cons;

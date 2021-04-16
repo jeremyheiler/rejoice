@@ -5,6 +5,7 @@ import net.jloop.rejoice.types.Char;
 import net.jloop.rejoice.types.Int64;
 import net.jloop.rejoice.types.Str;
 import net.jloop.rejoice.types.Symbol;
+import net.jloop.rejoice.types.Type;
 
 import java.util.ArrayList;
 
@@ -50,6 +51,9 @@ public final class Parser {
                 } else {
                     return Symbol.of(lexeme);
                 }
+            }
+            case Type -> {
+                return Type.of(token.lexeme().substring(1));
             }
             default -> throw new IllegalStateException("Unexpected token of type: " + token.type());
         }

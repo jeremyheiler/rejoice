@@ -1,12 +1,11 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.types.Symbol;
+import net.jloop.rejoice.types.List;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.List;
 
 public class Main {
 
@@ -65,9 +64,8 @@ public class Main {
 
             Runtime runtime = Runtime.create();
             try {
-                Module core = new Module("core").include(runtime.context().get("native"));
-                runtime.load(core, Runtime.class.getResourceAsStream("/core.rejoice"));
-                runtime.context().load(new Module("user").require(runtime.context().get("core")));
+                initCore(runtime);
+                initUser(runtime);
                 if (load != null) {
                     runtime.eval(new Input(new FileReader(load)));
                 }
@@ -76,13 +74,7 @@ public class Main {
                 }
                 System.exit(0);
             } catch (RuntimeError error) {
-                System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                List<Symbol> trace = runtime.context().trace();
-                if (trace != null) {
-                    for (Symbol symbol : trace) {
-                        System.out.println("  " + symbol.print());
-                    }
-                }
+                printError(runtime, error);
                 System.exit(1);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -127,9 +119,8 @@ public class Main {
 
             Runtime runtime = Runtime.create();
             try {
-                Module core = new Module("core").include(runtime.context().get("native"));
-                runtime.load(core, Runtime.class.getResourceAsStream("/core.rejoice"));
-                runtime.context().load(new Module("user").require(runtime.context().get("core")));
+                initCore(runtime);
+                initUser(runtime);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 if (load != null) {
                     runtime.eval(new Input(new FileReader(load)));
@@ -140,29 +131,17 @@ public class Main {
                 // TODO(jeremy) Exit when the 'quit' operator is evaluated
                 while (true) {
                     try {
-                        System.out.print("> ");
+                        System.out.print(runtime.context().active().name() + "> ");
                         String line = reader.readLine();
                         runtime.eval(new Input(line));
                     } catch (RuntimeError error) {
-                        System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                        List<Symbol> trace = runtime.context().trace();
-                        if (trace != null) {
-                            for (Symbol symbol : trace) {
-                                System.out.println("\t" + symbol.print());
-                            }
-                        }
+                        printError(runtime, error);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
             } catch (RuntimeError error) {
-                System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-                List<Symbol> trace = runtime.context().trace();
-                if (trace != null) {
-                    for (Symbol symbol : trace) {
-                        System.out.println("  " + symbol.print());
-                    }
-                }
+                printError(runtime, error);
                 System.exit(1);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -174,6 +153,42 @@ public class Main {
         printCommands(System.err);
 
         System.exit(1);
+    }
+
+    private static void initCore(Runtime runtime) {
+        Module internal = runtime.context().modules().resolve("internal");
+        Module core = new Module("core");
+        core.include(internal);
+        core.defineType("bool", null);
+        core.defineType("char", null);
+        core.defineType("i64", null);
+        core.defineType("list", List::new);
+        core.defineType("stack", Stack::new);
+        core.defineType("string", null);
+        core.defineType("type", null);
+        runtime.load(core, Runtime.class.getResourceAsStream("/core.rejoice"));
+        runtime.load(Runtime.class.getResourceAsStream("/list.rejoice"));
+        runtime.load(Runtime.class.getResourceAsStream("/stack.rejoice"));
+    }
+
+    private static void initUser(Runtime runtime) {
+        Module user = new Module("user");
+        user.require(runtime.context().modules().resolve("core"));
+        runtime.context().modules().add(user);
+        runtime.context().activate(user);
+    }
+
+    private static void printError(Runtime runtime, RuntimeError error) {
+        System.out.println(error.getStage() + " ERROR: " + error.getMessage());
+        for (Trace.Call call : runtime.context().trace().calls()) {
+            System.out.print("\t" + call.fullyQualifiedName());
+            for (String include : call.includes()) {
+                System.out.print(" < " + include);
+            }
+            System.out.println();
+        }
+        System.out.println("\t" + runtime.context().active().name());
+        runtime.context().trace().clear();
     }
 
     private static void printCommands(PrintStream stream) {

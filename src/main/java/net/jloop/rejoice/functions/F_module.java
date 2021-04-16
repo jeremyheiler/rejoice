@@ -12,11 +12,13 @@ public final class F_module implements Function {
     @Override
     public Stack invoke(Stack stack, Context context) {
         Str name = stack.consume(Str.class);
-        if (context.has(name.get())) {
-            throw new RuntimeError("INTERPRET","Module " + name.get() + " already exists");
+        if (context.modules().exists(name.get())) {
+            throw new RuntimeError("INTERPRET","Module '" + name.get() + "' already exists");
         }
-        Module module = new Module(name.get()).require(context.get("core"));
-        context.load(module);
+        Module module = new Module(name.get());
+        module.require(context.modules().resolve("core"));
+        context.modules().add(module);
+        context.activate(module);
         return stack;
     }
 }

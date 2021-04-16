@@ -16,8 +16,12 @@ public class F_list implements Function {
         List list = new List();
         for (long i = 0; i < n; ++i) {
             Value value = stack.consume(Value.class);
-            if (value instanceof Symbol && ((Symbol) value).isQuoted()) {
-                ((Symbol) value).unquote();
+            if (value instanceof Symbol) {
+                Symbol symbol = (Symbol) value;
+                if (symbol.isQuoted()) {
+                    symbol.unquote();
+                }
+                value = symbol.builder().withPath(context.active().name()).build();
             }
             list.cons(value);
         }
