@@ -86,11 +86,9 @@ define dip :
 # Conditions
 
 define if:
-  /*doc
-    "Expects three lists: p, t, and f (where f is the top of th stack).
-    Evaluates p (the predicate) against a copy of the stack with out p, t, or f.
-    If it yields true, then t is evaluated, otherwise f is evaluated."
-  */
+  # "Expects three lists: p, t, and f (where f is the top of th stack).
+  # Evaluates p (the predicate) against a copy of the stack with out p, t, or f.
+  # If it yields true, then t is evaluated, otherwise f is evaluated."
   %if;
 
 define if*:

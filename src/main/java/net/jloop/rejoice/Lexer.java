@@ -79,12 +79,12 @@ public final class Lexer {
                 while (true) {
                     int d = reader.read();
                     if (d == EOF || d == '\n') {
-                        return Lexer.Token.of(Lexer.Token.Type.LineComment, buffer.toString(), true);
+                        return Lexer.Token.of(Lexer.Token.Type.Comment, buffer.toString(), true);
                     }
                     if (d == '\r') {
                         int e;
                         if ((e = reader.read()) == EOF || e == '\n') {
-                            return Lexer.Token.of(Lexer.Token.Type.LineComment, buffer.toString(), true);
+                            return Lexer.Token.of(Lexer.Token.Type.Comment, buffer.toString(), true);
                         }
                         reader.unread(e);
                     }
@@ -222,9 +222,9 @@ public final class Lexer {
         public enum Type {
             Bool,
             Character,
+            Comment,
             EOF,
             Int,
-            LineComment,
             Str,
             Symbol,
             Type

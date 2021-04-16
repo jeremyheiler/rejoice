@@ -50,7 +50,6 @@ import net.jloop.rejoice.functions.Oopcase;
 import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.macros.M_List;
-import net.jloop.rejoice.macros.M_MultilineComment;
 import net.jloop.rejoice.macros.M_Stack;
 
 import java.io.InputStream;
@@ -165,7 +164,6 @@ public class Runtime {
         macros.put("(", new M_List());
         macros.put("[", new M_Stack());
         macros.put("define", new M_Define());
-        macros.put("/*", new M_MultilineComment());
 
         // Configure lexer
         Lexer lexer = new Lexer();

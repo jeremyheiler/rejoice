@@ -34,11 +34,11 @@ public final class Parser {
             case Character -> {
                 return Char.of(token.lexeme());
             }
+            case Comment -> {
+                return null;
+            }
             case Int -> {
                 return new Int64(Long.parseLong(token.lexeme()));
-            }
-            case LineComment -> {
-                return null;
             }
             case Str -> {
                 return new Str(token.lexeme());
