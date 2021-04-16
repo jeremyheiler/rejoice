@@ -113,6 +113,7 @@ public final class Lexer {
             } else if (c == '\'') {
                 // TODO: Accept multiple leading single quotes
                 StringBuilder buffer = new StringBuilder().append("'");
+                boolean doneQuoting = false;
                 while (true) {
                     int d = reader.read();
                     if (d == EOF) {
@@ -120,7 +121,16 @@ public final class Lexer {
                     } else if (contains(whitespace, d) || contains(adjacent, d)) {
                         reader.unread(d);
                         break;
+                    } else if (d == '\'') {
+                        if (doneQuoting) {
+                            throw new RuntimeError("LEX", "The quote character cannot be within a symbol");
+                        } else {
+                            buffer.append((char) d);
+                        }
                     } else if (contains(allow, d)) {
+                        if (!doneQuoting) {
+                            doneQuoting = true;
+                        }
                         buffer.append((char) d);
                     } else {
                         throw new RuntimeError("LEX", "Invalid symbol character: '" + (char) d + "'");
@@ -129,7 +139,7 @@ public final class Lexer {
                 if (buffer.length() == 1) {
                     throw new RuntimeError("LEX", "Unexpected end of symbol");
                 } else {
-                    return Token.of(Token.Type.Symbol, buffer.toString());
+                    return Token.of(Token.Type.Quote, buffer.toString());
                 }
             } else if (c == '^') {
                 StringBuilder buffer = new StringBuilder().append("^");
@@ -225,6 +235,7 @@ public final class Lexer {
             Comment,
             EOF,
             Int,
+            Quote,
             Str,
             Symbol,
             Type
