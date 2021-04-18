@@ -11,8 +11,8 @@ public final class F_define_E_ implements Function {
     @Override
     public Stack invoke(Stack stack, Context context) {
         Quote quote = stack.consume(Quote.class);
-        Function function = new Function.Interpreted(stack.consume(List.class));
-        context.active().define(quote.name(), function);
+        List body = stack.consume(List.class);
+        context.active().define(quote.name(), body);
         return stack;
     }
 }

@@ -15,9 +15,9 @@ public final class Capp2 implements Function {
     public Stack invoke(Stack stack, Context context) {
         List p = stack.consume(List.class);
         Atom y = stack.consume(Atom.class);
-        Atom ry = context.interpreter().interpret(new Stack().push(y), context, p).consume(Atom.class);
+        Atom ry = p.invoke(new Stack().push(y), context).consume(Atom.class);
         Atom x = stack.consume(Atom.class);
-        Atom rx = context.interpreter().interpret(new Stack().push(x), context, p).consume(Atom.class);
+        Atom rx = p.invoke(new Stack().push(x), context).consume(Atom.class);
         return stack.push(rx).push(ry);
     }
 }

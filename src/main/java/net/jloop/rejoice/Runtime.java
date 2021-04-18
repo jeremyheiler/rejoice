@@ -90,7 +90,7 @@ public class Runtime {
     }
 
     public void eval(Input input) {
-        stack = interpreter.interpret(stack, context, rewriter.rewrite(parser.parse(lexer.lex(input)).iterator()));
+        stack = interpreter.reduce(stack, rewriter.map(parser.map(lexer.iterate(input))));
     }
 
     public void eval(Function function) {
@@ -106,8 +106,7 @@ public class Runtime {
     }
 
     public static Runtime create() {
-
-        // Functions
+        // Define internal module
         Module internal = new Module("internal");
         internal.define("/", new O_Divide());
         internal.define("-", new O_Minus());
@@ -157,29 +156,20 @@ public class Runtime {
         internal.define("%write", new F_write());
         internal.define("x", new Cx());
         internal.define("y", new Cy());
-
-        // Macros
-        // TODO: Scope macros to modules
+        // Define global macros
         Map<String, Macro> macros = new HashMap<>();
         macros.put("(", new M_List());
         macros.put("[", new M_Stack());
         macros.put("define", new M_Define());
-
-        // Configure lexer
-        Lexer lexer = new Lexer();
-
-        // Configure parser
-        Parser parser = new Parser();
-
-        // Configure rewriter
-        Rewriter rewriter = new Rewriter(macros);
-
-        // Configure interpreter
-        Interpreter interpreter = new Interpreter();
-
-        // Initialize
-        Context context = new Context(interpreter);
+        // Setup context
+        Context context = new Context(macros);
         context.modules().add(internal);
+        // Configure phases
+        Lexer lexer = new Lexer();
+        Parser parser = new Parser();
+        Rewriter rewriter = new Rewriter(context);
+        Interpreter interpreter = new Interpreter(context);
+        // Initialize runtime
         return new Runtime(interpreter, rewriter, parser, lexer, context);
     }
 }

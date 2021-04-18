@@ -1,10 +1,19 @@
 package net.jloop.rejoice;
 
+import java.util.Iterator;
+
 public final class Interpreter {
 
-    public Stack interpret(Stack stack, Context context, Iterable<? extends Value> stream) {
-        for (Value value : stream) {
-            stack = value.interpret(stack, context);
+    private final Context context;
+
+    public Interpreter(Context context) {
+        this.context = context;
+    }
+
+    public Stack reduce(Stack stack, Iterator<Atom> input) {
+        while (input.hasNext()) {
+            Atom next = input.next();
+            stack = next.interpret(stack, context);
         }
         return stack;
     }

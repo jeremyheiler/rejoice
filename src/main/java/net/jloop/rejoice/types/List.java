@@ -1,12 +1,15 @@
 package net.jloop.rejoice.types;
 
+import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Function;
+import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.Value;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class List implements Value, Iterable<Value> {
+public class List implements Function, Value, Iterable<Value> {
 
     private final ArrayList<Value> values;
 
@@ -21,6 +24,14 @@ public class List implements Value, Iterable<Value> {
 
     public List(ArrayList<Value> values) {
         this.values = values;
+    }
+
+    @Override
+    public Stack invoke(Stack stack, Context context) {
+        for (Value value : values) {
+            stack = value.interpret(stack, context);
+        }
+        return stack;
     }
 
     public List append(Value value) {

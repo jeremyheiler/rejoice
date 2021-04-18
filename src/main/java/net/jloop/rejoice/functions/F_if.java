@@ -6,8 +6,6 @@ import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.types.Bool;
 import net.jloop.rejoice.types.List;
 
-// [b] [t] [f] -> ...
-
 public final class F_if implements Function {
 
     @Override
@@ -16,10 +14,10 @@ public final class F_if implements Function {
         List t = stack.consume(List.class);
         List b = stack.consume(List.class);
         Stack copy = stack.copy();
-        if (context.interpreter().interpret(copy, context, b).consume(Bool.class) == Bool.True) {
-            return context.interpreter().interpret(stack, context, t);
+        if (b.invoke(copy, context).consume(Bool.class) == Bool.True) {
+            return t.interpret(stack, context);
         } else {
-            return context.interpreter().interpret(stack, context, f);
+            return f.interpret(stack, context);
         }
     }
 }

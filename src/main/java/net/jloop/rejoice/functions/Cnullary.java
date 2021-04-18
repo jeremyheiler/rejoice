@@ -13,7 +13,7 @@ public final class Cnullary implements Function {
     @Override
     public Stack invoke(Stack stack, Context context) {
         List p = stack.consume(List.class);
-        Atom r = context.interpreter().interpret(stack.copy(), context, p).consume(Atom.class);
+        Atom r = p.invoke(stack.copy(), context).consume(Atom.class);
         return stack.push(r);
     }
 }

@@ -2,7 +2,6 @@ package net.jloop.rejoice;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public interface Atom extends Value {
 
@@ -16,7 +15,7 @@ public interface Atom extends Value {
         return this;
     }
 
-    default Iterator<Atom> rewrite(Map<String, Macro> macros, List<Atom> output, Iterator<Atom> input) {
+    default Iterator<Atom> rewrite(Context context, List<Atom> output, Iterator<Atom> input) {
         output.add(this);
         return input;
     }

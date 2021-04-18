@@ -2,18 +2,19 @@ package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.Symbol;
 
+import java.util.Map;
 import java.util.Optional;
 
 public final class Context {
 
-    private final Interpreter interpreter;
+    private final Map<String, Macro> macros;
     private final Modules modules = new Modules();
     private final Trace trace = new Trace();
 
     private Module active;
 
-    public Context(Interpreter interpreter) {
-        this.interpreter = interpreter;
+    public Context(Map<String, Macro> macros) {
+        this.macros = macros;
     }
 
     public Module.Resolved resolve(Symbol symbol) {
@@ -35,8 +36,8 @@ public final class Context {
         }
     }
 
-    public Interpreter interpreter() {
-        return interpreter;
+    public Map<String, Macro> macros() {
+        return macros;
     }
 
     public Modules modules() {

@@ -14,10 +14,8 @@ public final class Ccleave implements Function {
     public Stack invoke(Stack stack, Context context) {
         List q = stack.consume(List.class);
         List p = stack.consume(List.class);
-        Stack copyP = stack.copy();
-        Stack copyQ = stack.copy();
-        Atom rp = context.interpreter().interpret(copyP, context, p).consume(Atom.class);
-        Atom rq = context.interpreter().interpret(copyQ, context, q).consume(Atom.class);
+        Atom rp = p.invoke(stack.copy(), context).consume(Atom.class);
+        Atom rq = q.invoke(stack.copy(), context).consume(Atom.class);
         return stack.pop().push(rp).push(rq);
     }
 }

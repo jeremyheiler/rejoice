@@ -16,6 +16,6 @@ public final class Cdipdd implements Function {
         Atom z = stack.consume(Atom.class);
         Atom y = stack.consume(Atom.class);
         Atom x = stack.consume(Atom.class);
-        return context.interpreter().interpret(stack, context, p).push(x).push(y).push(z);
+        return p.invoke(stack, context).push(x).push(y).push(z);
     }
 }

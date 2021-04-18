@@ -2,7 +2,8 @@ package net.jloop.rejoice;
 
 import java.io.IOException;
 import java.io.PushbackReader;
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 // TODO(jeremy): Maybe move some of the logic up one level into the parser.
 // For example, if the lexer returns a NewLine token, then the parser could return a symbol
@@ -20,17 +21,34 @@ public final class Lexer {
     private static final String adjacent = ".:;()[]{}";
     private static final String allow = "!$%&*+,-/0123456789<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz|~";
 
-    private boolean contains(String s, int c) {
-        return s.indexOf(c) != -1;
+    public Iterator<Token> iterate(Input input) {
+        return new Iterator<>() {
+            private Token previous;
+            private Token next;
+
+            @Override
+            public boolean hasNext() {
+                next = previous = Lexer.this.next(input, previous);
+                return next.type != Token.Type.EOF;
+            }
+
+            @Override
+            public Token next() {
+                if (next == null) {
+                    next = Lexer.this.next(input, previous);
+                    if (next.type != Token.Type.EOF) {
+                        throw new NoSuchElementException();
+                    }
+                }
+                Token n = next;
+                next = null;
+                return n;
+            }
+        };
     }
 
-    public Iterable<Token> lex(Input input) {
-        ArrayList<Token> tokens = new ArrayList<>();
-        Token token = null;
-        while ((token = next(input, token)).type != Token.Type.EOF) {
-            tokens.add(token);
-        }
-        return tokens;
+    private boolean contains(String s, int c) {
+        return s.indexOf(c) != -1;
     }
 
     private Token next(Input input, Token previous) {

@@ -13,7 +13,7 @@ define include:
 define require:
   #eff "^string --"
   #doc "Allows the module's functions to be accessed without the module's path."
-  %include;
+  %require;
 
 define new:
   #eff ^a -- a

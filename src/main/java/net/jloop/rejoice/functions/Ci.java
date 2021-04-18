@@ -12,6 +12,6 @@ public final class Ci implements Function {
     @Override
     public Stack invoke(Stack stack, Context context) {
         List p = stack.consume(List.class);
-        return context.interpreter().interpret(stack, context, p);
+        return p.interpret(stack, context);
     }
 }

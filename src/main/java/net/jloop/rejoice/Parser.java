@@ -2,29 +2,31 @@ package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.Bool;
 import net.jloop.rejoice.types.Char;
+import net.jloop.rejoice.types.Comment;
 import net.jloop.rejoice.types.Int64;
 import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Str;
 import net.jloop.rejoice.types.Symbol;
 import net.jloop.rejoice.types.Type;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 
 public final class Parser {
 
-    public Iterable<Atom> parse(Iterable<Lexer.Token> tokens) {
-        ArrayList<Atom> atoms = new ArrayList<>();
-        for (Lexer.Token token : tokens) {
-            if (token.type() == Lexer.Token.Type.EOF) {
-                break;
-            } else {
-                Atom atom = translate(token);
-                if (atom != null) {
-                    atoms.add(atom);
-                }
+    public Iterator<Atom> map(Iterator<Lexer.Token> input) {
+        return new Iterator<>() {
+
+            @Override
+            public boolean hasNext() {
+                return input.hasNext();
             }
-        }
-        return atoms;
+
+            @Override
+            public Atom next() {
+                Lexer.Token next = input.next();
+                return translate(next);
+            }
+        };
     }
 
     private Atom translate(Lexer.Token token) {
@@ -36,16 +38,16 @@ public final class Parser {
                 return Char.of(token.lexeme());
             }
             case Comment -> {
-                return null;
+                return new Comment(token.lexeme());
             }
             case Int -> {
                 return new Int64(Long.parseLong(token.lexeme()));
             }
             case Quote -> {
-                int symbolStart = token.lexeme().lastIndexOf('\'') + 1;
-                String name = token.lexeme().substring(symbolStart);
+                int index = token.lexeme().lastIndexOf('\'') + 1;
+                String name = token.lexeme().substring(index);
                 Quotable quotable = Symbol.of(name);
-                for (int i = 0; i < symbolStart; i++) {
+                for (int i = 0; i < index; i++) {
                     quotable = new Quote(quotable);
                 }
                 return quotable;
