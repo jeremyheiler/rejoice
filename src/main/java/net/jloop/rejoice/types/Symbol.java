@@ -77,7 +77,7 @@ public final class Symbol implements Atom, Quotable {
     }
 
     @Override
-    public Stack interpret(Stack stack, Context context) {
+    public Stack interpret(Context context, Stack stack) {
         Module.Resolved resolved = context.resolve(this);
         context.trace().add(resolved.toCall());
         stack = resolved.function().invoke(context, stack);

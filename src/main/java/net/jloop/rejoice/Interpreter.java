@@ -15,7 +15,7 @@ public final class Interpreter {
     public Stack reduce(Stack stack, Iterator<Atom> input) {
         while (input.hasNext()) {
             Atom next = input.next();
-            stack = next.interpret(stack, context);
+            stack = next.interpret(context, stack);
         }
         return stack;
     }

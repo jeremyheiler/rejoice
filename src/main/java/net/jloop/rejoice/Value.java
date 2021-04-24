@@ -4,7 +4,7 @@ import net.jloop.rejoice.types.Stack;
 
 public interface Value {
 
-    default Stack interpret(Stack stack, Context context) {
+    default Stack interpret(Context context, Stack stack) {
         return stack.push(this);
     }
 

@@ -15,9 +15,9 @@ public final class F_if implements Function {
         List b = stack.consume(List.class);
         Stack copy = stack.copy();
         if (b.invoke(context, copy).consume(Bool.class) == Bool.True) {
-            return t.interpret(stack, context);
+            return t.interpret(context, stack);
         } else {
-            return f.interpret(stack, context);
+            return f.interpret(context, stack);
         }
     }
 }
