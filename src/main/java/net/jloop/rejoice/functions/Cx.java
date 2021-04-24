@@ -10,7 +10,7 @@ import net.jloop.rejoice.types.List;
 public final class Cx implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
-        return stack.peek(List.class).invoke(stack, context);
+    public Stack invoke(Context context, Stack stack) {
+        return stack.peek(List.class).invoke(context, stack);
     }
 }

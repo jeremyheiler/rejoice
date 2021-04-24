@@ -94,7 +94,7 @@ public class Runtime {
     }
 
     public void eval(Function function) {
-        stack = function.invoke(stack, context);
+        stack = function.invoke(context, stack);
     }
 
     public Context context() {

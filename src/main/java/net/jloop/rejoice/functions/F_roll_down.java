@@ -10,7 +10,7 @@ import net.jloop.rejoice.Value;
 public final class F_roll_down implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         Value z = stack.consume();
         Value y = stack.consume();
         Value x = stack.consume();

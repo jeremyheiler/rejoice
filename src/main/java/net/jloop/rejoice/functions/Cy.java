@@ -7,7 +7,7 @@ import net.jloop.rejoice.Stack;
 public final class Cy implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         throw new UnsupportedOperationException("y");
     }
 }

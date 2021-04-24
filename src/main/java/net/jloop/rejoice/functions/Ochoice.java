@@ -12,7 +12,7 @@ import net.jloop.rejoice.types.Bool;
 public final class Ochoice implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         Atom f = stack.consume(Atom.class);
         Atom t = stack.consume(Atom.class);
         Bool b = stack.consume(Bool.class);

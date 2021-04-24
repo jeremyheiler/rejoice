@@ -10,11 +10,11 @@ import net.jloop.rejoice.types.List;
 public final class Cb implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         List q = stack.consume(List.class);
         List p = stack.consume(List.class);
-        stack = p.invoke(stack, context);
-        stack = q.invoke(stack, context);
+        stack = p.invoke(context, stack);
+        stack = q.invoke(context, stack);
         return stack;
     }
 }

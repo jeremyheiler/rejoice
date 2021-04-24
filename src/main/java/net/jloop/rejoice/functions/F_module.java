@@ -10,7 +10,7 @@ import net.jloop.rejoice.types.Str;
 public final class F_module implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         Str name = stack.consume(Str.class);
         if (context.modules().exists(name.get())) {
             throw new RuntimeError("INTERPRET","Module '" + name.get() + "' already exists");

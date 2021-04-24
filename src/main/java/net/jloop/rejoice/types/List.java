@@ -27,7 +27,7 @@ public class List implements Function, Value, Iterable<Value> {
     }
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         for (Value value : values) {
             stack = value.interpret(stack, context);
         }

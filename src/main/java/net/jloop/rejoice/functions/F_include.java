@@ -8,7 +8,7 @@ import net.jloop.rejoice.types.Str;
 public final class F_include implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         Str name = stack.consume(Str.class);
         context.active().include(context.modules().resolve(name.get()));
         return stack;

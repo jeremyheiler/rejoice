@@ -10,7 +10,7 @@ import net.jloop.rejoice.types.List;
 public class F_list implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         long n = stack.consume(Int64.class).get();
         List list = new List();
         for (long i = 0; i < n; ++i) {

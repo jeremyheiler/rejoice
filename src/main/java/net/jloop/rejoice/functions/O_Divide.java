@@ -10,7 +10,7 @@ import net.jloop.rejoice.types.Int64;
 public final class O_Divide implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         Int64 j = stack.consume(Int64.class);
         Int64 i = stack.consume(Int64.class);
         Int64 k = i.divide(j);

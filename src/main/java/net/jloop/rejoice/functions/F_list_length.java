@@ -9,7 +9,7 @@ import net.jloop.rejoice.types.List;
 public class F_list_length implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         List list = stack.peek(List.class);
         return stack.push(new Int64(list.length()));
     }

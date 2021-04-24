@@ -8,7 +8,7 @@ import net.jloop.rejoice.Value;
 public final class F_print implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         Value value = stack.peek();
         System.out.print(value.print());
         return stack;

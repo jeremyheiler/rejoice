@@ -9,7 +9,7 @@ import net.jloop.rejoice.types.Int64;
 public class F_stack implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         long n = stack.consume(Int64.class).get();
         Stack s = new Stack();
         for (long i = 0; i < n; ++i) {

@@ -9,12 +9,12 @@ import net.jloop.rejoice.types.List;
 public final class F_if implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         List f = stack.consume(List.class);
         List t = stack.consume(List.class);
         List b = stack.consume(List.class);
         Stack copy = stack.copy();
-        if (b.invoke(copy, context).consume(Bool.class) == Bool.True) {
+        if (b.invoke(context, copy).consume(Bool.class) == Bool.True) {
             return t.interpret(stack, context);
         } else {
             return f.interpret(stack, context);

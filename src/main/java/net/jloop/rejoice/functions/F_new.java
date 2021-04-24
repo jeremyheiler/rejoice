@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 public final class F_new implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         Type type = stack.consume(Type.class);
         Supplier<? extends Value> constructor = context.active().lookupTypeConstructor(type.name());
         return stack.push(constructor.get());

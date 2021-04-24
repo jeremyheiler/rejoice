@@ -11,10 +11,10 @@ import net.jloop.rejoice.types.List;
 public final class Cdipd implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         List p = stack.consume(List.class);
         Atom y = stack.consume(Atom.class);
         Atom x = stack.consume(Atom.class);
-        return p.invoke(stack, context).push(x).push(y);
+        return p.invoke(context, stack).push(x).push(y);
     }
 }

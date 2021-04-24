@@ -15,7 +15,7 @@ import net.jloop.rejoice.types.List;
 public final class Oopcase implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         List list = stack.consume(List.class);
         Atom atom = stack.consume(Atom.class);
         if (list.length() == 0) {

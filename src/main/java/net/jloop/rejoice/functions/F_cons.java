@@ -8,7 +8,7 @@ import net.jloop.rejoice.types.List;
 public final class F_cons implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         return stack.push(stack.consume(List.class).cons(stack.consume()));
     }
 }

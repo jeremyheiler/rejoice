@@ -10,7 +10,7 @@ import net.jloop.rejoice.types.Int64;
 public final class Osign implements Function {
 
     @Override
-    public Stack invoke(Stack stack, Context context) {
+    public Stack invoke(Context context, Stack stack) {
         Int64 n = stack.consume(Int64.class);
         Int64 m = n.signum();
         return stack.push(m);
