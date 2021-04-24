@@ -198,6 +198,8 @@ public final class Lexer {
                     return Token.of(Token.Type.Int, lexeme);
                 } else if (lexeme.equals("true") || lexeme.equals("false")) {
                     return Token.of(Token.Type.Bool, lexeme);
+                } else if (lexeme.startsWith(":") && !lexeme.equals(":")) {
+                    return Token.of(Token.Type.Keyword, lexeme);
                 } else {
                     return Token.of(Token.Type.Symbol, lexeme);
                 }
@@ -253,6 +255,7 @@ public final class Lexer {
             Comment,
             EOF,
             Int,
+            Keyword,
             Quote,
             Str,
             Symbol,
