@@ -18,8 +18,8 @@ public final class Lexer {
     public static final int EOF = -1;
 
     private static final String whitespace = " \t\r\n";
-    private static final String adjacent = ".:;()[]{}";
-    private static final String allow = "!$%&*+,-/0123456789<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz|~";
+    private static final String adjacent = ".;()[]{}";
+    private static final String allow = "!$%&*+,-/0123456789<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz|~:";
 
     public Iterator<Token> iterate(Input input) {
         return new Iterator<>() {

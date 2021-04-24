@@ -2,17 +2,17 @@
 
 "internal" require
 
-define cons:
+define cons
   #eff "x ^list -- ^list"
   #doc "Adds x to the front of the list."
-  %list-cons;
+  : %list-cons ;
 
-define length:
+define length
   #eff "^list -- ^list ^i64"
   #doc "Pushes the length of the list onto the stack."
-  %list-length;
+  : %list-length ;
 
-define empty?:
+define empty?
   #eff "^list -- ^list ^bool"
   #doc "Pushes true onto the stack if the list is empty, otherwise pushes false."
-  length zero?;
+  : length zero? ;

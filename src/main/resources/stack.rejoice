@@ -2,42 +2,42 @@
 
 "internal" require
 
-define apply:
+define apply
   #eff "^list ^stack -- ^stack
   #doc "Expects the top element to be a stack. Evaluates the List with the stack, instead of the main stack."
-  %stack-apply;
+  : %stack-apply ;
 
-define demote:
+define demote
   #eff "-- ^stack"
   #doc "Pushes the existing stack onto a new main stack."
-  %stack-demote;
+  : %stack-demote ;
 
-define get:
+define get
   #eff "^stack ^i64 -- ^stack x"
   #doc "Pushes the nth element from the value stack.
-  %stack-get;
+  : %stack-get ;
 
-define peek:
+define peek
   #eff "^stack -- ^stack x"
   #doc "Expects the top element to be a stack. Pushes a copy of top element of that stack onto the main stack."
-  %stack-peek;
+  : %stack-peek ;
 
-define pop:
+define pop
   #eff "^stack -- ^stack x"
   #doc "Expects the top element to be a stack. Pops the top element off that stack, and pushes it onto the main stack."
-  %stack-pop;
+  : %stack-pop ;
 
-define promote:
+define promote
   #eff "^stack --"
   #doc "Expects the top element to be a stack. Makes that stack the new main stack."
-  %stack-promote;
+  : %stack-promote ;
 
-define push:
+define push
   #eff "^tack x -- ^stack"
   #doc "Pushes x onto the stack."
-  %stack-push;
+  : %stack-push ;
 
-define take:
+define take
   #eff "^stack ^i64 -- ^stack x"
   #doc "Removes the nth element from the value stack, and pushes it onto the main stack.
-  %stack-get;
+  : %stack-get ;

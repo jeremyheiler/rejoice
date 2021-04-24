@@ -5,117 +5,119 @@
 '%list 1 %list 'list define!
 '%stack 1 %list 'stack define!
 
-define include:
+define include
   #eff "^string --"
   #doc "Allows the module's functions to be accessed without the module's path, and exports the module's accessible functions."
-  %include;
+  : %include ;
 
-define require:
+define require
   #eff "^string --"
   #doc "Allows the module's functions to be accessed without the module's path."
-  %require;
+  : %require ;
 
-define new:
+define new
   #eff ^a -- a
   #doc Excepts a type on the stack, and creates a instance of it.
-  %new;
+  : %new ;
 
 ## Stack
 
-define swap:
+define swap
   #eff "x y -- y x"
   #doc "Swaps the top to elements of the stack."
-  %stack-demote 2 %stack-take %stack-push %stack-promote;
+  : %stack-demote 2 %stack-take %stack-push %stack-promote ;
 
-define dup:
+define dup
   #eff "x -- x x"
   #doc "Pushes a copy of x onto the stack."
-  %stack-demote %stack-peek swap %stack-push %stack-promote;
+  : %stack-demote %stack-peek swap %stack-push %stack-promote ;
 
-define dupd:
+define dupd
   #eff "x y -- x x y"
   #doc "Pushes a copy of x onto the stack, keeping y on the top."
-  swap dup %roll-down;
+  : swap dup %roll-down ;
 
-define pop:
+define pop
   #eff "x --"
   #doc "Removes the top element of the stack."
-  %pop;
+  : %pop ;
 
-define pop2:
+define pop2
   #eff "x y --"
   #doc "Removes the top two elements of the stack."
-  %pop %pop;
+  : %pop %pop ;
 
-define pop3:
+define pop3
   #eff "x y z --"
   #doc "Removes the top three elements of the stack."
-  %pop %pop %pop;
+  : %pop %pop %pop ;
 
 # TODO: pop-n
 
-define popd:
+define popd
   #eff "x y -- y"
   #doc "Removes x from the stack while keeping y."
-  swap %pop;
+  : swap %pop ;
 
-define roll-down:
+define roll-down
   #eff "x y z -- y z x"
   #doc ""
-  %roll-down;
+  : %roll-down ;
 
-define roll-up:
+define roll-up
   #eff "x y z -- z x y"
   #doc ""
-  %roll-up;
+  : %roll-up ;
 
-define swapd:
+define swapd
   #eff "x y z -- y x z"
   #doc ""
-  %stack-demote
-  %stack-pop swap (swap) swap %stack-apply swap %stack-push
-  %stack-promote;
+  : %stack-demote
+    %stack-pop swap (swap) swap %stack-apply swap %stack-push
+    %stack-promote
+  ;
 
-define dip :
+define dip
   #eff "x ^list -- x"
   #doc "Evaluates List against the stack with out x, pushing x back onto the stack after.
-  %stack-demote
-  %stack-pop swap %stack-pop %roll-up %stack-apply swap %stack-push
-  %stack-promote;
+  : %stack-demote
+    %stack-pop swap %stack-pop %roll-up %stack-apply swap %stack-push
+    %stack-promote
+  ;
 
 # Conditions
 
-define if:
+define if
   # "Expects three lists: p, t, and f (where f is the top of th stack).
   # Evaluates p (the predicate) against a copy of the stack with out p, t, or f.
   # If it yields true, then t is evaluated, otherwise f is evaluated."
-  %if;
+  : %if ;
 
-define if*:
+define if*
   #doc "Like if, except instead of a predicate list, expects a boolean."
-  %roll-down 1 %list %roll-up %if;
+  : %roll-down 1 %list %roll-up %if ;
 
 # Printing
 
-define print:
+define print
   #doc "Prints the top value of the stack such that it could be parsed again."
-  %print;
+  : %print ;
 
-define print-line:
+define print-line
   #doc "Prints the top value of the stack such that it could be parsed again, followed by a new line."
-  %print \newline %write pop;
+  : %print \newline %write pop ;
 
-define write:
+define write
   #doc "Prints the value represented by the the top value of the stack, i.e. '\x' prints 'x' and '"foo"" prints 'foo'."
-  %write;
+  : %write ;
 
-define write-line:
+define write-line
   #doc "Prints the value represented by the the top value of the stack, i.e. '\x' prints 'x' and '"foo"" prints 'foo', followed by a new line."
-  %write \newline %write pop;
+  : %write \newline %write pop ;
 
-define !:
+define !
   #doc "Prints the main stack."
-  %stack-demote write-line %stack-promote;
+  : %stack-demote write-line %stack-promote ;
 
 # booleans
 define not : (false) (true) if* ;
