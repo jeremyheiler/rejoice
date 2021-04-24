@@ -2,7 +2,6 @@ package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Function;
-import net.jloop.rejoice.Stack;
 import net.jloop.rejoice.Value;
 
 import java.util.ArrayList;

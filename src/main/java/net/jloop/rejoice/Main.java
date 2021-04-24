@@ -1,6 +1,7 @@
 package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.List;
+import net.jloop.rejoice.types.Stack;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

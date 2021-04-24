@@ -51,6 +51,7 @@ import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_Stack;
+import net.jloop.rejoice.types.Stack;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

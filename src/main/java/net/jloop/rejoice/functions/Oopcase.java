@@ -4,7 +4,7 @@ import net.jloop.rejoice.Atom;
 import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.RuntimeError;
-import net.jloop.rejoice.Stack;
+import net.jloop.rejoice.types.Stack;
 import net.jloop.rejoice.Value;
 import net.jloop.rejoice.types.List;
 

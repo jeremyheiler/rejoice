@@ -1,5 +1,7 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Stack;
+
 public interface Value {
 
     default Stack interpret(Stack stack, Context context) {

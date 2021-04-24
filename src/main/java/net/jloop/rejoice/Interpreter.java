@@ -1,5 +1,7 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Stack;
+
 import java.util.Iterator;
 
 public final class Interpreter {

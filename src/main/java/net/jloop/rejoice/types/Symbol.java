@@ -5,7 +5,6 @@ import net.jloop.rejoice.ConcatIterator;
 import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Module;
 import net.jloop.rejoice.Quotable;
-import net.jloop.rejoice.Stack;
 
 import java.util.Iterator;
 import java.util.List;
