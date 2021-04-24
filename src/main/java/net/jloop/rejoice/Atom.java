@@ -19,4 +19,8 @@ public interface Atom extends Value {
         output.add(this);
         return input;
     }
+
+    default boolean isIgnorable() {
+        return false;
+    }
 }

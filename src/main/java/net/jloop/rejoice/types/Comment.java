@@ -23,4 +23,9 @@ public final class Comment implements Atom {
     public String print() {
         return "#" + value;
     }
+
+    @Override
+    public boolean isIgnorable() {
+        return true;
+    }
 }
