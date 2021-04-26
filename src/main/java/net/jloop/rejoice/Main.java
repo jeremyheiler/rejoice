@@ -68,10 +68,10 @@ public class Main {
                 initCore(runtime);
                 initUser(runtime);
                 if (load != null) {
-                    runtime.eval(new Input(new FileReader(load)));
+                    runtime.eval(new FileReader(load));
                 }
                 if (eval != null) {
-                    runtime.eval(new Input(eval));
+                    runtime.eval(eval);
                 }
                 System.exit(0);
             } catch (RuntimeError error) {
@@ -124,17 +124,17 @@ public class Main {
                 initUser(runtime);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 if (load != null) {
-                    runtime.eval(new Input(new FileReader(load)));
+                    runtime.eval(new FileReader(load));
                 }
                 if (eval != null) {
-                    runtime.eval(new Input(eval));
+                    runtime.eval(eval);
                 }
                 // TODO(jeremy) Exit when the 'quit' operator is evaluated
                 while (true) {
                     try {
                         System.out.print(runtime.context().active().name() + "> ");
                         String line = reader.readLine();
-                        runtime.eval(new Input(line));
+                        runtime.eval(line);
                     } catch (RuntimeError error) {
                         printError(runtime, error);
                     } catch (Exception ex) {

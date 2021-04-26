@@ -52,9 +52,12 @@ import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_Stack;
 import net.jloop.rejoice.types.Stack;
+import net.jloop.rejoice.util.ReaderIterator;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,7 +84,7 @@ public class Runtime {
     }
 
     public void load(InputStream source) {
-        eval(new Input(new InputStreamReader(source)));
+        eval(new InputStreamReader(source));
     }
 
     public void load(Module module, InputStream source) {
@@ -90,8 +93,12 @@ public class Runtime {
         load(source);
     }
 
-    public void eval(Input input) {
-        stack = interpreter.reduce(stack, rewriter.map(parser.map(lexer.iterate(input))));
+    public void eval(String input) {
+        eval(new StringReader(input));
+    }
+
+    public void eval(Reader input) {
+        stack = interpreter.reduce(stack, rewriter.map(parser.map(lexer.map(new ReaderIterator(input)))));
     }
 
     public void eval(Function function) {

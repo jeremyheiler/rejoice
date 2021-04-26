@@ -1,9 +1,11 @@
 package net.jloop.rejoice;
 
-import java.io.IOException;
-import java.io.PushbackReader;
+import net.jloop.rejoice.util.ReaderIterator;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 // TODO(jeremy): Maybe move some of the logic up one level into the parser.
 // For example, if the lexer returns a NewLine token, then the parser could return a symbol
@@ -14,227 +16,306 @@ import java.util.NoSuchElementException;
 // as you would see in a forth-like language. This ia precursor to "parsing words".
 
 public final class Lexer {
-
-    public static final int EOF = -1;
-
     private static final String whitespace = " \t\r\n";
     private static final String adjacent = ".;()[]{}";
     private static final String allow = "!$%&*+,-/0123456789<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz|~:";
 
-    public Iterator<Token> iterate(Input input) {
-        return new Iterator<>() {
-            private Token previous;
-            private Token next;
+    public Iterator<Token> map(ReaderIterator input) {
+        class Mapper implements Iterator<Token>, Consumer<Token> {
+            private final ArrayList<Token> tokens = new ArrayList<>();
+
+            private State state = new StartingState();
+
+            @Override
+            public void accept(Token token) {
+                tokens.add(token);
+            }
 
             @Override
             public boolean hasNext() {
-                next = previous = Lexer.this.next(input, previous);
-                return next.type != Token.Type.EOF;
+                while (true) {
+                    if (!tokens.isEmpty()) {
+                        return true;
+                    }
+                    if (state == null) {
+                        return false;
+                    }
+                    if (input.hasNext()) {
+                        state = state.consume(input.next(), this);
+                    } else {
+                        state.complete(this);
+                        state = null;
+                    }
+                }
             }
 
             @Override
             public Token next() {
-                if (next == null) {
-                    next = Lexer.this.next(input, previous);
-                    if (next.type != Token.Type.EOF) {
-                        throw new NoSuchElementException();
-                    }
+                if (hasNext()) {
+                    return tokens.remove(0);
+                } else {
+                    throw new NoSuchElementException();
                 }
-                Token n = next;
-                next = null;
-                return n;
             }
-        };
+        }
+        return new Mapper();
     }
 
-    private boolean contains(String s, int c) {
-        return s.indexOf(c) != -1;
+    private interface State {
+        State consume(char character, Consumer<Token> collector);
+
+        default void complete(Consumer<Token> collector) {
+            // Do nothing
+        }
     }
 
-    private Token next(Input input, Token previous) {
-        PushbackReader reader = input.getReader();
-        try {
-            int c;
-            boolean consumedWhitespace = false;
+    private static final class StartingState implements State {
 
-            // Consume any whitespace
-            while (true) {
-                if ((c = reader.read()) == EOF) {
-                    return Token.of(Token.Type.EOF);
-                } else if (contains(whitespace, c)) {
-                    consumedWhitespace = true;
-                } else {
-                    break;
-                }
+        @Override
+        public State consume(char character, Consumer<Token> collector) {
+            if (character == '"') {
+                return new StringState();
+            } else if (character == '\'') {
+                return new QuoteState();
+            } else if (character == ':') {
+                return new KeywordState();
+            } else if (character == '#') {
+                return new CommentState();
+            } else if (character == '\\') {
+                return new CharacterState();
+            } else if (character == '^') {
+                return new TypeState();
+            } else if (contains(adjacent, character)) {
+                collector.accept(Token.of(Token.Type.Symbol, String.valueOf(character)));
+                return new StartingState();
+            } else if (contains(allow, character)) {
+                return new SymbolOrIntegerState().consume(character, collector);
+            } else {
+                return this;
             }
+        }
+    }
 
-            // Maybe consume a token that can be adjacent to others
-            if (contains(adjacent, c)) {
-                return Token.of(Token.Type.Symbol, String.valueOf((char) c), true);
+    private static final class SymbolOrIntegerState implements State {
+        private final StringBuilder buffer = new StringBuilder();
+
+        // TODO: Match all printable characters.
+        // TODO: Symbols: Check for valid module names.
+        // TODO: Symbols: Check for multiple forward slashes.
+        // TODO: Symbols: Check for consecutive dots.
+
+        @Override
+        public State consume(char character, Consumer<Token> collector) {
+            if ((contains(whitespace, character) || contains(adjacent, character))) {
+                complete(collector);
+                return new StartingState().consume(character, collector);
+            } else if (contains(allow, character)) {
+                buffer.append(character);
+                return this;
+            } else {
+                throw new RuntimeError("LEX", "Invalid symbol character: '" + character + "'");
             }
+        }
 
-            if (!consumedWhitespace && previous != null && !previous.isAdjacent()) {
-                throw new RuntimeError("LEX", "Refusing to parse two non-adjacent tokens without any whitespace between them");
+        @Override
+        public void complete(Consumer<Token> collector) {
+            String lexeme = buffer.toString();
+            if (lexeme.matches("-?\\d+")) {
+                collector.accept(Token.of(Token.Type.Int, lexeme));
+            } else if (lexeme.equals("true") || lexeme.equals("false")) {
+                collector.accept(Token.of(Token.Type.Bool, lexeme));
+            } else {
+                collector.accept(Token.of(Token.Type.Symbol, lexeme));
             }
+        }
+    }
 
-            // Consume the next token
-            if (c == '"') {
-                // Parse a string
-                // TODO: Parse escaped characters
-                StringBuilder buffer = new StringBuilder();
-                while (true) {
-                    int d = reader.read();
-                    if (d == EOF) {
-                        throw new RuntimeError("LEX", "Unexpected EOF: Run-on string literal");
-                    }
-                    if (d == '"') {
-                        return Token.of(Token.Type.Str, buffer.toString());
-                    }
-                    buffer.append((char) d);
-                }
-            } else if (c == '#') {
-                StringBuilder buffer = new StringBuilder();
-                while (true) {
-                    int d = reader.read();
-                    if (d == EOF || d == '\n') {
-                        return Lexer.Token.of(Lexer.Token.Type.Comment, buffer.toString(), true);
-                    }
-                    if (d == '\r') {
-                        int e;
-                        if ((e = reader.read()) == EOF || e == '\n') {
-                            return Lexer.Token.of(Lexer.Token.Type.Comment, buffer.toString(), true);
-                        }
-                        reader.unread(e);
-                    }
-                    buffer.append((char) d);
-                }
-            } else if (c == '\\') {
-                StringBuilder buffer = new StringBuilder().append((char) c);
-                while (true) {
-                    int d = reader.read();
-                    if (d == EOF) {
-                        break;
-                    } else if (contains(whitespace, d)) {
-                        reader.unread(d);
-                        break;
-                    }
-                    buffer.append((char) d);
-                }
-                String lexeme = buffer.toString();
-                // TODO(jeremy): Match all printable characters in the last case, not just alphanumerics.
-                // TODO(jeremy): Be more restrictive in which single characters can be escaped?
-                if (lexeme.substring(1).matches("^(?:u[A-Fa-f0-9]{4}|[\\\\0-9]+|\\\\[a-z]|[A-Za-z]+)$")) {
-                    return Token.of(Token.Type.Character, buffer.toString());
+    private static final class StringState implements State {
+        private final StringBuilder buffer = new StringBuilder();
+
+        // TODO: Support escape characters.
+
+        @Override
+        public State consume(char character, Consumer<Token> collector) {
+            if (character == '"') {
+                collector.accept(Token.of(Token.Type.Str, buffer.toString()));
+                return new StartingState();
+            } else {
+                buffer.append(character);
+                return this;
+            }
+        }
+
+        @Override
+        public void complete(Consumer<Token> collector) {
+            throw new RuntimeError("LEX", "Run-on string");
+        }
+    }
+
+    private static final class KeywordState implements State {
+        private final StringBuilder buffer = new StringBuilder().append(':');
+
+        // TODO: Ensure this matches symbols exactly.
+
+        @Override
+        public State consume(char character, Consumer<Token> collector) {
+            if ((contains(whitespace, character) || contains(adjacent, character))) {
+                complete(collector);
+                return new StartingState().consume(character, collector);
+            } else if (character == ':') {
+                throw new RuntimeError("LEX", "The colon character cannot be within a keyword");
+            } else {
+                buffer.append(character);
+                return this;
+            }
+        }
+
+        @Override
+        public void complete(Consumer<Token> collector) {
+            String lexeme = buffer.toString();
+            if (lexeme.equals(":")) {
+                collector.accept(Token.of(Token.Type.Symbol, lexeme));
+            } else {
+                collector.accept(Token.of(Token.Type.Keyword, lexeme));
+            }
+        }
+    }
+
+    private static final class QuoteState implements State {
+        private final StringBuilder buffer = new StringBuilder().append('\'');
+
+        private boolean doneQuoting = false;
+
+        // TODO: Ensure this matches symbols exactly.
+
+        @Override
+        public State consume(char character, Consumer<Token> collector) {
+            if ((contains(whitespace, character) || contains(adjacent, character))) {
+                complete(collector);
+                return new StartingState().consume(character, collector);
+            } else if (character == '\'') {
+                if (doneQuoting) {
+                    throw new RuntimeError("LEX", "The quote character cannot be within a symbol");
                 } else {
-                    throw new RuntimeError("LEX", "Invalid character literal: " + lexeme);
-                }
-            } else if (c == '\'') {
-                // TODO: Accept multiple leading single quotes
-                StringBuilder buffer = new StringBuilder().append("'");
-                boolean doneQuoting = false;
-                while (true) {
-                    int d = reader.read();
-                    if (d == EOF) {
-                        break;
-                    } else if (contains(whitespace, d) || contains(adjacent, d)) {
-                        reader.unread(d);
-                        break;
-                    } else if (d == '\'') {
-                        if (doneQuoting) {
-                            throw new RuntimeError("LEX", "The quote character cannot be within a symbol");
-                        } else {
-                            buffer.append((char) d);
-                        }
-                    } else if (contains(allow, d)) {
-                        if (!doneQuoting) {
-                            doneQuoting = true;
-                        }
-                        buffer.append((char) d);
-                    } else {
-                        throw new RuntimeError("LEX", "Invalid symbol character: '" + (char) d + "'");
-                    }
-                }
-                if (buffer.length() == 1) {
-                    throw new RuntimeError("LEX", "Unexpected end of symbol");
-                } else {
-                    return Token.of(Token.Type.Quote, buffer.toString());
-                }
-            } else if (c == '^') {
-                StringBuilder buffer = new StringBuilder().append("^");
-                while (true) {
-                    int d = reader.read();
-                    if (d == EOF) {
-                        break;
-                    } else if (contains(whitespace, d) || contains(adjacent, d)) {
-                        reader.unread(d);
-                        break;
-                    } else if (contains(allow, d)) {
-                        buffer.append((char) d);
-                    } else {
-                        throw new RuntimeError("LEX", "Invalid type symbol character: '" + (char) d + "'");
-                    }
-                }
-                if (buffer.length() == 1) {
-                    throw new RuntimeError("LEX", "Unexpected end of type symbol");
-                } else {
-                    return Token.of(Token.Type.Type, buffer.toString());
-                }
-            } else if (contains(allow, c)) {
-                // Parse a literal
-                StringBuilder buffer = new StringBuilder().append((char) c);
-                int d;
-                while ((d = reader.read()) != EOF) {
-                    if (contains(allow, d)) {
-                        buffer.append((char) d);
-                    } else if (contains(whitespace, d) || contains(adjacent, d)){
-                        reader.unread(d);
-                        break;
-                    } else {
-                        throw new RuntimeError("LEX", "Invalid symbol character: '" + (char) d + "'");
-                    }
-                }
-                String lexeme = buffer.toString();
-                if (lexeme.matches("-?\\d+")) {
-                    return Token.of(Token.Type.Int, lexeme);
-                } else if (lexeme.equals("true") || lexeme.equals("false")) {
-                    return Token.of(Token.Type.Bool, lexeme);
-                } else if (lexeme.startsWith(":") && !lexeme.equals(":")) {
-                    return Token.of(Token.Type.Keyword, lexeme);
-                } else {
-                    return Token.of(Token.Type.Symbol, lexeme);
+                    buffer.append(character);
+                    return this;
                 }
             } else {
-                throw new RuntimeError("LEX", "Unsupported character '" + (char) c + "'");
+                doneQuoting = true;
+                buffer.append(character);
+                return this;
             }
-        } catch (IOException cause) {
-            throw new RuntimeError("LEX", cause);
         }
+
+        @Override
+        public void complete(Consumer<Token> collector) {
+            collector.accept(Token.of(Token.Type.Quote, buffer.toString()));
+        }
+    }
+
+    private static final class CommentState implements State {
+        private final StringBuilder buffer = new StringBuilder();
+
+        private boolean foundReturn = false;
+
+        @Override
+        public State consume(char character, Consumer<Token> collector) {
+            if (character == '\n') {
+                complete(collector);
+                return new StartingState();
+            } else if (character == '\r') {
+                if (foundReturn) {
+                    buffer.append('\r');
+                }
+            } else {
+                foundReturn = false;
+                buffer.append(character);
+            }
+            return this;
+        }
+
+        @Override
+        public void complete(Consumer<Token> collector) {
+            collector.accept(Lexer.Token.of(Lexer.Token.Type.Comment, buffer.toString()));
+        }
+    }
+
+    private static final class CharacterState implements State {
+        private final StringBuilder buffer = new StringBuilder().append('\\');
+
+        // TODO: Validate characters as they're being consumed.
+        // TODO: Match all printable characters when parsing literals.
+        // TODO: Maybe restrict which single characters can be escaped?
+
+        @Override
+        public State consume(char character, Consumer<Token> collector) {
+            if ((contains(whitespace, character) || contains(adjacent, character))) {
+                complete(collector);
+                return new StartingState().consume(character, collector);
+            } else {
+                buffer.append(character);
+                return this;
+            }
+        }
+
+        @Override
+        public void complete(Consumer<Token> collector) {
+            String lexeme = buffer.toString();
+            if (lexeme.substring(1).matches("^(?:u[A-Fa-f0-9]{4}|[\\\\0-9]+|\\\\[a-z]|[A-Za-z]+)$")) {
+                collector.accept(Token.of(Token.Type.Character, buffer.toString()));
+            } else {
+                throw new RuntimeError("LEX", "Invalid character literal: " + lexeme);
+            }
+        }
+    }
+
+    private static final class TypeState implements State {
+        private final StringBuilder buffer = new StringBuilder().append('^');
+
+        @Override
+        public State consume(char character, Consumer<Token> collector) {
+            if ((contains(whitespace, character) || contains(adjacent, character))) {
+                complete(collector);
+                return new StartingState().consume(character, collector);
+
+            } else {
+                buffer.append(character);
+                return this;
+            }
+        }
+
+        @Override
+        public void complete(Consumer<Token> collector) {
+            if (buffer.length() == 1) {
+                throw new RuntimeError("LEX", "Incomplete type");
+            } else {
+                collector.accept(Token.of(Token.Type.Type, buffer.toString()));
+            }
+        }
+    }
+
+    private static boolean contains(String s, int c) {
+        return s.indexOf(c) != -1;
     }
 
     public static final class Token {
 
         private final Type type;
         private final String lexeme;
-        private final boolean adjacent;
 
-        // TODO(jeremy) Store source information like line, column, and file
+        // TODO: Store source information like line, column, and file.
 
-        public Token(Type type, String lexeme, boolean adjacent) {
+        public Token(Type type, String lexeme) {
             this.type = type;
             this.lexeme = lexeme;
-            this.adjacent = adjacent;
         }
 
         public static Token of(Type type) {
-            return new Token(type, null, false);
+            return new Token(type, null);
         }
 
         public static Token of(Type type, String lexeme) {
-            return new Token(type, lexeme, false);
-        }
-
-        public static Token of(Type type, String lexeme, boolean adjacent) {
-            return new Token(type, lexeme, adjacent);
+            return new Token(type, lexeme);
         }
 
         public Type type() {
@@ -245,15 +326,10 @@ public final class Lexer {
             return lexeme;
         }
 
-        public boolean isAdjacent() {
-            return adjacent;
-        }
-
         public enum Type {
             Bool,
             Character,
             Comment,
-            EOF,
             Int,
             Keyword,
             Quote,

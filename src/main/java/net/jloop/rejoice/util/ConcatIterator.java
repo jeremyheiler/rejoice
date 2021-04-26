@@ -1,4 +1,4 @@
-package net.jloop.rejoice;
+package net.jloop.rejoice.util;
 
 import java.util.Iterator;
 

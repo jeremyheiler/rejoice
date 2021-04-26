@@ -1,7 +1,7 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.ConcatIterator;
+import net.jloop.rejoice.util.ConcatIterator;
 import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Module;
 import net.jloop.rejoice.Quotable;
