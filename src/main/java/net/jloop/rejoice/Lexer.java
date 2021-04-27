@@ -16,9 +16,8 @@ import java.util.function.Consumer;
 // as you would see in a forth-like language. This ia precursor to "parsing words".
 
 public final class Lexer {
-    private static final String whitespace = " \t\r\n";
-    private static final String special = ";()[]{}";
-    private static final String allow = "!$%&*+.,-/0123456789<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_`abcdefghijklmnopqrstuvwxyz|~";
+    private static final String whitespace = "\t\n\r ";
+    private static final String allowedInName = "!$%&()*+,-./0123456789;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]_`abcdefghijklmnopqrstuvwxyz{|}~";
 
     public Iterator<Token> map(ReaderIterator input) {
         class Mapper implements Iterator<Token>, Consumer<Token> {
@@ -85,10 +84,7 @@ public final class Lexer {
                 return new TypeState();
             } else if (character >= '0' && character <= '9') {
                 return new IntegerState().consume(character, collector);
-            } else if (contains(special, character)) {
-                collector.accept(Token.of(Token.Type.Symbol, String.valueOf(character)));
-                return new StartingState();
-            } else if (contains(allow, character)) {
+            } else if (contains(allowedInName, character)) {
                 return new SymbolState().consume(character, collector);
             } else if (contains(whitespace, character)) {
                 return this;
@@ -125,10 +121,10 @@ public final class Lexer {
 
         @Override
         public State consume(char character, Consumer<Token> collector) {
-            if ((contains(whitespace, character) || contains(special, character))) {
+            if (contains(whitespace, character)) {
                 complete(collector);
                 return new StartingState().consume(character, collector);
-            } else if (contains(allow, character)) {
+            } else if (contains(allowedInName, character)) {
                 if (first) {
                     first = false;
                     if (character == '.') {
@@ -182,7 +178,7 @@ public final class Lexer {
 
         @Override
         public State consume(char character, Consumer<Token> collector) {
-            if ((contains(whitespace, character) || contains(special, character))) {
+            if (contains(whitespace, character)) {
                 complete(collector);
                 return new StartingState().consume(character, collector);
             } else {
@@ -201,7 +197,7 @@ public final class Lexer {
 
         @Override
         public State consume(char character, Consumer<Token> collector) {
-            if ((contains(whitespace, character) || contains(special, character))) {
+            if (contains(whitespace, character)) {
                 throw new RuntimeError("LEX", "Incomplete quoted symbol");
             } else if (character == '\'') {
                 buffer.append(character);
@@ -298,7 +294,7 @@ public final class Lexer {
 
         @Override
         public State consume(char character, Consumer<Token> collector) {
-            if ((contains(whitespace, character) || contains(special, character))) {
+            if (contains(whitespace, character)) {
                 complete(collector);
                 return new StartingState().consume(character, collector);
             } else {
@@ -323,7 +319,7 @@ public final class Lexer {
 
         @Override
         public State consume(char character, Consumer<Token> collector) {
-            if ((contains(whitespace, character) || contains(special, character))) {
+            if (contains(whitespace, character)) {
                 complete(collector);
                 return new StartingState().consume(character, collector);
 

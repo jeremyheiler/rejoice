@@ -120,7 +120,7 @@ define !
   : %stack-demote write-line %stack-promote ;
 
 # booleans
-define not : (false) (true) if* ;
+define not : ( false ) ( true ) if* ;
 
 # integers
 define inc : 1 + ;
