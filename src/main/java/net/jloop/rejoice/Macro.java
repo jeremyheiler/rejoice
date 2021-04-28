@@ -17,13 +17,13 @@ public interface Macro {
             Atom next = input.next();
             if (!next.isIgnorable()) {
                 if (next.equals(terminator)) {
-                    break;
+                    return output;
                 } else {
                     input = next.rewrite(context, output, input);
                 }
             }
         }
-        return output;
+        throw new RuntimeError("MACRO", "Input stream ended before finding the terminating symbol '" + terminator.print() + "'");
     }
 
     @SuppressWarnings("unchecked")
