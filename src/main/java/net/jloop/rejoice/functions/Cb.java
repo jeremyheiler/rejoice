@@ -13,8 +13,8 @@ public final class Cb implements Function {
     public Stack invoke(Context context, Stack stack) {
         List q = stack.consume(List.class);
         List p = stack.consume(List.class);
-        stack = p.invoke(context, stack);
-        stack = q.invoke(context, stack);
+        stack = p.interpret(context, stack);
+        stack = q.interpret(context, stack);
         return stack;
     }
 }

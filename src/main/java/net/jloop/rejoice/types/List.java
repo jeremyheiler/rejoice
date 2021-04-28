@@ -1,14 +1,13 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Context;
-import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Value;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class List implements Function, Value, Iterable<Value> {
+public class List implements Value, Iterable<Value> {
 
     private final ArrayList<Value> values;
 
@@ -26,7 +25,7 @@ public class List implements Function, Value, Iterable<Value> {
     }
 
     @Override
-    public Stack invoke(Context context, Stack stack) {
+    public Stack interpret(Context context, Stack stack) {
         for (Value value : values) {
             stack = value.interpret(context, stack);
         }
@@ -72,16 +71,10 @@ public class List implements Function, Value, Iterable<Value> {
     @Override
     public String print() {
         StringBuilder buffer = new StringBuilder().append("(");
-        boolean first = true;
         for (Value value : values) {
-            if (first) {
-                first = false;
-            } else {
-                buffer.append(" ");
-            }
-            buffer.append(value.print());
+            buffer.append(" ").append(value.print());
         }
-        return buffer.append(")").toString();
+        return buffer.append(" )").toString();
     }
 
     @Override

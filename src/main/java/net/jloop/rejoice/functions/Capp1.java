@@ -15,7 +15,7 @@ public final class Capp1 implements Function {
     public Stack invoke(Context context, Stack stack) {
         List p = stack.consume(List.class);
         Atom x = stack.consume(Atom.class);
-        Atom r = p.invoke(context, new Stack().push(x)).consume(Atom.class);
+        Atom r = p.interpret(context, new Stack().push(x)).consume(Atom.class);
         return stack.push(r);
     }
 }

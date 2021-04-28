@@ -15,6 +15,6 @@ public final class Cdipd implements Function {
         List p = stack.consume(List.class);
         Atom y = stack.consume(Atom.class);
         Atom x = stack.consume(Atom.class);
-        return p.invoke(context, stack).push(x).push(y);
+        return p.interpret(context, stack).push(x).push(y);
     }
 }

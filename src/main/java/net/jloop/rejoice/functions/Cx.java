@@ -11,6 +11,6 @@ public final class Cx implements Function {
 
     @Override
     public Stack invoke(Context context, Stack stack) {
-        return stack.peek(List.class).invoke(context, stack);
+        return stack.peek(List.class).interpret(context, stack);
     }
 }

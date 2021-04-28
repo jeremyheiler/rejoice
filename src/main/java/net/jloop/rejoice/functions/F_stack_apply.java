@@ -11,6 +11,6 @@ public final class F_stack_apply implements Function {
     public Stack invoke(Context context, Stack stack) {
         Stack s = stack.consume(Stack.class);
         List p = stack.consume(List.class);
-        return stack.push(p.invoke(context, s));
+        return stack.push(p.interpret(context, s));
     }
 }

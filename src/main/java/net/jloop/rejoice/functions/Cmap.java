@@ -17,7 +17,7 @@ public final class Cmap implements Function {
         List a = stack.consume(List.class);
         List b = new List();
         for (Value value : a) {
-            b.append(p.invoke(context, new Stack().push(value)).consume(Atom.class));
+            b.append(p.interpret(context, new Stack().push(value)).consume(Atom.class));
         }
         return stack.push(b);
     }
