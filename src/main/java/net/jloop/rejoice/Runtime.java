@@ -64,19 +64,17 @@ import java.util.Map;
 public class Runtime {
 
     private final Interpreter interpreter;
-    private final Rewriter rewriter;
     private final Parser parser;
     private final Lexer lexer;
     private final Context context;
     private Stack stack;
 
-    public Runtime(Interpreter interpreter, Rewriter rewriter, Parser parser, Lexer lexer, Context context) {
-        this(interpreter, rewriter, parser, lexer, context, new Stack());
+    public Runtime(Interpreter interpreter, Parser parser, Lexer lexer, Context context) {
+        this(interpreter, parser, lexer, context, new Stack());
     }
 
-    public Runtime(Interpreter interpreter, Rewriter rewriter, Parser parser, Lexer lexer, Context context, Stack stack) {
+    public Runtime(Interpreter interpreter, Parser parser, Lexer lexer, Context context, Stack stack) {
         this.interpreter = interpreter;
-        this.rewriter = rewriter;
         this.parser = parser;
         this.lexer = lexer;
         this.context = context;
@@ -98,7 +96,7 @@ public class Runtime {
     }
 
     public void eval(Reader input) {
-        stack = interpreter.reduce(stack, rewriter.map(parser.map(lexer.map(new ReaderIterator(input)))));
+        stack = interpreter.reduce(stack, parser.map(lexer.map(new ReaderIterator(input))));
     }
 
     public void eval(Function function) {
@@ -175,9 +173,8 @@ public class Runtime {
         // Configure phases
         Lexer lexer = new Lexer();
         Parser parser = new Parser();
-        Rewriter rewriter = new Rewriter(context);
         Interpreter interpreter = new Interpreter(context);
         // Initialize runtime
-        return new Runtime(interpreter, rewriter, parser, lexer, context);
+        return new Runtime(interpreter, parser, lexer, context);
     }
 }
