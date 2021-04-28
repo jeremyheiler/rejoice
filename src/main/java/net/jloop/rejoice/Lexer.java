@@ -85,7 +85,7 @@ public final class Lexer {
             } else if (character >= '0' && character <= '9') {
                 return new IntegerState().consume(character, collector);
             } else if (contains(allowedInName, character)) {
-                return new SymbolState().consume(character, collector);
+                return new SymbolOrBoolState().consume(character, collector);
             } else if (contains(whitespace, character)) {
                 return this;
             } else {
@@ -156,11 +156,16 @@ public final class Lexer {
 
         @Override
         public void complete(Consumer<Token> collector) {
-            collector.accept(Token.of(type, buffer.toString()));
+            String lexeme = buffer.toString();
+            if (type == Token.Type.Symbol && (lexeme.equals("true") || lexeme.equals("false"))) {
+                collector.accept(Token.of(Token.Type.Bool, lexeme));
+            } else {
+                collector.accept(Token.of(type, lexeme));
+            }
         }
     }
 
-    private static final class SymbolState implements State {
+    private static final class SymbolOrBoolState implements State {
 
         @Override
         public State consume(char character, Consumer<Token> collector) {
