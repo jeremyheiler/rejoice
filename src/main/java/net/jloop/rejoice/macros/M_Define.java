@@ -4,6 +4,7 @@ import net.jloop.rejoice.Atom;
 import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.types.Symbol;
+import net.jloop.rejoice.util.ConcatIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,6 +21,6 @@ public final class M_Define implements Macro {
         output.add(Symbol.of(")"));
         output.add(name.quote());
         output.add(Symbol.of("define!"));
-        return output.iterator();
+        return new ConcatIterator<>(output.iterator(), input);
     }
 }

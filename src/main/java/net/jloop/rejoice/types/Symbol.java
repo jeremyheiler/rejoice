@@ -1,7 +1,6 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.util.ConcatIterator;
 import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Module;
 import net.jloop.rejoice.Quotable;
@@ -66,10 +65,7 @@ public final class Symbol implements Atom, Quotable {
     @Override
     public Iterator<Atom> rewrite(Context context, List<Atom> output, Iterator<Atom> input) {
         if (context.macros().containsKey(name)) {
-            // A rewritten macro could include other macros. In order to process them
-            // the rewritten stream is concatenated with the remaining input stream.
-            Iterator<Atom> rewritten = context.macros().get(name).rewrite(context, input);
-            return new ConcatIterator<>(rewritten, input);
+            return context.macros().get(name).rewrite(context, input);
         } else {
             output.add(this);
             return input;

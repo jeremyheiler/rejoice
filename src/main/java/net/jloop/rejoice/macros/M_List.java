@@ -5,6 +5,7 @@ import net.jloop.rejoice.Context;
 import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.types.Int64;
 import net.jloop.rejoice.types.Symbol;
+import net.jloop.rejoice.util.ConcatIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,6 +21,6 @@ public final class M_List implements Macro {
         }
         output.add(new Int64(output.size()));
         output.add(Symbol.of("list"));
-        return output.iterator();
+        return new ConcatIterator<>(output.iterator(), input);
     }
 }
