@@ -73,7 +73,7 @@ define swapd
   #eff "x y z -- y x z"
   #doc ""
   : %stack-demote
-    %stack-pop swap (swap) swap %stack-apply swap %stack-push
+    %stack-pop swap ( swap ) swap %stack-apply swap %stack-push
     %stack-promote
   ;
 

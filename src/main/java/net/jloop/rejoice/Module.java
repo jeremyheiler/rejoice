@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public final class Module {
 
-    private final Map<String, Function> functions = new HashMap<>();
+    private final Map<String, Invocable> invocables = new HashMap<>();
     private final Map<String, Supplier<? extends Value>> types = new HashMap<>();
     private final List<Module> includes = new ArrayList<>();
     private final List<Module> requires = new ArrayList<>();
@@ -29,13 +29,13 @@ public final class Module {
         requires.add(0, module);
     }
 
-    public void define(String name, Function function) {
+    public void define(String name, Invocable invocable) {
         // TODO: Restrict what is allowed in a name?
         // TODO: Maybe remove this restriction?
-        if (functions.containsKey(name)) {
-            throw new RuntimeError("MODULE", "Attempted to redefine a function with the name '" + name + "'");
+        if (invocables.containsKey(name)) {
+            throw new RuntimeError("MODULE", "Attempted to redefine a function or macro with the name '" + name + "'");
         }
-        functions.put(name, function);
+        invocables.put(name, invocable);
     }
 
     public void defineType(String name, Supplier<? extends Value> constructor) {
@@ -58,46 +58,11 @@ public final class Module {
         }
     }
 
-    public static final class Resolved {
-
-        private final ArrayList<String> includes = new ArrayList<>();
-
-        private final Module module;
-        private final Function function;
-        private final String name;
-
-        public Resolved(Module module, Function function, String name) {
-            this.module = module;
-            this.function = function;
-            this.name = name;
-        }
-
-        public Trace.Call toCall() {
-            return new Trace.Call(includes, module().name(), name);
-        }
-
-        public List<String> includes() {
-            return includes;
-        }
-
-        public Module module() {
-            return module;
-        }
-
-        public Function function() {
-            return function;
-        }
-
-        public String name() {
-            return name;
-        }
-    }
-
-    public Optional<Resolved> resolve(Module caller, String name) {
-        if (functions.containsKey(name)) {
-            return Optional.of(new Resolved(this, functions.get(name), name));
+    public Optional<Invocation> resolve(Module caller, String name) {
+        if (invocables.containsKey(name)) {
+            return Optional.of(new Invocation(this, invocables.get(name), name));
         } else {
-            Optional<Resolved> resolved = resolveFromIncludes(name);
+            Optional<Invocation> resolved = resolveFromIncludes(name);
             if (resolved.isPresent()) {
                 return resolved;
             }
@@ -113,14 +78,14 @@ public final class Module {
         }
     }
 
-    private Optional<Resolved> resolveFromIncludes(String name) {
+    private Optional<Invocation> resolveFromIncludes(String name) {
         for (Module module : includes) {
-            if (module.functions.containsKey(name)) {
-                Resolved resolved = new Resolved(this, module.functions.get(name), name);
+            if (module.invocables.containsKey(name)) {
+                Invocation resolved = new Invocation(this, module.invocables.get(name), name);
                 resolved.includes().add(module.name);
                 return Optional.of(resolved);
             } else {
-                Optional<Resolved> resolved = module.resolveFromIncludes(name);
+                Optional<Invocation> resolved = module.resolveFromIncludes(name);
                 if (resolved.isPresent()) {
                     resolved.get().includes().add(this.name);
                     return resolved;

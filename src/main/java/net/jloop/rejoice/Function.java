@@ -2,8 +2,15 @@ package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.Stack;
 
-@FunctionalInterface
-public interface Function {
+import java.util.Iterator;
 
-    Stack invoke(Context context, Stack stack);
+@FunctionalInterface
+public interface Function extends Invocable {
+
+    Stack evaluate(Env env, Stack stack);
+
+    @Override
+    default Stack invoke(Env env, Stack stack, Iterator<Value> input) {
+        return evaluate(env, stack);
+    }
 }

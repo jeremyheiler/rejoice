@@ -1,11 +1,10 @@
 package net.jloop.rejoice.macros;
 
-import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Macro;
+import net.jloop.rejoice.Value;
 import net.jloop.rejoice.types.Int64;
 import net.jloop.rejoice.types.Symbol;
-import net.jloop.rejoice.util.ConcatIterator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,14 +14,16 @@ import java.util.List;
 public final class M_Stack implements Macro {
 
     @Override
-    public Iterator<Atom> rewrite(Context context, Iterator<Atom> input) {
-        List<Atom> output = new ArrayList<>();
-        for (Atom atom : Macro.collect(context, input, Symbol.of("]"))) {
-            output.add(atom.quote());
-        }
-        Collections.reverse(output);
-        output.add(new Int64(output.size()));
+    public Iterator<Value> rewrite(Env env, Iterator<Value> input) {
+        // Pattern
+        List<Value> elements = new ArrayList<>();
+        Macro.collect(env, input, elements, Symbol.of("]"));
+        // Template
+        List<Value> output = new ArrayList<>();
+        Collections.reverse(elements);
+        elements.stream().map(Value::quote).forEach(output::add);
+        output.add(new Int64(elements.size()));
         output.add(Symbol.of("stack"));
-        return new ConcatIterator<>(output.iterator(), input);
+        return output.iterator();
     }
 }

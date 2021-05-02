@@ -132,7 +132,7 @@ public class Main {
                 // TODO(jeremy) Exit when the 'quit' operator is evaluated
                 while (true) {
                     try {
-                        System.out.print(runtime.context().active().name() + "> ");
+                        System.out.print(runtime.env().active().name() + "> ");
                         String line = reader.readLine();
                         runtime.eval(line);
                     } catch (RuntimeError error) {
@@ -157,7 +157,7 @@ public class Main {
     }
 
     private static void initCore(Runtime runtime) {
-        Module internal = runtime.context().modules().resolve("internal");
+        Module internal = runtime.env().module("internal");
         Module core = new Module("core");
         core.include(internal);
         core.defineType("bool", null);
@@ -174,22 +174,22 @@ public class Main {
 
     private static void initUser(Runtime runtime) {
         Module user = new Module("user");
-        user.require(runtime.context().modules().resolve("core"));
-        runtime.context().modules().add(user);
-        runtime.context().activate(user);
+        user.require(runtime.env().module("core"));
+        runtime.env().install(user);
+        runtime.env().activate(user);
     }
 
     private static void printError(Runtime runtime, RuntimeError error) {
         System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-        for (Trace.Call call : runtime.context().trace().calls()) {
-            System.out.print("\t" + call.fullyQualifiedName());
-            for (String include : call.includes()) {
+        for (Invocation invocation : runtime.env().trace().invocations()) {
+            System.out.print("\t" + invocation.name());
+            for (String include : invocation.includes()) {
                 System.out.print(" < " + include);
             }
             System.out.println();
         }
-        System.out.println("\t" + runtime.context().active().name());
-        runtime.context().trace().clear();
+        System.out.println("\t" + runtime.env().active().name());
+        runtime.env().trace().clear();
     }
 
     private static void printCommands(PrintStream stream) {

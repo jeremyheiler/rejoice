@@ -2,9 +2,16 @@ package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.Stack;
 
+import java.util.Iterator;
+import java.util.List;
+
 public interface Value {
 
-    default Stack interpret(Context context, Stack stack) {
+    default void collect(Env env, Iterator<Value> input, List<Value> output) {
+        output.add(this);
+    }
+
+    default Stack interpret(Env env, Stack stack, Iterator<Value> input) {
         return stack.push(this);
     }
 
@@ -12,7 +19,7 @@ public interface Value {
         return this;
     }
 
-    default Value unquote(Module module) {
+    default Value unquote(Env env) {
         return this;
     }
 

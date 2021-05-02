@@ -58,26 +58,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Runtime {
 
     private final Interpreter interpreter;
     private final Parser parser;
     private final Lexer lexer;
-    private final Context context;
+    private final Env env;
     private Stack stack;
 
-    public Runtime(Interpreter interpreter, Parser parser, Lexer lexer, Context context) {
-        this(interpreter, parser, lexer, context, new Stack());
+    public Runtime(Interpreter interpreter, Parser parser, Lexer lexer, Env env) {
+        this(interpreter, parser, lexer, env, new Stack());
     }
 
-    public Runtime(Interpreter interpreter, Parser parser, Lexer lexer, Context context, Stack stack) {
+    public Runtime(Interpreter interpreter, Parser parser, Lexer lexer, Env env, Stack stack) {
         this.interpreter = interpreter;
         this.parser = parser;
         this.lexer = lexer;
-        this.context = context;
+        this.env = env;
         this.stack = stack;
     }
 
@@ -86,8 +84,8 @@ public class Runtime {
     }
 
     public void load(Module module, InputStream source) {
-        context.modules().add(module);
-        context.activate(module);
+        env.install(module);
+        env.activate(module);
         load(source);
     }
 
@@ -96,15 +94,11 @@ public class Runtime {
     }
 
     public void eval(Reader input) {
-        stack = interpreter.reduce(stack, parser.map(lexer.map(new ReaderIterator(input))));
+        stack = interpreter.interpret(env, stack, parser.map(lexer.map(new ReaderIterator(input))));
     }
 
-    public void eval(Function function) {
-        stack = function.invoke(context, stack);
-    }
-
-    public Context context() {
-        return context;
+    public Env env() {
+        return env;
     }
 
     public Stack stack() {
@@ -112,8 +106,9 @@ public class Runtime {
     }
 
     public static Runtime create() {
-        // Define internal module
+        // Create internal module
         Module internal = new Module("internal");
+        // Define internal functions
         internal.define("/", new O_Divide());
         internal.define("-", new O_Minus());
         internal.define("%", new O_Modulus());
@@ -162,19 +157,18 @@ public class Runtime {
         internal.define("%write", new F_write());
         internal.define("x", new Cx());
         internal.define("y", new Cy());
-        // Define global macros
-        Map<String, Macro> macros = new HashMap<>();
-        macros.put("(", new M_List());
-        macros.put("[", new M_Stack());
-        macros.put("define", new M_Define());
+        // Define internal macros
+        internal.define("(", new M_List());
+        internal.define("[", new M_Stack());
+        internal.define("define", new M_Define());
         // Setup context
-        Context context = new Context(macros);
-        context.modules().add(internal);
+        Env env = new Env();
+        env.install(internal);
         // Configure phases
         Lexer lexer = new Lexer();
         Parser parser = new Parser();
-        Interpreter interpreter = new Interpreter(context);
+        Interpreter interpreter = new Interpreter();
         // Initialize runtime
-        return new Runtime(interpreter, parser, lexer, context);
+        return new Runtime(interpreter, parser, lexer, env);
     }
 }

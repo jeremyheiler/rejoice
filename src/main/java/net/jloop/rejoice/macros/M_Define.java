@@ -1,26 +1,30 @@
 package net.jloop.rejoice.macros;
 
-import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Context;
+import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Macro;
+import net.jloop.rejoice.Value;
 import net.jloop.rejoice.types.Symbol;
-import net.jloop.rejoice.util.ConcatIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public final class M_Define implements Macro {
 
     @Override
-    public Iterator<Atom> rewrite(Context context, Iterator<Atom> input) {
+    public Iterator<Value> rewrite(Env env, Iterator<Value> input) {
+        // Pattern
         Symbol name = Macro.match(input, Symbol.class);
         Macro.match(input, Symbol.of(":"));
-        ArrayList<Atom> output = new ArrayList<>();
+        List<Value> body = new ArrayList<>();
+        Macro.collect(env, input, body, Symbol.of(";"));
+        // Template
+        List<Value> output = new ArrayList<>();
         output.add(Symbol.of("("));
-        output.addAll(Macro.collect(context, input, Symbol.of(";")));
+        output.addAll(body);
         output.add(Symbol.of(")"));
         output.add(name.quote());
         output.add(Symbol.of("define!"));
-        return new ConcatIterator<>(output.iterator(), input);
+        return output.iterator();
     }
 }

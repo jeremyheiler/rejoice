@@ -2,7 +2,6 @@ package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.Bool;
 import net.jloop.rejoice.types.Char;
-import net.jloop.rejoice.types.Comment;
 import net.jloop.rejoice.types.Int64;
 import net.jloop.rejoice.types.Keyword;
 import net.jloop.rejoice.types.Quote;
@@ -14,7 +13,7 @@ import java.util.Iterator;
 
 public final class Parser {
 
-    public Iterator<Atom> map(Iterator<Lexer.Token> input) {
+    public Iterator<Value> map(Iterator<Lexer.Token> input) {
         return new Iterator<>() {
 
             @Override
@@ -37,9 +36,6 @@ public final class Parser {
             }
             case Character -> {
                 return Char.of(token.lexeme());
-            }
-            case Comment -> {
-                return new Comment(token.lexeme());
             }
             case Int -> {
                 return new Int64(Long.parseLong(token.lexeme()));

@@ -1,5 +1,6 @@
 package net.jloop.rejoice.types;
 
+import net.jloop.rejoice.Atom;
 import net.jloop.rejoice.RuntimeError;
 import net.jloop.rejoice.Value;
 
@@ -9,25 +10,19 @@ import java.util.Iterator;
 public final class Stack implements Value, Iterable<Value> {
 
     private final ArrayList<Value> values;
+    private final boolean onlyAtoms;
 
     public Stack() {
-        this.values = new ArrayList<>();
+        this(new ArrayList<>(), false);
     }
 
-    private Stack(ArrayList<Value> values) {
+    public Stack(boolean onlyAtoms) {
+        this(new ArrayList<>(), onlyAtoms);
+    }
+
+    private Stack(ArrayList<Value> values, boolean onlyAtoms) {
         this.values = values;
-    }
-
-    public int length() {
-        return values.size();
-    }
-
-    public Value get(int i) {
-        return values.get(values.size() - i);
-    }
-
-    public Value take(int i) {
-        return values.remove(values.size() - i);
+        this.onlyAtoms = onlyAtoms;
     }
 
     private void checkUnderflow() {
@@ -51,10 +46,18 @@ public final class Stack implements Value, Iterable<Value> {
         return values.get(values.size() - 1);
     }
 
+    public Value peek(int i) {
+        return values.get(values.size() - i);
+    }
+
     public <V extends Value> V consume(Class<V> type) {
         V value = peek(type);
         pop();
         return value;
+    }
+
+    public Value consume(int i) {
+        return values.remove(values.size() - i);
     }
 
     public Value consume() {
@@ -64,6 +67,9 @@ public final class Stack implements Value, Iterable<Value> {
     }
 
     public Stack push(Value value) {
+        if (onlyAtoms && !(value instanceof Atom)) {
+            throw new RuntimeError("STACK", "Cannot push a value onto a stack that only accepts atoms");
+        }
         values.add(value);
         return this;
     }
@@ -106,7 +112,7 @@ public final class Stack implements Value, Iterable<Value> {
 
     public Stack copy() {
         // This is a shallow copy
-        return new Stack(new ArrayList<>(values));
+        return new Stack(new ArrayList<>(values), onlyAtoms);
     }
 
     @Override

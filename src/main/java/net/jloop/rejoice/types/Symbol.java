@@ -1,9 +1,11 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Context;
-import net.jloop.rejoice.Module;
+import net.jloop.rejoice.Env;
+import net.jloop.rejoice.Invocation;
+import net.jloop.rejoice.Macro;
 import net.jloop.rejoice.Quotable;
+import net.jloop.rejoice.Value;
 
 import java.util.Iterator;
 import java.util.List;
@@ -63,22 +65,21 @@ public final class Symbol implements Atom, Quotable {
     }
 
     @Override
-    public Iterator<Atom> rewrite(Context context, List<Atom> output, Iterator<Atom> input) {
-        if (context.macros().containsKey(name)) {
-            return context.macros().get(name).rewrite(context, input);
+    public void collect(Env env, Iterator<Value> input, List<Value> collection) {
+        Invocation invocation = env.resolve(this);
+        if (invocation.invocable() instanceof Macro) {
+            Iterator<Value> macro = ((Macro) invocation.invocable()).rewrite(env, input);
+            while (macro.hasNext()) {
+                collection.add(macro.next());
+            }
         } else {
-            output.add(this);
-            return input;
+            collection.add(this);
         }
     }
 
     @Override
-    public Stack interpret(Context context, Stack stack) {
-        Module.Resolved resolved = context.resolve(this);
-        context.trace().add(resolved.toCall());
-        stack = resolved.function().invoke(context, stack);
-        context.trace().pop();
-        return stack;
+    public Stack interpret(Env env, Stack stack, Iterator<Value> input) {
+        return env.resolve(this).invoke(env, stack, input);
     }
 
     public Optional<String> path() {
@@ -96,9 +97,9 @@ public final class Symbol implements Atom, Quotable {
     }
 
     @Override
-    public Atom unquote(Module module) {
+    public Atom unquote(Env env) {
         if (path == null) {
-            return builder().withPath(module.name()).build();
+            return builder().withPath(env.active().name()).build();
         } else {
             return this;
         }

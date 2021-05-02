@@ -7,20 +7,14 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-// TODO(jeremy): Maybe move some of the logic up one level into the parser.
-// For example, if the lexer returns a NewLine token, then the parser could return a symbol
-// token for '//' and call a lexer function that will consume all characters until a new line
-// is found. This same logic could be used for parsing strings and other 'delimited' lexemes.
-// The advantage of doing this in the lexer is that there doesn't need to be extra whitespace
-// around the tokens. That is, the string '"foo"' could be parsed as is, instead of '" foo"',
-// as you would see in a forth-like language. This ia precursor to "parsing words".
-
 public final class Lexer {
+
     private static final String whitespace = "\t\n\r ";
     private static final String allowedInName = "!$%&()*+,-./0123456789;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]_`abcdefghijklmnopqrstuvwxyz{|}~";
 
     public Iterator<Token> map(ReaderIterator input) {
         class Mapper implements Iterator<Token>, Consumer<Token> {
+
             private final ArrayList<Token> tokens = new ArrayList<>();
 
             private State state = new StartingState();
@@ -61,6 +55,7 @@ public final class Lexer {
     }
 
     private interface State {
+
         State consume(char character, Consumer<Token> collector);
 
         void complete(Consumer<Token> collector);
@@ -100,6 +95,7 @@ public final class Lexer {
     }
 
     private static final class NamedMetaState implements State {
+
         private final StringBuilder buffer;
         private final Token.Type type;
 
@@ -179,6 +175,7 @@ public final class Lexer {
     }
 
     private static final class KeywordState implements State {
+
         private final StringBuilder buffer = new StringBuilder().append(':');
 
         @Override
@@ -198,6 +195,7 @@ public final class Lexer {
     }
 
     private static final class QuoteState implements State {
+
         private final StringBuilder buffer = new StringBuilder().append('\'');
 
         @Override
@@ -219,6 +217,7 @@ public final class Lexer {
     }
 
     private static final class IntegerState implements State {
+
         private final StringBuilder buffer = new StringBuilder();
 
         // TODO: Support negative integers
@@ -242,6 +241,7 @@ public final class Lexer {
     }
 
     private static final class StringState implements State {
+
         private final StringBuilder buffer = new StringBuilder();
 
         // TODO: Support escape characters.
@@ -264,33 +264,24 @@ public final class Lexer {
     }
 
     private static final class CommentState implements State {
-        private final StringBuilder buffer = new StringBuilder();
-
-        private boolean foundReturn = false;
 
         @Override
         public State consume(char character, Consumer<Token> collector) {
             if (character == '\n') {
-                complete(collector);
                 return new StartingState();
-            } else if (character == '\r') {
-                if (foundReturn) {
-                    buffer.append('\r');
-                }
             } else {
-                foundReturn = false;
-                buffer.append(character);
+                return this;
             }
-            return this;
         }
 
         @Override
         public void complete(Consumer<Token> collector) {
-            collector.accept(Lexer.Token.of(Lexer.Token.Type.Comment, buffer.toString()));
+            // There's nothing to do, as this state always delegates to another.
         }
     }
 
     private static final class CharacterState implements State {
+
         private final StringBuilder buffer = new StringBuilder().append('\\');
 
         // TODO: Validate characters as they're being consumed.
@@ -320,6 +311,7 @@ public final class Lexer {
     }
 
     private static final class TypeState implements State {
+
         private final StringBuilder buffer = new StringBuilder().append('^');
 
         @Override
@@ -379,7 +371,6 @@ public final class Lexer {
         public enum Type {
             Bool,
             Character,
-            Comment,
             Int,
             Keyword,
             Quote,
