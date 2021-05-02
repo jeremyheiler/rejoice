@@ -52,7 +52,6 @@ import net.jloop.rejoice.macros.M_Define;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_Stack;
 import net.jloop.rejoice.types.Stack;
-import net.jloop.rejoice.util.ReaderIterator;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -94,7 +93,7 @@ public class Runtime {
     }
 
     public void eval(Reader input) {
-        stack = interpreter.interpret(env, stack, parser.map(lexer.map(new ReaderIterator(input))));
+        stack = interpreter.interpret(env, stack, parser.map(lexer.map(input)));
     }
 
     public Env env() {

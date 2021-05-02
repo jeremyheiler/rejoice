@@ -1,10 +1,11 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.util.ReaderIterator;
-
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class Lexer {
@@ -12,7 +13,8 @@ public final class Lexer {
     private static final String whitespace = "\t\n\r ";
     private static final String allowedInName = "!$%&()*+,-./0123456789;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-    public Iterator<Token> map(ReaderIterator input) {
+    public Iterator<Token> map(Reader reader) {
+        ReaderIterator input = new ReaderIterator(reader);
         class Mapper implements Iterator<Token>, Consumer<Token> {
 
             private final ArrayList<Token> tokens = new ArrayList<>();
@@ -52,6 +54,49 @@ public final class Lexer {
             }
         }
         return new Mapper();
+    }
+
+    private static final class ReaderIterator implements Iterator<Character> {
+
+        private final Reader reader;
+
+        private boolean advanced;
+        private int next;
+
+        public ReaderIterator(Reader reader) {
+            this.reader = Objects.requireNonNull(reader);
+        }
+
+        private void advance() {
+            try {
+                next = reader.read();
+            } catch (IOException e) {
+                Exceptions.sneakyThrow(e);
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (!advanced) {
+                advanced = true;
+                advance();
+            }
+            return next != -1;
+        }
+
+        @Override
+        public Character next() {
+            if (advanced) {
+                advanced = false;
+            } else {
+                advance();
+            }
+            if (next == -1) {
+                throw new NoSuchElementException();
+            } else {
+                return (char) next;
+            }
+        }
     }
 
     private interface State {
