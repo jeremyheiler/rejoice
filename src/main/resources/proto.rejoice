@@ -1,0 +1,182 @@
+# The core namespace for Rejoice. This namespace is implicitly required in every module.
+
+native (
+  #syn "( ~& body ) >> ~'@ body ~$ body list/create"
+  #doc "A macro that creates a list."
+
+native [
+  #syn "[ ~& body ] >> ~'@ body ~$ body stack/create"
+  #doc "A macro that creates a stack."
+
+native define
+  #syn "define ~% name ^symbol : ~& body ; >> ( ~@ body ) ~'@ name define-define"
+  #doc "A macro that defines a named define."
+
+native include
+  #eff "^symbol --"
+  #doc "Allows the module's defines to be accessed without the module's path, and exports the module's public defines in the current module."
+
+native require
+  #eff "^symbol --"
+  #doc "Allows the module's defines to be accessed without the module's path in the current module."
+
+native lift
+  #eff "... x ... ^i64 -- ... x"
+  #doc "Expects an integer on the stack. After popping it, moves the element from the desired position to position one. The program '1 lift' is a no-op."
+
+native push
+  #doc "Expects an integer on the stack. After popping it, moves the element from position one to the desired position. The program '1 push' is a no-op."
+
+native list/create
+  #eff "a ... ^i64 -- ^list"
+  #doc "Creates a list with n elements, consuming them from the main stack."
+
+native list/cons
+  #eff "x ^list -- ^list"
+  #doc "Adds x to the front of the list."
+
+native list/length
+  #eff "^list -- ^list ^i64"
+  #doc "Pushes the length of the list onto the stack."
+
+define list/empty?
+  #eff "^list -- ^list ^bool"
+  #doc "Pushes true onto the stack if the list is empty, otherwise pushes false."
+  : list/length 0 equal? ;
+
+native stack/create
+  #eff "a ... ^i64 -- ^stack"
+  #doc "Creates a stack with n elements, consuming them from the main stack."
+
+native stack/demote
+  #eff "-- ^stack"
+  #doc "Pushes the existing stack onto a new main stack."
+
+native stack/promote
+  #eff "^stack --"
+  #doc "Expects the top element to be a stack. Makes that stack the new main stack."
+
+native stack/apply
+  #eff "^list ^stack -- ^stack
+  #doc "Expects the top element to be a stack. Evaluates the List with the stack, instead of the main stack."
+
+native stack/peek
+  #eff "^stack -- x ^stack"
+  #doc "Expects the top element to be a stack. Pushes a copy of top element of that stack onto the main stack."
+
+native stack/pop
+  #eff "^stack -- x ^stack"
+  #doc "Expects the top element to be a stack. Pops the top element off that stack, and pushes it onto the main stack."
+
+native stack/push
+  #eff "x ^stack -- ^stack"
+  #doc "Pushes x onto the stack."
+
+define roll-down
+  #eff "x y z -- y z x"
+  : 3 lift ;
+
+define roll-up
+  #eff "x y z -- z x y"
+  : 3 push ;
+
+define swap
+  #eff "x y -- y x"
+  #doc "Swaps the top two elements of the stack."
+  : 2 lift ;
+
+define dup
+  #eff "x -- x x"
+  #doc "Pushes another references to x onto the stack."
+  : stack/demote stack/peek stack/push stack/promote ;
+
+define dupd
+  #eff "x y -- x x y"
+  #doc "Pushes a copy of x onto the stack, keeping y on the top."
+  : swap dup roll-down ;
+
+define pop
+  #eff "x --"
+  #doc "Removes the top element of the stack."
+  : stack/demote stack/pop stack/promote ;
+
+define pop2
+  #eff "x y --"
+  #doc "Removes the top two elements of the stack."
+  : stack/demote stack/pop stack/pop stack/promote ;
+
+define pop3
+  #eff "x y --"
+  #doc "Removes the top two elements of the stack."
+  : stack/demote stack/pop stack/pop stack/pop stack/promote ;
+
+# TODO: pop-n
+
+define popd
+  #eff "x y -- y"
+  #doc "Removes x from the stack while keeping y."
+  : swap pop ;
+
+define swapd
+  #eff "x y z -- y x z"
+  #doc ""
+  : 3 lift swap ;
+
+define dip
+  #eff "x ^list -- x"
+  #doc "Evaluates List against the stack with out x, pushing x back onto the stack after.
+  : swap stack/demote stack/pop stack/pop stack/apply stack/push stack/promote ;
+
+native if
+  # "Expects three lists: p, t, and f (where f is the top of th stack).
+  # Evaluates p (the predicate) against a copy of the stack with out p, t, or f.
+  # If it yields true, then t is evaluated, otherwise f is evaluated."
+
+define if*
+  #doc "Like if, except instead of a predicate list, expects a boolean."
+  : roll-down 1 list/create roll-up if ;
+
+native print
+  #doc "Prints the top value of the stack such that it could be parsed again."
+
+native write
+  #doc "Prints the value represented by the the top value of the stack, i.e. '\x' prints 'x' and '"foo"" prints 'foo'."
+
+define print-line
+  #doc "Prints the top value of the stack such that it could be parsed again, followed by a new line."
+  : print \newline write pop ;
+
+define write-line
+  #doc "Prints the value represented by the the top value of the stack, i.e. '\x' prints 'x' and '"foo"" prints 'foo', followed by a new line."
+  : write \newline write pop ;
+
+define !
+  #doc "Prints the main stack."
+  : stack/demote write-line stack/promote ;
+
+define not
+  #eff "^bool -- ^bool"
+  #doc "Inverts the ^bool value at the top of th stack."
+  : ( false ) ( true ) if* ;
+
+define inc
+  #eff "^i64 -- ^i64"
+  #doc "Increments the integer at the top of the stack by one."
+  : 1 + ;
+
+define dec
+  #eff "^i64 -- ^i64"
+  #doc "Decrements the integer at the top of the stack by one."
+  : 1 - ;
+
+define zero?
+  #eff "^i64 -- ^bool"
+  : 0 equal? ;
+
+define even?
+  #eff "^i64 -- ^bool"
+  : 2 % zero? ;
+
+define odd?
+  #eff "^i64 -- ^bool"
+  : even? not ;

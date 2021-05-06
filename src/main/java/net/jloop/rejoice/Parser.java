@@ -41,7 +41,7 @@ public final class Parser {
                 return new Int64(Long.parseLong(token.lexeme()));
             }
             case Keyword -> {
-                return Keyword.of(token.lexeme().substring(1));
+                return Keyword.of(token.lexeme());
             }
             case Quote -> {
                 int index = token.lexeme().lastIndexOf('\'') + 1;

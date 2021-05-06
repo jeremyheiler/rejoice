@@ -8,6 +8,7 @@ public final class F_stack_pop implements Function {
 
     @Override
     public Stack evaluate(Env env, Stack stack) {
-        return stack.push(stack.peek(Stack.class).consume());
+        Stack s = stack.consume(Stack.class);
+        return stack.push(s.peek()).push(s.pop());
     }
 }

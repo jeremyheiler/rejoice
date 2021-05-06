@@ -1,37 +1,39 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Symbol;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 public final class Trace {
 
-    private final ArrayList<Invocation> invocations = new ArrayList<>();
+    private final ArrayList<Symbol> calls = new ArrayList<>();
 
-    public void push(Invocation invocation) {
-        invocations.add(invocation);
+    public void push(Symbol symbol) {
+        calls.add(symbol);
     }
 
     public void pop() {
-        if (invocations.isEmpty()) {
+        if (calls.isEmpty()) {
             throw new RuntimeError("INTERPRET", "Trace underflow");
         }
-        invocations.remove(invocations.size() - 1);
+        calls.remove(calls.size() - 1);
     }
 
-    public Invocation peek() {
-        if (invocations.isEmpty()) {
+    public Symbol peek() {
+        if (calls.isEmpty()) {
             throw new RuntimeError("INTERPRET", "Trace underflow");
         }
-        return invocations.get(invocations.size() - 1);
+        return calls.get(calls.size() - 1);
     }
 
     public void clear() {
-        invocations.clear();
+        calls.clear();
     }
 
-    public Iterable<Invocation> invocations() {
-        ArrayList<Invocation> invocations = new ArrayList<>(this.invocations);
-        Collections.reverse(invocations);
-        return invocations;
+    public Iterable<Symbol> calls() {
+        ArrayList<Symbol> calls = new ArrayList<>(this.calls);
+        Collections.reverse(calls);
+        return calls;
     }
 }

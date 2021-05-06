@@ -1,7 +1,6 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Quotable;
 
 public final class Quote implements Atom, Quotable {
@@ -13,8 +12,8 @@ public final class Quote implements Atom, Quotable {
     }
 
     @Override
-    public String name() {
-        return quotable.name();
+    public Symbol symbol() {
+        return quotable.symbol();
     }
 
     @Override
@@ -23,7 +22,7 @@ public final class Quote implements Atom, Quotable {
     }
 
     @Override
-    public Atom unquote(Env env) {
+    public Atom unquote() {
         return quotable;
     }
 

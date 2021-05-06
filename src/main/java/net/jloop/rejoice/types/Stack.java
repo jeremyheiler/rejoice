@@ -74,6 +74,11 @@ public final class Stack implements Value, Iterable<Value> {
         return this;
     }
 
+    public Stack push(int i) {
+        values.add(values.size() - i, values.remove(values.size() - 1));
+        return this;
+    }
+
     public Stack pop() {
         checkUnderflow();
         values.remove(values.size() - 1);

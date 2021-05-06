@@ -1,60 +1,35 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Stack;
 import net.jloop.rejoice.types.Symbol;
 
-import java.util.HashMap;
-import java.util.Optional;
+import java.io.Reader;
 
 public class Env {
 
-    private final HashMap<String, Module> modules = new HashMap<>();
+    private final Lexer lexer = new Lexer();
+    private final Parser parser = new Parser();
+    private final Interpreter interpreter = new Interpreter();
     private final Trace trace = new Trace();
+    private final Namespace proto;
 
-    private Module active;
-
-    public Module active() {
-        return active;
+    public Env(Namespace proto) {
+        this.proto = proto;
     }
 
-    public void activate(Module module) {
-        active = module;
-    }
-
-    public void install(Module module) {
-        if (modules.containsKey(module.name())) {
-            throw new RuntimeError("INTERPRET", "Module '" + module.name() + "' already exists");
-        }
-        modules.put(module.name(), module);
-    }
-
-    public Module module(String name) {
-        Module module = modules.get(name);
-        if (module == null) {
-            throw new RuntimeError("INTERPRET", "Module '" + name + "' doesn't exist");
-        }
-        return module;
+    public Stack eval(Stack stack, Reader input) {
+        return interpreter.interpret(this, stack, parser.map(lexer.map(input)));
     }
 
     public Trace trace() {
         return trace;
     }
 
-    public Invocation resolve(Symbol symbol) {
-        Module module = moduleFor(symbol);
-        Optional<Invocation> resolved = module.resolve(active, symbol.name());
-        if (resolved.isPresent()) {
-            return resolved.get();
-        } else {
-            throw new RuntimeError("INTERPRET", "Function '" + symbol.name() + "' was not found when called from module '" + module.name() + "'");
-        }
+    public void add(Symbol symbol, Invocable invocable) {
+        proto.add(symbol, invocable);
     }
 
-    private Module moduleFor(Symbol symbol) {
-        Optional<String> path = symbol.path();
-        if (path.isPresent()) {
-            return module(path.get());
-        } else {
-            return active;
-        }
+    public Invocable resolve(Symbol symbol) {
+        return proto.resolve(symbol);
     }
 }

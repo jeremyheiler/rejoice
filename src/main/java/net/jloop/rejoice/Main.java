@@ -1,12 +1,13 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.types.List;
-import net.jloop.rejoice.types.Stack;
+import net.jloop.rejoice.types.Symbol;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.StringReader;
 
 public class Main {
 
@@ -65,13 +66,12 @@ public class Main {
 
             Runtime runtime = Runtime.create();
             try {
-                initCore(runtime);
-                initUser(runtime);
+                loadCore(runtime);
                 if (load != null) {
                     runtime.eval(new FileReader(load));
                 }
                 if (eval != null) {
-                    runtime.eval(eval);
+                    runtime.eval(new StringReader(eval));
                 }
                 System.exit(0);
             } catch (RuntimeError error) {
@@ -120,21 +120,19 @@ public class Main {
 
             Runtime runtime = Runtime.create();
             try {
-                initCore(runtime);
-                initUser(runtime);
+                loadCore(runtime);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 if (load != null) {
                     runtime.eval(new FileReader(load));
                 }
                 if (eval != null) {
-                    runtime.eval(eval);
+                    runtime.eval(new StringReader(eval));
                 }
                 // TODO(jeremy) Exit when the 'quit' operator is evaluated
                 while (true) {
                     try {
-                        System.out.print(runtime.env().active().name() + "> ");
-                        String line = reader.readLine();
-                        runtime.eval(line);
+                        System.out.print("> ");
+                        runtime.eval(new StringReader(reader.readLine()));
                     } catch (RuntimeError error) {
                         printError(runtime, error);
                     } catch (Exception ex) {
@@ -156,39 +154,19 @@ public class Main {
         System.exit(1);
     }
 
-    private static void initCore(Runtime runtime) {
-        Module internal = runtime.env().module("internal");
-        Module core = new Module("core");
-        core.include(internal);
-        core.defineType("bool", null);
-        core.defineType("char", null);
-        core.defineType("i64", null);
-        core.defineType("list", List::new);
-        core.defineType("stack", Stack::new);
-        core.defineType("string", null);
-        core.defineType("type", null);
-        runtime.load(core, Runtime.class.getResourceAsStream("/core.rejoice"));
-        runtime.load(Runtime.class.getResourceAsStream("/list.rejoice"));
-        runtime.load(Runtime.class.getResourceAsStream("/stack.rejoice"));
-    }
-
-    private static void initUser(Runtime runtime) {
-        Module user = new Module("user");
-        user.require(runtime.env().module("core"));
-        runtime.env().install(user);
-        runtime.env().activate(user);
+    private static void loadCore(Runtime runtime) {
+        InputStream input = Main.class.getResourceAsStream("/proto.rejoice");
+        if (input == null) {
+            throw new RuntimeError("NS", "Could not find proto.rejoice on the classpath");
+        }
+        runtime.eval(new InputStreamReader(input));
     }
 
     private static void printError(Runtime runtime, RuntimeError error) {
         System.out.println(error.getStage() + " ERROR: " + error.getMessage());
-        for (Invocation invocation : runtime.env().trace().invocations()) {
-            System.out.print("\t" + invocation.name());
-            for (String include : invocation.includes()) {
-                System.out.print(" < " + include);
-            }
-            System.out.println();
+        for (Symbol symbol : runtime.env().trace().calls()) {
+            System.out.println("\t" + symbol.print());
         }
-        System.out.println("\t" + runtime.env().active().name());
         runtime.env().trace().clear();
     }
 

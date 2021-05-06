@@ -9,8 +9,8 @@ public final class F_stack_push implements Function {
 
     @Override
     public Stack evaluate(Env env, Stack stack) {
-        Value x = stack.consume();
         Stack s = stack.consume(Stack.class);
+        Value x = stack.consume();
         return stack.push(s.push(x));
     }
 }

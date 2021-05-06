@@ -24,7 +24,7 @@ public final class M_Define implements Macro {
         output.addAll(body);
         output.add(Symbol.of(")"));
         output.add(name.quote());
-        output.add(Symbol.of("define!"));
+        output.add(Symbol.of("define-function"));
         return output.iterator();
     }
 }

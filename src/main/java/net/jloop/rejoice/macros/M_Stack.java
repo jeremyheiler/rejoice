@@ -23,7 +23,7 @@ public final class M_Stack implements Macro {
         Collections.reverse(elements);
         elements.stream().map(Value::quote).forEach(output::add);
         output.add(new Int64(elements.size()));
-        output.add(Symbol.of("stack"));
+        output.add(Symbol.of("stack/create"));
         return output.iterator();
     }
 }

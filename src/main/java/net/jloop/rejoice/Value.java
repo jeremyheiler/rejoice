@@ -19,7 +19,7 @@ public interface Value {
         return this;
     }
 
-    default Value unquote(Env env) {
+    default Value unquote() {
         return this;
     }
 
