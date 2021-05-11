@@ -1,6 +1,5 @@
 package net.jloop.rejoice.types;
 
-import net.jloop.rejoice.Atom;
 import net.jloop.rejoice.RuntimeError;
 import net.jloop.rejoice.Value;
 
@@ -10,19 +9,13 @@ import java.util.Iterator;
 public final class Stack implements Value, Iterable<Value> {
 
     private final ArrayList<Value> values;
-    private final boolean onlyAtoms;
 
     public Stack() {
-        this(new ArrayList<>(), false);
+        this(new ArrayList<>());
     }
 
-    public Stack(boolean onlyAtoms) {
-        this(new ArrayList<>(), onlyAtoms);
-    }
-
-    private Stack(ArrayList<Value> values, boolean onlyAtoms) {
+    private Stack(ArrayList<Value> values) {
         this.values = values;
-        this.onlyAtoms = onlyAtoms;
     }
 
     @Override
@@ -76,9 +69,6 @@ public final class Stack implements Value, Iterable<Value> {
     }
 
     public Stack push(Value value) {
-        if (onlyAtoms && !(value instanceof Atom)) {
-            throw new RuntimeError("STACK", "Cannot push a value onto a stack that only accepts atoms");
-        }
         values.add(value);
         return this;
     }
@@ -126,7 +116,7 @@ public final class Stack implements Value, Iterable<Value> {
 
     public Stack copy() {
         // This is a shallow copy
-        return new Stack(new ArrayList<>(values), onlyAtoms);
+        return new Stack(new ArrayList<>(values));
     }
 
     @Override
