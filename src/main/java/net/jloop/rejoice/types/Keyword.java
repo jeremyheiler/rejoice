@@ -21,6 +21,11 @@ public final class Keyword implements Atom {
     }
 
     @Override
+    public Type type() {
+        return Type.Keyword;
+    }
+
+    @Override
     public String print() {
         return ":" + name;
     }

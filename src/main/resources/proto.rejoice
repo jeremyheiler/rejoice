@@ -27,26 +27,29 @@ native list
   #doc "Creates a list with n elements, consuming them from the main stack."
 ;
 
-native cons
-  #eff "x ^list -- ^list"
-  #doc "Adds x to the front of the list."
+native stack
+  #eff "a ... ^i64 -- ^stack"
+  #doc "Creates a stack with n elements, consuming them from the main stack."
 ;
 
-native length
-  #eff "^list -- ^list ^i64"
-  #doc "Pushes the length of the list onto the stack."
+protocol length
+  #eff "a -- a ^i64"
+  #doc "Pushes the length of 'a' onto the stack."
 ;
+
+extend length ^list  :   list-length ;
+extend length ^stack :  stack-length ;
 
 function empty?
-  #eff "^list -- ^list ^bool"
-  #doc "Pushes true onto the stack if the list is empty, otherwise pushes false."
+  #eff "a -- a ^bool"
+  #doc "Pushes true onto the stack if 'a' has a length of zero, otherwise pushes false."
 :
   length 0 equal?
 ;
 
-native stack
-  #eff "a ... ^i64 -- ^stack"
-  #doc "Creates a stack with n elements, consuming them from the main stack."
+native cons
+  #eff "x ^list -- ^list"
+  #doc "Adds x to the front of the list."
 ;
 
 native demote

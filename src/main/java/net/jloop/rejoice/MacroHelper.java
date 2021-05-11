@@ -1,6 +1,7 @@
 package net.jloop.rejoice;
 
 import net.jloop.rejoice.types.Symbol;
+import net.jloop.rejoice.types.Type;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,15 +38,15 @@ public class MacroHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Value> T match(Iterator<Value> input, Class<T> type) {
+    public static <T extends Value> T match(Iterator<Value> input, Type type) {
         if (!input.hasNext()) {
-            throw new RuntimeError("MACRO", "Unexpected EOF when attempting to match ^" + type.getSimpleName().toLowerCase());
+            throw new RuntimeError("MACRO", "Unexpected EOF when attempting to match " + type.print());
         }
         Value next = input.next();
-        if (type.isInstance(next)) {
+        if (type == next.type()) {
             return (T) next;
         } else {
-            throw new RuntimeError("MACRO", "Expecting to match ^" + type.getSimpleName().toLowerCase() + " , but found ^" + next.getClass().getSimpleName().toLowerCase() + " with value '" + next.print() + "'");
+            throw new RuntimeError("MACRO", "Expecting to match " + type.print() + ", but found " + next.type().print() + " with value '" + next.print() + "'");
         }
     }
 
@@ -55,7 +56,7 @@ public class MacroHelper {
         }
         Value next = input.next();
         if (!next.equals(symbol)) {
-            throw new RuntimeError("MACRO", "Expecting to match ^symbol '" + symbol.print() + "' , but found ^" + next.getClass().getSimpleName().toLowerCase() + " with value '" + next.print() + "'");
+            throw new RuntimeError("MACRO", "Expecting to match symbol '" + symbol.print() + "' , but found " + next.type().print() + " with value '" + next.print() + "'");
         }
     }
 }

@@ -20,6 +20,12 @@ public enum Bool implements Atom {
         }
     }
 
+
+    @Override
+    public Type type() {
+        return Type.Bool;
+    }
+
     @Override
     public String print() {
         return this == True ? "true" : "false";

@@ -16,6 +16,11 @@ public class Int64 implements Atom {
         return value;
     }
 
+    @Override
+    public Type type() {
+        return Type.I64;
+    }
+
     public Int64 abs() {
         if (value < 0) {
             return new Int64(-value);

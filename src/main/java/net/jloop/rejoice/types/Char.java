@@ -44,6 +44,11 @@ public class Char implements Atom {
     }
 
     @Override
+    public Type type() {
+        return Type.Char;
+    }
+
+    @Override
     public String print() {
         if (value == ' ') {
             return "\\space";

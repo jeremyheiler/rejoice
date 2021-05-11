@@ -19,6 +19,11 @@ public final class Str implements Atom {
     }
 
     @Override
+    public Type type() {
+        return Type.String;
+    }
+
+    @Override
     public String print() {
         return "\"" + value + "\"";
     }

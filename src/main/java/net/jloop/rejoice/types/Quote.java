@@ -12,6 +12,11 @@ public final class Quote implements Atom, Quotable {
     }
 
     @Override
+    public Type type() {
+        return Type.Quote;
+    }
+
+    @Override
     public Symbol symbol() {
         return quotable.symbol();
     }

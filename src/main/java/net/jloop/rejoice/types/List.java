@@ -27,6 +27,11 @@ public class List implements Value, Iterable<Value>, Function {
     }
 
     @Override
+    public Type type() {
+        return Type.List;
+    }
+
+    @Override
     public Stack invoke(Env env, Stack stack) {
         return new Interpreter().interpret(env, stack, values.iterator());
     }

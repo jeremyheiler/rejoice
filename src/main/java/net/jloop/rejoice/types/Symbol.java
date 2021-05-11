@@ -22,6 +22,11 @@ public final class Symbol implements Atom, Quotable {
     }
 
     @Override
+    public Type type() {
+        return Type.Symbol;
+    }
+
+    @Override
     public Symbol symbol() {
         return this;
     }

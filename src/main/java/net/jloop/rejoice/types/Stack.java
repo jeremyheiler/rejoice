@@ -25,6 +25,15 @@ public final class Stack implements Value, Iterable<Value> {
         this.onlyAtoms = onlyAtoms;
     }
 
+    @Override
+    public Type type() {
+        return Type.Stack;
+    }
+
+    public int length() {
+        return values.size();
+    }
+
     private void checkUnderflow() {
         if (values.isEmpty()) {
             throw new RuntimeError("STACK", "Underflow");
