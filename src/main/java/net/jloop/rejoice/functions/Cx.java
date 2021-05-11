@@ -10,7 +10,7 @@ import net.jloop.rejoice.types.Stack;
 public final class Cx implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
-        return stack.peek(List.class).evaluate(env, stack);
+    public Stack invoke(Env env, Stack stack) {
+        return stack.peek(List.class).invoke(env, stack);
     }
 }

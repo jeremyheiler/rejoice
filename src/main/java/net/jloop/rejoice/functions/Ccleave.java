@@ -11,11 +11,11 @@ import net.jloop.rejoice.types.Stack;
 public final class Ccleave implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         List q = stack.consume(List.class);
         List p = stack.consume(List.class);
-        Atom rp = p.evaluate(env, stack.copy()).consume(Atom.class);
-        Atom rq = q.evaluate(env, stack.copy()).consume(Atom.class);
+        Atom rp = p.invoke(env, stack.copy()).consume(Atom.class);
+        Atom rq = q.invoke(env, stack.copy()).consume(Atom.class);
         return stack.pop().push(rp).push(rq);
     }
 }

@@ -10,7 +10,7 @@ import net.jloop.rejoice.types.Stack;
 public final class O_Plus implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         Int64 j = stack.consume(Int64.class);
         Int64 i = stack.consume(Int64.class);
         Int64 k = i.plus(j);

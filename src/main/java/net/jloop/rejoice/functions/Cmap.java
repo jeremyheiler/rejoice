@@ -12,12 +12,12 @@ import net.jloop.rejoice.types.Stack;
 public final class Cmap implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         List p = stack.consume(List.class);
         List a = stack.consume(List.class);
         List b = new List();
         for (Value value : a) {
-            b.append(p.evaluate(env, new Stack().push(value)).consume(Atom.class));
+            b.append(p.invoke(env, new Stack().push(value)).consume(Atom.class));
         }
         return stack.push(b);
     }

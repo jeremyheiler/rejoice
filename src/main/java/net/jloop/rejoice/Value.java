@@ -1,19 +1,6 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.types.Stack;
-
-import java.util.Iterator;
-import java.util.List;
-
 public interface Value {
-
-    default void collect(Env env, Iterator<Value> input, List<Value> output) {
-        output.add(this);
-    }
-
-    default Stack interpret(Env env, Stack stack, Iterator<Value> input) {
-        return stack.push(this);
-    }
 
     default Value quote() {
         return this;

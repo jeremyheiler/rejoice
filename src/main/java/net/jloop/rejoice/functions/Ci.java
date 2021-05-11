@@ -10,8 +10,8 @@ import net.jloop.rejoice.types.Stack;
 public final class Ci implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         List p = stack.consume(List.class);
-        return p.evaluate(env, stack);
+        return p.invoke(env, stack);
     }
 }

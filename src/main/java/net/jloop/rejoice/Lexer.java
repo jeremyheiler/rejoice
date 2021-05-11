@@ -145,7 +145,6 @@ public final class Lexer {
         private final Token.Type type;
 
         private boolean first = true;
-        private boolean slash = false;
         private boolean dot = false;
 
         public NamedMetaState(Token.Type type) {
@@ -181,13 +180,6 @@ public final class Lexer {
                 } else {
                     dot = false;
                 }
-                if (character == '/') {
-                    if (slash) {
-                        throw new RuntimeError("LEX", "Invalid " + type.name().toLowerCase() + ": cannot have more than one '/' character");
-                    } else {
-                        slash = true;
-                    }
-                }
                 buffer.append(character);
                 return this;
             } else {
@@ -200,6 +192,8 @@ public final class Lexer {
             String lexeme = buffer.toString();
             if (type == Token.Type.Symbol && (lexeme.equals("true") || lexeme.equals("false"))) {
                 collector.accept(Token.of(Token.Type.Bool, lexeme));
+            } else if (buffer.charAt(buffer.length() - 1) == '.') {
+                throw new RuntimeError("LEX", "Invalid " + type.name().toLowerCase() + ": cannot end with a '.' character");
             } else {
                 collector.accept(Token.of(type, lexeme));
             }

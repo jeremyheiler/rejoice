@@ -4,11 +4,11 @@ import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.types.Stack;
 
-public final class F_stack_peek implements Function {
+public final class F_pop implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         Stack s = stack.consume(Stack.class);
-        return stack.push(s.peek()).push(s);
+        return stack.push(s.peek()).push(s.pop());
     }
 }

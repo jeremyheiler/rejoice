@@ -3,38 +3,25 @@ package net.jloop.rejoice.types;
 import net.jloop.rejoice.Atom;
 
 import java.util.Objects;
-import java.util.Optional;
 
 public final class Type implements Atom {
 
-    private final String path;
     private final String name;
 
-    private Type(String path, String name) {
-        this.path = path;
+    private Type(String name) {
         this.name = name;
     }
 
     public static Type of(String name) {
-        int i = name.indexOf('/');
-        if (i == -1 || name.equals("/")) {
-            return new Type(null, name);
-        } else {
-            return new Type(name.substring(0, i), name.substring(i + 1));
-        }
+        return new Type(name);
     }
-
-    public Optional<String> path() {
-        return Optional.ofNullable(path);
-    }
-
     public String name() {
         return name;
     }
 
     @Override
     public String print() {
-        return "^" + (path == null ? name : path + "/" + name);
+        return "^" + name;
     }
 
     @Override
@@ -42,11 +29,11 @@ public final class Type implements Atom {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Type type = (Type) o;
-        return Objects.equals(path, type.path) && name.equals(type.name);
+        return name.equals(type.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, name);
+        return Objects.hash(name);
     }
 }

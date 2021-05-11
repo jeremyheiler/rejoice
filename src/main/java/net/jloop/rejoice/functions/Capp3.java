@@ -12,14 +12,14 @@ import net.jloop.rejoice.types.Stack;
 public final class Capp3 implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         List p = stack.consume(List.class);
         Atom z = stack.consume(Atom.class);
-        Atom rz = p.evaluate(env, new Stack().push(z)).consume(Atom.class);
+        Atom rz = p.invoke(env, new Stack().push(z)).consume(Atom.class);
         Atom y = stack.consume(Atom.class);
-        Atom ry = p.evaluate(env, new Stack().push(y)).consume(Atom.class);
+        Atom ry = p.invoke(env, new Stack().push(y)).consume(Atom.class);
         Atom x = stack.consume(Atom.class);
-        Atom rx = p.evaluate(env, new Stack().push(x)).consume(Atom.class);
+        Atom rx = p.invoke(env, new Stack().push(x)).consume(Atom.class);
         return stack.push(rx).push(ry).push(rz);
     }
 }

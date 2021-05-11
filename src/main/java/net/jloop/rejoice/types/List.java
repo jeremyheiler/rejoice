@@ -17,7 +17,7 @@ public class List implements Value, Iterable<Value>, Function {
         this.values = new ArrayList<>();
     }
 
-    public List(Value ... values) {
+    public List(Value... values) {
         this.values = new ArrayList<>();
         this.values.addAll(Arrays.asList(values));
     }
@@ -27,13 +27,8 @@ public class List implements Value, Iterable<Value>, Function {
     }
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         return new Interpreter().interpret(env, stack, values.iterator());
-    }
-
-    @Override
-    public Stack interpret(Env env, Stack stack, Iterator<Value> input) {
-        return evaluate(env, stack);
     }
 
     public List append(Value value) {

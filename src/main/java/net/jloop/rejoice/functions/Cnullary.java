@@ -11,9 +11,9 @@ import net.jloop.rejoice.types.Stack;
 public final class Cnullary implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         List p = stack.consume(List.class);
-        Atom r = p.evaluate(env, stack.copy()).consume(Atom.class);
+        Atom r = p.invoke(env, stack.copy()).consume(Atom.class);
         return stack.push(r);
     }
 }

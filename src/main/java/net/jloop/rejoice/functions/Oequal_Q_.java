@@ -11,7 +11,7 @@ import net.jloop.rejoice.types.Stack;
 public final class Oequal_Q_ implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         Atom y = stack.consume(Atom.class);
         Atom x = stack.consume(Atom.class);
         Bool b = Bool.of(x.equals(y));

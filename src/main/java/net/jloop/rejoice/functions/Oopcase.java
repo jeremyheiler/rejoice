@@ -15,7 +15,7 @@ import net.jloop.rejoice.types.Stack;
 public final class Oopcase implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         List list = stack.consume(List.class);
         Atom atom = stack.consume(Atom.class);
         if (list.length() == 0) {

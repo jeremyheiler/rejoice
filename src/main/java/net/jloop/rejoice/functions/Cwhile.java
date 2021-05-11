@@ -11,11 +11,11 @@ import net.jloop.rejoice.types.Stack;
 public final class Cwhile implements Function {
 
     @Override
-    public Stack evaluate(Env env, Stack stack) {
+    public Stack invoke(Env env, Stack stack) {
         List d = stack.consume(List.class);
         List b = stack.consume(List.class);
-        while (b.evaluate(env, stack.copy()).consume(Bool.class) == Bool.True) {
-            stack = d.evaluate(env, stack);
+        while (b.invoke(env, stack.copy()).consume(Bool.class) == Bool.True) {
+            stack = d.invoke(env, stack);
         }
         return stack;
     }

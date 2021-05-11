@@ -13,20 +13,20 @@ import net.jloop.rejoice.functions.Cnullary;
 import net.jloop.rejoice.functions.Cwhile;
 import net.jloop.rejoice.functions.Cx;
 import net.jloop.rejoice.functions.Cy;
+import net.jloop.rejoice.functions.F_cons;
 import net.jloop.rejoice.functions.F_define_function;
+import net.jloop.rejoice.functions.F_demote;
 import net.jloop.rejoice.functions.F_if;
+import net.jloop.rejoice.functions.F_length;
 import net.jloop.rejoice.functions.F_lift;
-import net.jloop.rejoice.functions.F_list_cons;
-import net.jloop.rejoice.functions.F_list_create;
-import net.jloop.rejoice.functions.F_list_length;
+import net.jloop.rejoice.functions.F_list;
+import net.jloop.rejoice.functions.F_peek;
+import net.jloop.rejoice.functions.F_pop;
 import net.jloop.rejoice.functions.F_print;
-import net.jloop.rejoice.functions.F_push;
+import net.jloop.rejoice.functions.F_promote;
+import net.jloop.rejoice.functions.F_sink;
+import net.jloop.rejoice.functions.F_stack;
 import net.jloop.rejoice.functions.F_stack_apply;
-import net.jloop.rejoice.functions.F_stack_create;
-import net.jloop.rejoice.functions.F_stack_demote;
-import net.jloop.rejoice.functions.F_stack_peek;
-import net.jloop.rejoice.functions.F_stack_pop;
-import net.jloop.rejoice.functions.F_stack_promote;
 import net.jloop.rejoice.functions.F_stack_push;
 import net.jloop.rejoice.functions.F_write;
 import net.jloop.rejoice.functions.O_Divide;
@@ -41,12 +41,11 @@ import net.jloop.rejoice.functions.Omax;
 import net.jloop.rejoice.functions.Omin;
 import net.jloop.rejoice.functions.Oopcase;
 import net.jloop.rejoice.functions.Osign;
-import net.jloop.rejoice.macros.M_Define;
+import net.jloop.rejoice.macros.M_Function;
 import net.jloop.rejoice.macros.M_List;
 import net.jloop.rejoice.macros.M_Native;
 import net.jloop.rejoice.macros.M_Stack;
 import net.jloop.rejoice.types.Stack;
-import net.jloop.rejoice.types.Symbol;
 
 import java.io.Reader;
 
@@ -77,60 +76,54 @@ public class Runtime {
     }
 
     public static Runtime create() {
-        // Namespace: proto
-        Namespace proto = new Namespace("proto");
-        // Core Functions
-        proto.add("/", new O_Divide());
-        proto.add("-", new O_Minus());
-        proto.add("%", new O_Modulus());
-        proto.add("*", new O_Multiply());
-        proto.add("+", new O_Plus());
-        proto.add("abs", new Oabs());
-        proto.add("app1", new Capp1());
-        proto.add("app2", new Capp2());
-        proto.add("app3", new Capp3());
-        proto.add("b", new Cb());
-        proto.add("choice", new Ochoice());
-        proto.add("cleave", new Ccleave());
-        proto.add("define-function", new F_define_function());
-        proto.add("dipd", new Cdipd());
-        proto.add("dipdd", new Cdipdd());
-        proto.add("equal?", new Oequal_Q_());
-        proto.add("i", new Ci());
-        proto.add("if", new F_if());
-        proto.add("lift", new F_lift());
-        proto.add("map", new Cmap());
-        proto.add("max", new Omax());
-        proto.add("min", new Omin());
-        proto.add("nullary", new Cnullary());
-        proto.add("opcase", new Oopcase());
-        proto.add("print", new F_print());
-        proto.add("push", new F_push());
-        proto.add("sign", new Osign());
-        proto.add("while", new Cwhile());
-        proto.add("write", new F_write());
-        proto.add("x", new Cx());
-        proto.add("y", new Cy());
-        // Core macros
-        proto.add("(", new M_List());
-        proto.add("[", new M_Stack());
-        proto.add("define", new M_Define());
-        proto.add("native", new M_Native());
-        // Namespace: proto.list
-        proto.add(Symbol.of("list/cons"), new F_list_cons());
-        proto.add(Symbol.of("list/create"), new F_list_create());
-        proto.add(Symbol.of("list/length"), new F_list_length());
-        // Namespace: proto.stack
-        proto.add(Symbol.of("stack/apply"), new F_stack_apply());
-        proto.add(Symbol.of("stack/create"), new F_stack_create());
-        proto.add(Symbol.of("stack/demote"), new F_stack_demote());
-        proto.add(Symbol.of("stack/peek"), new F_stack_peek());
-        proto.add(Symbol.of("stack/pop"), new F_stack_pop());
-        proto.add(Symbol.of("stack/promote"), new F_stack_promote());
-        proto.add(Symbol.of("stack/push"), new F_stack_push());
-        // Setup environment
-        Env env = new Env(proto);
-        // Initialize runtime
+        Env env = new Env();
+        // Functions
+        env.define("/", new O_Divide());
+        env.define("-", new O_Minus());
+        env.define("%", new O_Modulus());
+        env.define("*", new O_Multiply());
+        env.define("+", new O_Plus());
+        env.define("abs", new Oabs());
+        env.define("app1", new Capp1());
+        env.define("app2", new Capp2());
+        env.define("app3", new Capp3());
+        env.define("b", new Cb());
+        env.define("choice", new Ochoice());
+        env.define("cleave", new Ccleave());
+        env.define("cons", new F_cons());
+        env.define("define-function", new F_define_function());
+        env.define("demote", new F_demote());
+        env.define("dipd", new Cdipd());
+        env.define("dipdd", new Cdipdd());
+        env.define("equal?", new Oequal_Q_());
+        env.define("i", new Ci());
+        env.define("if", new F_if());
+        env.define("length", new F_length());
+        env.define("lift", new F_lift());
+        env.define("list", new F_list());
+        env.define("map", new Cmap());
+        env.define("max", new Omax());
+        env.define("min", new Omin());
+        env.define("nullary", new Cnullary());
+        env.define("opcase", new Oopcase());
+        env.define("peek", new F_peek());
+        env.define("pop", new F_pop());
+        env.define("print", new F_print());
+        env.define("promote", new F_promote());
+        env.define("push", new F_stack_push());
+        env.define("sign", new Osign());
+        env.define("sink", new F_sink());
+        env.define("stack", new F_stack());
+        env.define("stack-apply", new F_stack_apply());
+        env.define("while", new Cwhile());
+        env.define("write", new F_write());
+        env.define("x", new Cx());
+        env.define("y", new Cy());
+        // Macros
+        env.define("(", new M_List());
+        env.define("[", new M_Stack());
+        env.define("function", new M_Function());
+        env.define("native", new M_Native());
         return new Runtime(env);
     }
 }
