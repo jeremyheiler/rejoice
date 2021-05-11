@@ -22,12 +22,11 @@ public final class Quote implements Atom, Quotable {
     }
 
     @Override
-    public Atom quote() {
+    public Quote quote() {
         return new Quote(this);
     }
 
-    @Override
-    public Atom unquote() {
+    public Quotable unquote() {
         return quotable;
     }
 

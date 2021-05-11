@@ -4,14 +4,6 @@ import net.jloop.rejoice.types.Type;
 
 public interface Value {
 
-    default Value quote() {
-        return this;
-    }
-
-    default Value unquote() {
-        return this;
-    }
-
     Type type();
 
     // Prints the value such that it can be parsed again.

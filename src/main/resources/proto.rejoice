@@ -1,16 +1,48 @@
+# Rejoice!
+
+# Natives
+#
+# A native is a function or macro that is provided by the runtime.
+# Declaring them in a source file is for documentation purposes.
+
+# Native Macros
+
+native native
+  #syn "; >>"
+  #doc "A macro for documenting a native function or macro"
+;
+
 native (
   #syn "( ~& body ) >> ~'@ body ~$ body list"
-  #doc "A macro that creates a list."
+  #doc "A macro that creates a list from the input stream."
 ;
 
 native [
   #syn "[ ~& body ] >> ~'@ body ~$ body stack"
-  #doc "A macro that creates a stack."
+  #doc "A macro that creates a stack from the input stream."
 ;
 
 native function
   #syn "function ~% name ^symbol : ~& body ; >> ( ~@ body ) ~'@ name define-function"
   #doc "A macro that defines a named function."
+;
+
+native protocol
+  #syn "protocol ~% name ^symbol ; >> ( ~@ body ) ~'@ name define-protocol"
+  #doc "A macro that defines a named protocol."
+;
+
+native extend
+  #syn "extend ~% name ^symbol ~% type ^type : ~& body ; >> ( ~@ body ) ~'@ name ~@type extend-protocol"
+  #doc "A macro that extends a protocol with a function for a single value of the specified type."
+;
+
+# Native Functions
+
+native if
+  # "Expects three lists: p, t, and f (where f is the top of th stack).
+  # Evaluates p (the predicate) against a copy of the stack with out p, t, or f.
+  # If it yields true, then t is evaluated, otherwise f is evaluated."
 ;
 
 native lift
@@ -30,21 +62,6 @@ native list
 native stack
   #eff "a ... ^i64 -- ^stack"
   #doc "Creates a stack with n elements, consuming them from the main stack."
-;
-
-protocol length
-  #eff "a -- a ^i64"
-  #doc "Pushes the length of 'a' onto the stack."
-;
-
-extend length ^list  :   list-length ;
-extend length ^stack :  stack-length ;
-
-function empty?
-  #eff "a -- a ^bool"
-  #doc "Pushes true onto the stack if 'a' has a length of zero, otherwise pushes false."
-:
-  length 0 equal?
 ;
 
 native cons
@@ -80,6 +97,33 @@ native pop
 native push
   #eff "x ^stack -- ^stack"
   #doc "Pushes x onto the stack."
+;
+
+native print
+  #doc "Prints the top value of the stack such that it could be parsed again."
+;
+
+native write
+  #doc "Prints the value represented by the the top value of the stack, i.e. '\x' prints 'x' and '"foo"" prints 'foo'."
+;
+
+# Protocols
+
+protocol length
+  #eff "a -- a ^i64"
+  #doc "Pushes the length of 'a' onto the stack."
+;
+
+extend length ^list  :   list-length ;
+extend length ^stack :  stack-length ;
+
+# Functions
+
+function empty?
+  #eff "a -- a ^bool"
+  #doc "Pushes true onto the stack if 'a' has a length of zero, otherwise pushes false."
+:
+  length 0 equal?
 ;
 
 function roll-down
@@ -139,23 +183,9 @@ function dip
   #doc "Evaluates List against the stack with out x, pushing x back onto the stack after.
   : swap demote pop pop stack-apply push promote ;
 
-native if
-  # "Expects three lists: p, t, and f (where f is the top of th stack).
-  # Evaluates p (the predicate) against a copy of the stack with out p, t, or f.
-  # If it yields true, then t is evaluated, otherwise f is evaluated."
-;
-
 function if*
   #doc "Like if, except instead of a predicate list, expects a boolean."
   : roll-down 1 list roll-up if ;
-
-native print
-  #doc "Prints the top value of the stack such that it could be parsed again."
-;
-
-native write
-  #doc "Prints the value represented by the the top value of the stack, i.e. '\x' prints 'x' and '"foo"" prints 'foo'."
-;
 
 function print-line
   #doc "Prints the top value of the stack such that it could be parsed again, followed by a new line."

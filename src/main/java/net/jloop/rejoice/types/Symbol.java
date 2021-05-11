@@ -32,7 +32,7 @@ public final class Symbol implements Atom, Quotable {
     }
 
     @Override
-    public Atom quote() {
+    public Quote quote() {
         return new Quote(this);
     }
 
