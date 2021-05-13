@@ -5,11 +5,10 @@ import net.jloop.rejoice.types.Symbol;
 import net.jloop.rejoice.types.Type;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
-public final class Protocol implements Invocable {
+public final class Protocol implements Function {
 
     private final Map<Type, Function> extensions = new HashMap<>();
     private final Symbol name;
@@ -19,13 +18,13 @@ public final class Protocol implements Invocable {
     }
 
     @Override
-    public Stack invoke(Env env, Stack stack, Iterator<Value> input) {
+    public Stack invoke(Env env, Stack stack) {
         Value value = stack.peek();
         Function function = extensions.get(value.type());
         if (function == null) {
             throw new RuntimeError("INTERPRET", "Protocol '" + name.name() + "' does is not extended by type '" + value.type().print() + "'");
         }
-        return function.invoke(env, stack, input);
+        return function.invoke(env, stack);
     }
 
     public void extend(Type type, Function function) {
