@@ -1,24 +1,15 @@
 package net.jloop.rejoice;
 
-import net.jloop.rejoice.types.Stack;
 import net.jloop.rejoice.types.Symbol;
 
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class Env {
 
-    private final Lexer lexer = new Lexer();
-    private final Parser parser = new Parser();
-    private final Interpreter interpreter = new Interpreter();
     private final Map<Symbol, Invocable> invocables = new HashMap<>();
     private final Trace trace = new Trace();
-
-    public Stack eval(Stack stack, Reader input) {
-        return interpreter.interpret(this, stack, parser.map(lexer.map(input)));
-    }
 
     public Trace trace() {
         return trace;

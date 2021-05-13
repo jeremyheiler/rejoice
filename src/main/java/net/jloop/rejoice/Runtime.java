@@ -53,19 +53,15 @@ import net.jloop.rejoice.macros.M_stack;
 import net.jloop.rejoice.types.Stack;
 
 import java.io.Reader;
+import java.util.Iterator;
 
 public class Runtime {
 
     private final Env env;
-    private Stack stack;
+    private Stack stack = new Stack();
 
     public Runtime(Env env) {
-        this(env, new Stack());
-    }
-
-    public Runtime(Env env, Stack stack) {
         this.env = env;
-        this.stack = stack;
     }
 
     public Env env() {
@@ -77,7 +73,8 @@ public class Runtime {
     }
 
     public void eval(Reader input) {
-        stack = env.eval(stack, input);
+        Iterator<Value> values = new Parser().map(new Lexer().map(input));
+        stack = new Interpreter().interpret(env, stack, values);
     }
 
     public static Runtime create() {
