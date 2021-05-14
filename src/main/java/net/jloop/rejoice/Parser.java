@@ -4,7 +4,6 @@ import net.jloop.rejoice.types.Bool;
 import net.jloop.rejoice.types.Char;
 import net.jloop.rejoice.types.Int64;
 import net.jloop.rejoice.types.Keyword;
-import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Str;
 import net.jloop.rejoice.types.Symbol;
 import net.jloop.rejoice.types.Type;
@@ -42,15 +41,6 @@ public final class Parser {
             }
             case Keyword -> {
                 return Keyword.of(token.lexeme());
-            }
-            case Quote -> {
-                int index = token.lexeme().lastIndexOf('\'') + 1;
-                String name = token.lexeme().substring(index);
-                Quotable quotable = Symbol.of(name);
-                for (int i = 0; i < index; i++) {
-                    quotable = new Quote(quotable);
-                }
-                return quotable;
             }
             case Str -> {
                 return new Str(token.lexeme());

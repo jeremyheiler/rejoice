@@ -23,7 +23,7 @@ public class MacroHelper {
                 Invocable invocable = env.lookup((Symbol) next);
                 if (invocable instanceof Macro) {
                     env.trace().push((Symbol) next);
-                    Iterator<Value> values = ((Macro) invocable).invoke(env, input);
+                    Iterator<Value> values = ((Macro) invocable).call(env, input);
                     while (values.hasNext()) {
                         output.add(values.next());
                     }

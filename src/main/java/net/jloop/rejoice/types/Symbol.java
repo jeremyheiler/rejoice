@@ -1,11 +1,10 @@
 package net.jloop.rejoice.types;
 
 import net.jloop.rejoice.Atom;
-import net.jloop.rejoice.Quotable;
 
 import java.util.Objects;
 
-public final class Symbol implements Atom, Quotable {
+public final class Symbol implements Atom {
 
     private final String name;
 
@@ -24,16 +23,6 @@ public final class Symbol implements Atom, Quotable {
     @Override
     public Type type() {
         return Type.Symbol;
-    }
-
-    @Override
-    public Symbol symbol() {
-        return this;
-    }
-
-    @Override
-    public Quote quote() {
-        return new Quote(this);
     }
 
     @Override

@@ -5,16 +5,17 @@ import net.jloop.rejoice.Value;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public final class Stack implements Value, Iterable<Value> {
 
-    private final ArrayList<Value> values;
+    private final List<Value> values;
 
     public Stack() {
         this(new ArrayList<>());
     }
 
-    private Stack(ArrayList<Value> values) {
+    public Stack(List<Value> values) {
         this.values = values;
     }
 
@@ -25,6 +26,10 @@ public final class Stack implements Value, Iterable<Value> {
 
     public int length() {
         return values.size();
+    }
+
+    public boolean isEmpty() {
+        return values.isEmpty();
     }
 
     private void checkUnderflow() {
@@ -73,6 +78,13 @@ public final class Stack implements Value, Iterable<Value> {
         return this;
     }
 
+    public Stack pushAll(Stack stack) {
+        while (!stack.isEmpty()) {
+            push(stack.pop());
+        }
+        return this;
+    }
+
     public Stack push(int i) {
         values.add(values.size() - i, values.remove(values.size() - 1));
         return this;
@@ -86,7 +98,7 @@ public final class Stack implements Value, Iterable<Value> {
 
     @Override
     public String print() {
-        StringBuilder buffer = new StringBuilder("[");
+        StringBuilder buffer = new StringBuilder("[ ");
         boolean first = true;
         for (Value value : values) {
             if (first) {
@@ -96,7 +108,7 @@ public final class Stack implements Value, Iterable<Value> {
             }
             buffer.append(value.print());
         }
-        return buffer.append("]").toString();
+        return buffer.append(" ]").toString();
     }
 
     @Override

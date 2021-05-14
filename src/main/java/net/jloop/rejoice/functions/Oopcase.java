@@ -5,7 +5,7 @@ import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.RuntimeError;
 import net.jloop.rejoice.Value;
-import net.jloop.rejoice.types.List;
+import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Stack;
 
 // x [... [x xs] ...] -> [xs]
@@ -15,20 +15,20 @@ import net.jloop.rejoice.types.Stack;
 public final class Oopcase implements Function {
 
     @Override
-    public Stack invoke(Env env, Stack stack) {
-        List list = stack.consume(List.class);
+    public Stack call(Env env, Stack stack) {
+        Quote quote = stack.consume(Quote.class);
         Atom atom = stack.consume(Atom.class);
-        if (list.length() == 0) {
+        if (quote.length() == 0) {
             throw new RuntimeError("INTERPRET", "Operator 'opcase': list cannot be empty");
         }
-        if (list.length() == 1) {
-            return stack.push(list.first());
+        if (quote.length() == 1) {
+            return stack.push(quote.first());
         }
         int count = 0;
-        for (Value value : list) {
-            if (value instanceof List) {
-                List l = (List) value;
-                if (++count == list.length()) { // last list
+        for (Value value : quote) {
+            if (value instanceof Quote) {
+                Quote l = (Quote) value;
+                if (++count == quote.length()) { // last list
                     return stack.push(l);
                 }
                 if (l.length() == 0) {

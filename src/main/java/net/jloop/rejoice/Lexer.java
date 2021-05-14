@@ -112,8 +112,6 @@ public final class Lexer {
         public State consume(char character, Consumer<Token> collector) {
             if (character == '"') {
                 return new StringState();
-            } else if (character == '\'') {
-                return new QuoteState();
             } else if (character == ':') {
                 return new KeywordState();
             } else if (character == '#') {
@@ -230,28 +228,6 @@ public final class Lexer {
         @Override
         public void complete(Consumer<Token> collector) {
             collector.accept(Token.of(Token.Type.Symbol, buffer.toString()));
-        }
-    }
-
-    private static final class QuoteState implements State {
-
-        private final StringBuilder buffer = new StringBuilder().append('\'');
-
-        @Override
-        public State consume(char character, Consumer<Token> collector) {
-            if (contains(whitespace, character)) {
-                throw new RuntimeError("LEX", "Incomplete quoted symbol");
-            } else if (character == '\'') {
-                buffer.append(character);
-                return this;
-            } else {
-                return new NamedMetaState(Token.Type.Quote, buffer).consume(character, collector);
-            }
-        }
-
-        @Override
-        public void complete(Consumer<Token> collector) {
-            throw new RuntimeError("LEX", "Incomplete quoted symbol");
         }
     }
 
@@ -412,7 +388,6 @@ public final class Lexer {
             Character,
             Int,
             Keyword,
-            Quote,
             Str,
             Symbol,
             Type

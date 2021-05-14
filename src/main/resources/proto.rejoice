@@ -8,33 +8,27 @@
 # Native Macros
 
 native native
-  #syn "; >>"
-  #doc "A macro for documenting a native function or macro"
+  #doc "Documents a native function or macro."
 ;
 
 native (
-  #syn "( ~& body ) >> ~'@ body ~$ body list"
-  #doc "A macro that creates a list from the input stream."
+  #doc "Create a quote from the input stream."
 ;
 
 native [
-  #syn "[ ~& body ] >> ~'@ body ~$ body stack"
-  #doc "A macro that creates a stack from the input stream."
+  #doc "Create a stack from the input stream."
 ;
 
 native function
-  #syn "function ~% name ^symbol : ~& body ; >> ( ~@ body ) ~'@ name define-function"
-  #doc "A macro that defines a named function."
+  #doc "Defines a named function."
 ;
 
 native protocol
-  #syn "protocol ~% name ^symbol ; >> ( ~@ body ) ~'@ name define-protocol"
-  #doc "A macro that defines a named protocol."
+  #doc "Defines a named protocol."
 ;
 
 native extend
-  #syn "extend ~% name ^symbol ~% type ^type : ~& body ; >> ( ~@ body ) ~'@ name ~@type extend-protocol"
-  #doc "A macro that extends a protocol with a function for a single value of the specified type."
+  #doc "Extends a protocol with a function for a single value of the specified type."
 ;
 
 # Native Functions

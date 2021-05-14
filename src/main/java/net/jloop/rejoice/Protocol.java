@@ -18,13 +18,13 @@ public final class Protocol implements Function {
     }
 
     @Override
-    public Stack invoke(Env env, Stack stack) {
+    public Stack call(Env env, Stack stack) {
         Value value = stack.peek();
         Function function = extensions.get(value.type());
         if (function == null) {
             throw new RuntimeError("INTERPRET", "Protocol '" + name.name() + "' does is not extended by type '" + value.type().print() + "'");
         }
-        return function.invoke(env, stack);
+        return function.call(env, stack);
     }
 
     public void extend(Type type, Function function) {

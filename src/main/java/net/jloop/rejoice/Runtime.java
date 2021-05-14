@@ -46,7 +46,7 @@ import net.jloop.rejoice.functions.Oopcase;
 import net.jloop.rejoice.functions.Osign;
 import net.jloop.rejoice.macros.M_extend;
 import net.jloop.rejoice.macros.M_function;
-import net.jloop.rejoice.macros.M_list;
+import net.jloop.rejoice.macros.M_quote;
 import net.jloop.rejoice.macros.M_native;
 import net.jloop.rejoice.macros.M_protocol;
 import net.jloop.rejoice.macros.M_stack;
@@ -125,7 +125,7 @@ public class Runtime {
         env.define("x", new Cx());
         env.define("y", new Cy());
         // Macros
-        env.define("(", new M_list());
+        env.define("(", new M_quote());
         env.define("[", new M_stack());
         env.define("extend", new M_extend());
         env.define("function", new M_function());

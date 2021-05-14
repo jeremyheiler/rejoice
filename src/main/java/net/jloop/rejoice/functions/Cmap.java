@@ -4,7 +4,7 @@ import net.jloop.rejoice.Atom;
 import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.Value;
-import net.jloop.rejoice.types.List;
+import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Stack;
 
 // a [p] -> b
@@ -12,12 +12,12 @@ import net.jloop.rejoice.types.Stack;
 public final class Cmap implements Function {
 
     @Override
-    public Stack invoke(Env env, Stack stack) {
-        List p = stack.consume(List.class);
-        List a = stack.consume(List.class);
-        List b = new List();
+    public Stack call(Env env, Stack stack) {
+        Quote p = stack.consume(Quote.class);
+        Quote a = stack.consume(Quote.class);
+        Quote b = new Quote();
         for (Value value : a) {
-            b.append(p.invoke(env, new Stack().push(value)).consume(Atom.class));
+            b.append(p.call(env, new Stack().push(value)).consume(Atom.class));
         }
         return stack.push(b);
     }

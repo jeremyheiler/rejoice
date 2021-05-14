@@ -8,7 +8,7 @@ import net.jloop.rejoice.types.Stack;
 
 public final class F_sink implements Function {
     @Override
-    public Stack invoke(Env env, Stack stack) {
+    public Stack call(Env env, Stack stack) {
         Int64 n = stack.consume(Int64.class);
         Value value = stack.consume((int) n.get());
         return stack.push(value);

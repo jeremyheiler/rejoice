@@ -6,10 +6,10 @@ import java.util.Iterator;
 
 public interface Function extends Invocable {
 
-    Stack invoke(Env env, Stack stack);
+    Stack call(Env env, Stack stack);
 
     @Override
     default Stack invoke(Env env, Stack stack, Iterator<Value> input) {
-        return invoke(env, stack);
+        return call(env, stack);
     }
 }

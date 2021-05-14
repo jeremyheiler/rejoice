@@ -7,7 +7,7 @@ import net.jloop.rejoice.types.Stack;
 public final class F_promote implements Function {
 
     @Override
-    public Stack invoke(Env env, Stack stack) {
+    public Stack call(Env env, Stack stack) {
         return stack.consume(Stack.class);
     }
 }
