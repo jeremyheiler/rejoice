@@ -3,17 +3,20 @@ package net.jloop.rejoice.functions;
 import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.types.Int64;
+import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Stack;
+
+import java.util.Deque;
 
 // i j -> k
 
 public final class Omax implements Function {
 
     @Override
-    public Stack call(Env env, Stack stack) {
-        Int64 j = stack.consume(Int64.class);
-        Int64 i = stack.consume(Int64.class);
+    public Stack call(Env env, Stack data, Deque<Quote> call) {
+        Int64 j = data.consume(Int64.class);
+        Int64 i = data.consume(Int64.class);
         Int64 k = i.max(j);
-        return stack.push(k);
+        return data.push(k);
     }
 }

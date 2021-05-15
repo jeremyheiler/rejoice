@@ -1,9 +1,11 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Stack;
 import net.jloop.rejoice.types.Symbol;
 import net.jloop.rejoice.types.Type;
 
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -18,13 +20,13 @@ public final class Protocol implements Function {
     }
 
     @Override
-    public Stack call(Env env, Stack stack) {
-        Value value = stack.peek();
+    public Stack call(Env env, Stack data, Deque<Quote> call) {
+        Value value = data.peek();
         Function function = extensions.get(value.type());
         if (function == null) {
             throw new RuntimeError("INTERPRET", "Protocol '" + name.name() + "' does is not extended by type '" + value.type().print() + "'");
         }
-        return function.call(env, stack);
+        return function.call(env, data, );
     }
 
     public void extend(Type type, Function function) {

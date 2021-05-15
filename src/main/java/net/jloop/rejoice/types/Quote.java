@@ -1,8 +1,5 @@
 package net.jloop.rejoice.types;
 
-import net.jloop.rejoice.Env;
-import net.jloop.rejoice.Function;
-import net.jloop.rejoice.Interpreter;
 import net.jloop.rejoice.Value;
 
 import java.util.ArrayList;
@@ -10,7 +7,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class Quote implements Value, Iterable<Value>, Function {
+public class Quote implements Value, Iterable<Value> {
 
     private final List<Value> values;
 
@@ -30,11 +27,6 @@ public class Quote implements Value, Iterable<Value>, Function {
     @Override
     public Type type() {
         return Type.List;
-    }
-
-    @Override
-    public Stack call(Env env, Stack stack) {
-        return new Interpreter().interpret(env, stack, values.iterator());
     }
 
     public Quote append(Value value) {

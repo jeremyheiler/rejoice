@@ -2,7 +2,8 @@ package net.jloop.rejoice;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -13,47 +14,13 @@ public final class Lexer {
     private static final String whitespace = "\t\n\r ";
     private static final String allowedInName = "!$%&()*+,-./0123456789;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-    public Iterator<Token> map(Reader reader) {
+    public Deque<Token> lex(Reader reader) {
+        Deque<Token> tokens = new ArrayDeque<>();
         ReaderIterator input = new ReaderIterator(reader);
-        class Mapper implements Iterator<Token>, Consumer<Token> {
-
-            private final ArrayList<Token> tokens = new ArrayList<>();
-
-            private State state = new StartingState();
-
-            @Override
-            public void accept(Token token) {
-                tokens.add(token);
-            }
-
-            @Override
-            public boolean hasNext() {
-                while (true) {
-                    if (!tokens.isEmpty()) {
-                        return true;
-                    }
-                    if (state == null) {
-                        return false;
-                    }
-                    if (input.hasNext()) {
-                        state = state.consume(input.next(), this);
-                    } else {
-                        state.complete(this);
-                        state = null;
-                    }
-                }
-            }
-
-            @Override
-            public Token next() {
-                if (hasNext()) {
-                    return tokens.remove(0);
-                } else {
-                    throw new NoSuchElementException();
-                }
-            }
-        }
-        return new Mapper();
+        State state = new StartingState();
+        while (input.hasNext()) state = state.consume(input.next(), tokens::add);
+        state.complete(tokens::add);
+        return tokens;
     }
 
     private static final class ReaderIterator implements Iterator<Character> {

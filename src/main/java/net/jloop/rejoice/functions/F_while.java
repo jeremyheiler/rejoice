@@ -8,13 +8,18 @@ import net.jloop.rejoice.types.Symbol;
 
 import java.util.Deque;
 
-public final class F_define_function implements Function {
+// Example: 3 [ pos? ] [ dec ] while
+
+public final class F_while implements Function {
 
     @Override
     public Stack call(Env env, Stack data, Deque<Quote> call) {
-        Symbol name = data.consume(Symbol.class);
         Quote body = data.consume(Quote.class);
-        env.define(name.name(), body);
+        Quote pred = data.consume(Quote.class);
+        Quote recur = new Quote()
+                .append(body).append(Symbol.of("apply"))
+                .append(pred).append(body).append(Symbol.of("while"));
+        call.push(new Quote().append(pred).append(recur).append(Symbol.of("when")));
         return data;
     }
 }

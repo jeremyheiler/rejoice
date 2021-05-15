@@ -20,10 +20,10 @@ public class MacroHelper {
                 if (next.equals(terminator)) {
                     return output;
                 }
-                Invocable invocable = env.lookup((Symbol) next);
-                if (invocable instanceof Macro) {
+                Function function = env.lookup((Symbol) next);
+                if (function instanceof Macro) {
                     env.trace().push((Symbol) next);
-                    Iterator<Value> values = ((Macro) invocable).call(env, input);
+                    Iterator<Value> values = ((Macro) function).call(env, input);
                     while (values.hasNext()) {
                         output.add(values.next());
                     }

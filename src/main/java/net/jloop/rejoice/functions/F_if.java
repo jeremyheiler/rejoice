@@ -2,22 +2,22 @@ package net.jloop.rejoice.functions;
 
 import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Function;
-import net.jloop.rejoice.types.Bool;
 import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Stack;
+import net.jloop.rejoice.types.Symbol;
+
+import java.util.Deque;
 
 public final class F_if implements Function {
 
     @Override
-    public Stack call(Env env, Stack stack) {
-        Quote f = stack.consume(Quote.class);
-        Quote t = stack.consume(Quote.class);
-        Quote b = stack.consume(Quote.class);
-        Stack copy = stack.copy();
-        if (b.call(env, copy).consume(Bool.class) == Bool.True) {
-            return t.call(env, stack);
-        } else {
-            return f.call(env, stack);
-        }
+    public Stack call(Env env, Stack data, Deque<Quote> call) {
+        Quote f = data.consume(Quote.class);
+        Quote t = data.consume(Quote.class);
+        Quote pred = data.consume(Quote.class);
+        call.push(t);
+        call.push(f);
+        call.push(pred.append(Symbol.of("prepare-if")));
+        return data;
     }
 }

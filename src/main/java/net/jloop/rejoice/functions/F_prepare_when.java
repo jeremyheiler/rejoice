@@ -1,6 +1,5 @@
 package net.jloop.rejoice.functions;
 
-import net.jloop.rejoice.Atom;
 import net.jloop.rejoice.Env;
 import net.jloop.rejoice.Function;
 import net.jloop.rejoice.types.Bool;
@@ -9,15 +8,16 @@ import net.jloop.rejoice.types.Stack;
 
 import java.util.Deque;
 
-// x y -> b
+// This function assumes there is a quote on the call stack
+// that should only be evaluated if the boolean 'true' is on
+// the data stack.
 
-public final class Oequal_Q_ implements Function {
+public final class F_prepare_when implements Function {
 
     @Override
     public Stack call(Env env, Stack data, Deque<Quote> call) {
-        Atom y = data.consume(Atom.class);
-        Atom x = data.consume(Atom.class);
-        Bool b = Bool.of(x.equals(y));
-        return data.push(b);
+        Bool bool = data.consume(Bool.class);
+        if (bool == Bool.False) call.pop();
+        return data;
     }
 }

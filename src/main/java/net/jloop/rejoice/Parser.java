@@ -8,24 +8,15 @@ import net.jloop.rejoice.types.Str;
 import net.jloop.rejoice.types.Symbol;
 import net.jloop.rejoice.types.Type;
 
-import java.util.Iterator;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public final class Parser {
 
-    public Iterator<Value> map(Iterator<Lexer.Token> input) {
-        return new Iterator<>() {
-
-            @Override
-            public boolean hasNext() {
-                return input.hasNext();
-            }
-
-            @Override
-            public Atom next() {
-                Lexer.Token next = input.next();
-                return translate(next);
-            }
-        };
+    public Deque<Value> parse(Deque<Lexer.Token> input) {
+        Deque<Value> values = new ArrayDeque<>();
+        for (Lexer.Token token : input) values.add(translate(token));
+        return values;
     }
 
     private Atom translate(Lexer.Token token) {

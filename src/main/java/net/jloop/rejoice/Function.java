@@ -1,15 +1,11 @@
 package net.jloop.rejoice;
 
+import net.jloop.rejoice.types.Quote;
 import net.jloop.rejoice.types.Stack;
 
-import java.util.Iterator;
+import java.util.Deque;
 
-public interface Function extends Invocable {
+public interface Function {
 
-    Stack call(Env env, Stack stack);
-
-    @Override
-    default Stack invoke(Env env, Stack stack, Iterator<Value> input) {
-        return call(env, stack);
-    }
+    Stack call(Env env, Stack data, Deque<Quote> call);
 }
